@@ -388,7 +388,8 @@ class Device
 
         foreach($feedArray as $f) {
             // for each feed
-            if (($f->engine == Engine::VIRTUALFEED) && isset($f->processList)) {
+            $type = @constant($f->engine); 
+            if (($type === Engine::VIRTUALFEED) && isset($f->processList)) {
                 $feedId = $f->feedId;
                 $result = $this->convertTemplateProcessList($feedArray, $inputArray, $f->processList);
                 if (isset($result["success"])) {
