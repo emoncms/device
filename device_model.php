@@ -308,6 +308,12 @@ class Device
             // Create each feed
             $name = $f->name;
             if (property_exists($f, "tag")) {
+                $tag = '';
+                
+                if(property_exists($f, "include_node")) {
+                     $tag .= $node . ' ';
+                }
+                
                 $tag = $f->tag;
             } else {
                 $tag = $node;
