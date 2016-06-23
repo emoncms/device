@@ -180,7 +180,6 @@
   {
     var id = $('#initdeviceModal').attr('deviceid');
     var result = device.inittemplate(id);
-    alert(result['message']);
     $('#initdeviceModal').modal('hide');
   });
 

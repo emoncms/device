@@ -1,0 +1,2529 @@
+{	"name": "GEM Direct",
+	"description": "Brultech GreenEye Monitor",
+	"inputs": [
+		{
+			"name": "E1",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH1 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH1 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E2",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH2 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH2 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E3",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH3 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH3 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E4",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH4 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH4 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E5",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH5 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH5 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E6",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH6 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH6 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E7",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH7 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH7 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E8",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH8 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH8 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E9",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH9 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH9 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E10",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH10 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH10 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E11",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH11 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH11 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E12",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH12 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH12 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E13",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH13 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH13 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E14",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH14 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH14 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E15",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH15 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH15 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E16",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH16 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH16 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E17",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH17 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH17 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E18",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH18 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH18 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E19",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH19 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH19 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E20",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH20 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH20 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E21",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH21 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH21 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E22",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH22 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH22 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E23",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH23 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH23 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E24",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH24 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH24 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E25",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH25 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH25 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E26",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH26 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH26 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E27",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH27 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH27 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E28",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH28 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH28 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E29",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH29 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH29 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E30",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH30 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH30 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E31",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH31 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH31 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "E32",
+			"description": "Wattseconds Counter",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.00027777777" 
+									}
+								},
+								{
+									"process": "34",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH32 Total Wh" 
+									}
+								},
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "3600" 
+									}
+								},
+								{
+									"process": "15",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "CH32 WS Delta" 
+									}
+								}	
+							]
+		},
+		{
+			"name": "T1",
+			"description": "Temperature",
+			"processList": [
+								{
+									"process": "1",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "Temp 1" 
+									}
+								}
+							]
+		},
+		{
+			"name": "T2",
+			"description": "Temperature",
+			"processList": [
+								{
+									"process": "1",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "Temp 2" 
+									}
+								}
+							]
+		},
+		{
+			"name": "T3",
+			"description": "Temperature",
+			"processList": [
+								{
+									"process": "1",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "Temp 3" 
+									}
+								}
+							]
+		},
+		{
+			"name": "T4",
+			"description": "Temperature",
+			"processList": [
+								{
+									"process": "1",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "Temp 4" 
+									}
+								}
+							]
+		},
+		{
+			"name": "T5",
+			"description": "Temperature",
+			"processList": [
+								{
+									"process": "1",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "Temp 5" 
+									}
+								}
+							]
+		},
+		{
+			"name": "T6",
+			"description": "Temperature",
+			"processList": [
+								{
+									"process": "1",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "Temp 6" 
+									}
+								}
+							]
+		},
+		{
+			"name": "T7",
+			"description": "Temperature",
+			"processList": [
+								{
+									"process": "1",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "Temp 7" 
+									}
+								}
+							]
+		},
+		{
+			"name": "T8",
+			"description": "Temperature",
+			"processList": [
+								{
+									"process": "1",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "Temp 8" 
+									}
+								}
+							]
+		},
+		{
+			"name": "V",
+			"description": "Voltage",
+			"processList": [
+								{
+									"process": "2",
+									"arguments": {
+										"type": "ProcessArg::VALUE", 
+										"value": "0.1" 
+									}
+								},
+								{
+									"process": "1",
+									"arguments": {
+										"type": "ProcessArg::FEEDID", 
+										"value": "Voltage" 
+									}
+								}
+							]
+		},
+		{
+			"name": "SC",
+			"description": "Seconds Counter",
+			"processList": [
+				{
+					"process": "15",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		}
+	],
+
+	"feeds": [
+		{
+			"name": "SC Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH1 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH1 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH1 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH1 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH2 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH2 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH2 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH2 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH3 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH3 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH3 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH3 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH4 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH4 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH4 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH4 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH5 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH5 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH5 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH5 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH6 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH6 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH6 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH6 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH7 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH7 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH7 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH7 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH8 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH8 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH8 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH8 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH9 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH9 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH9 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH9 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH10 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH10 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH10 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH10 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH11 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH11 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH11 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH11 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH12 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH12 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH12 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH12 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH13 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH13 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH13 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH13 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH14 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH14 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH14 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH14 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH15 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH15 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH15 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH15 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH16 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH16 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH16 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH16 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH17 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH17 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH17 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH17 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH18 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH18 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH18 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH18 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH19 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH19 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH19 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH19 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH20 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH20 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH20 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH20 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH21 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH21 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH21 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH21 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH22 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH22 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH22 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH22 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH23 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH23 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH23 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH23 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH24 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH24 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH24 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH24 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH25 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH25 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH25 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH25 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH26 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH26 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH26 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH26 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH27 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH27 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH27 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH27 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH28 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH28 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH28 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH28 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH29 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH29 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH29 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH29 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH30 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH30 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH30 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH30 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH31 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH31 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH31 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH31 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "CH32 WS Delta",
+			"include_node": "1",
+			"tag": "Deltas",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "CH32 Total Wh",
+			"include_node": "1",
+			"tag": "Watt Hours",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA"
+		},
+		{
+			"name": "CH32 Watts",
+			"tag": "Watts",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::VIRTUALFEED",
+			"processList": [
+				{
+					"process": "53",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "CH32 WS Delta" 
+					}
+				},
+				{
+					"process": "32",
+					"arguments": {
+						"type": "ProcessArg::FEEDID", 
+						"value": "SC Delta" 
+					}
+				}
+			]
+		},
+		{
+			"name": "Temp 1",
+			"tag": "Other",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "Temp 2",
+			"tag": "Other",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "Temp 3",
+			"tag": "Other",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "Temp 4",
+			"tag": "Other",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "Temp 5",
+			"tag": "Other",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "Temp 6",
+			"tag": "Other",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "Temp 7",
+			"tag": "Other",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "Temp 8",
+			"tag": "Other",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		},
+		{
+			"name": "Voltage",
+			"tag": "Other",
+			"include_node": "1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::PHPFINA",
+			"interval": "5"
+		}
+	]
+}
