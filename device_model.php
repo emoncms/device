@@ -379,12 +379,17 @@ class Device
           } else {
             $nodeid = $node;
           }
-          $this->log->info("create_inputs() userid=$userid nodeid=$nodeid name=$name description=$description");
-          $inputId = $input->create_input($userid, $nodeid, $name);
-          if(!$input->exists($inputId)) {
-              return false;
+          
+          $inputId = $input->exists_nodeid_name($userid,$nodeid,$name);
+          
+          if ($inputId==false) {
+            $this->log->info("create_inputs() userid=$userid nodeid=$nodeid name=$name description=$description");
+            $inputId = $input->create_input($userid, $nodeid, $name);
+            if(!$input->exists($inputId)) {
+                return false;
+            }
+            $input->set_fields($inputId, '{"description":"'.$description.'"}');
           }
-          $input->set_fields($inputId, '{"description":"'.$description.'"}');
           $i->inputId = $inputId; // Assign the created input id to the inputs array
         }
         return true;
