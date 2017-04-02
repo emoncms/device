@@ -314,11 +314,9 @@ class Device
             }
             $datatype = constant($f->type); // DataType::
             $engine = constant($f->engine); // Engine::
+            $options_in = new stdClass();
             if (property_exists($f, "interval")) {
-                $options_in[] = array();
-                $options_in['interval'] = $f->interval;
-            } else {
-                $options_in = null;
+                $options_in->interval = $f->interval;
             }
             $this->log->info("create_feeds() userid=$userid tag=$tag name=$name datatype=$datatype engine=$engine");
             $result = $feed->create($userid,$tag,$name,$datatype,$engine,$options_in);
