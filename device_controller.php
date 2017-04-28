@@ -23,7 +23,11 @@ function device_controller()
 
     if ($route->format == 'json')
     {
-        if ($route->action == 'list') {
+        // Used in conjunction with input name describe to auto create device
+        if ($route->action == "autocreate") {
+            if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
+        }
+        else if ($route->action == 'list') {
             if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
         }
         elseif ($route->action == "create") {

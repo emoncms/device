@@ -92,6 +92,15 @@ class Device
         }
         return $deviceexist;
     }
+    
+    
+    public function exists_name($userid,$name)
+    {
+        $userid = intval($userid);
+        $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$name);
+        $result = $this->mysqli->query("SELECT id FROM device WHERE userid = '$userid' AND name = '$name'");
+        if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
+    }
 
     public function get($id)
     {
@@ -103,7 +112,7 @@ class Device
 
         return $row;
     }
-
+    
     public function get_list($userid)
     {
         if ($this->redis) {
@@ -160,6 +169,34 @@ class Device
             ));
         }
     }
+    
+    public function autocreate($userid,$_nodeid,$_type)
+    {
+        $userid = intval($userid);
+        
+        $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$_nodeid);
+        if ($_nodeid!=$nodeid) return array("success"=>false, "message"=>"Invalid nodeid");
+        $type = preg_replace('/[^\/\|\,\w\s-:]/','',$_type);
+        if ($_type!=$type) return array("success"=>false, "message"=>"Invalid type");
+        
+        $name = "$nodeid:$type";
+        
+        if (!$this->exists_name($userid,$name)) {
+            $deviceid = $this->create($userid);
+            if ($deviceid>0) {
+                $result = $this->set_fields($deviceid,json_encode(array("name"=>$name,"nodeid"=>$nodeid,"type"=>$type)));
+                if ($result["success"]==true) {
+                    return $this->init_template($deviceid);
+                } else {
+                    return $result;
+                }
+            } else {
+               return array("success"=>false, "message"=>"Device creation failed");
+            }
+        } else {
+            return array("success"=>false, "message"=>"Device name already exists");
+        }
+    }   
     
     public function create($userid)
     {
@@ -342,12 +379,17 @@ class Device
           } else {
             $nodeid = $node;
           }
-          $this->log->info("create_inputs() userid=$userid nodeid=$nodeid name=$name description=$description");
-          $inputId = $input->create_input($userid, $nodeid, $name);
-          if(!$input->exists($inputId)) {
-              return false;
+          
+          $inputId = $input->exists_nodeid_name($userid,$nodeid,$name);
+          
+          if ($inputId==false) {
+            $this->log->info("create_inputs() userid=$userid nodeid=$nodeid name=$name description=$description");
+            $inputId = $input->create_input($userid, $nodeid, $name);
+            if(!$input->exists($inputId)) {
+                return false;
+            }
+            $input->set_fields($inputId, '{"description":"'.$description.'"}');
           }
-          $input->set_fields($inputId, '{"description":"'.$description.'"}');
           $i->inputId = $inputId; // Assign the created input id to the inputs array
         }
         return true;
