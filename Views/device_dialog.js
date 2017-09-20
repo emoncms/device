@@ -98,14 +98,16 @@ var device_dialog =
         $("#template-table").html(out);
         
         if (this.deviceType != null && this.deviceType != '') {
-            var template = this.templates[this.deviceType]
-            
-            $(".category-body[category='"+template.category+"']").show();
-            $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
-            $(".group-row[type='"+this.deviceType+"']").addClass("device-selected");
-            
-            $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
-            $('#template-info').show();
+            if (this.templates[this.deviceType]!=undefined) {
+                var template = this.templates[this.deviceType]
+                
+                $(".category-body[category='"+template.category+"']").show();
+                $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
+                $(".group-row[type='"+this.deviceType+"']").addClass("device-selected");
+                
+                $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+                $('#template-info').show();
+            }
         }
     },
 
@@ -178,7 +180,7 @@ var device_dialog =
                 // If a device is selected and in the category to uncollapse, show and select it
                 if (device_dialog.deviceType != null && device_dialog.deviceType != '') {
                     var template = device_dialog.templates[device_dialog.deviceType];
-                    if (category == template.category) {
+                    if (template && category == template.category) {
                         $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
                         $(".group-row[type='"+device_dialog.deviceType+"']").addClass("device-selected");
                     }

@@ -91,7 +91,7 @@
       table.data = data;
 
       for (d in data) {
-        if (data[d]['type'] !== null && data[d]['type'] != '') {
+        if (data[d]['type'] !== null && data[d]['type'] != '' && devices[data[d]['type']]!=undefined) {
           data[d]['typename'] = devices[data[d]['type']].name;
         }
         else data[d]['typename'] = '';
