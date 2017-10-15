@@ -355,6 +355,31 @@ class Device
         return array('success'=>false, 'message'=>'Unknown error while initializing device');
     }
 
+    public function get_value_list($userid)
+    {
+    	
+    }
+
+    public function get_value($id)
+    {
+    	
+    }
+
+    public function set_value($id, $value)
+    {
+    	
+    }
+
+    public function set_on($id)
+    {
+    	
+    }
+
+    public function set_off($id)
+    {
+    	
+    }
+
     private function load_modules()
     {
         $list = array();

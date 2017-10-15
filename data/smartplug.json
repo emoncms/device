@@ -1,8 +1,8 @@
 {
-	"name": "smartplug",
+	"name": "Smartplug",
 	"category": "OpenEnergyMonitor",
-	"group": "smartplug",
-    "description": "smartplug",
+	"group": "Switchs",
+    "description": "Smartplug prototype",
     "inputs": [
         {
             "name": "period",
