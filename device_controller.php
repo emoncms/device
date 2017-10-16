@@ -88,7 +88,7 @@ function device_controller()
         	}
         }
         else if ($route->action == "control" && $route->subaction == "list") {
-        	if ($session['userid']>0 && $session['write']) $result = $device->get_value_list($session['userid']);
+        	if ($session['userid']>0 && $session['write']) $result = $device->get_output_list($session['userid']);
         }
         else {
             $deviceid = (int) get('id');
@@ -106,8 +106,8 @@ function device_controller()
                         $result = $device->init_template($deviceid);
                     }
                     else if ($route->action == "control") {
-                    	if ($route->subaction == "get")  $result = $device->get_value($deviceid);
-                    	else if ($route->subaction == "set")  $result = $device->set_value($deviceid, get('value'));
+                    	if ($route->subaction == "get")  $result = $device->get_output($deviceid, get('outputid'));
+                    	else if ($route->subaction == "set")  $result = $device->set_output($deviceid, get('outputid'), get('value'));
                     	else if ($route->subaction == "on") $result = $device->set_on($deviceid);
                         else if ($route->subaction == "off") $result = $device->set_off($deviceid);
                     }

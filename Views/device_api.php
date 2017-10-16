@@ -49,12 +49,17 @@
     <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/template/init.json?id=1"><?php echo $path; ?>device/template/init.json?id=1</a></td></tr>
 </table>
 
+<p><b><?php echo _('Control actions'); ?></b></p>
+<table class="table">
+    <tr><td><?php echo _('List control values'); ?></td><td><a href="<?php echo $path; ?>device/control/list.json"><?php echo $path; ?>device/control/list.json</a></td></tr>
+    <tr><td><?php echo _('Get control value'); ?></td><td><a href="<?php echo $path; ?>device/control/get.json?id=1&outputid=1"><?php echo $path; ?>device/control/get.json?id=1&outputid=1</a></td></tr>
+    <tr><td><?php echo _('Set control value'); ?></td><td><a href="<?php echo $path; ?>device/control/set.json?id=1&outputid=1&value=true"><?php echo $path; ?>device/control/set.json?id=1&outputid=1&value=true</a></td></tr>
+    <tr><td><?php echo _('Set control on'); ?></td><td><a href="<?php echo $path; ?>device/control/on.json?id=1"><?php echo $path; ?>device/control/on.json?id=1</a></td></tr>
+    <tr><td><?php echo _('Set control off'); ?></td><td><a href="<?php echo $path; ?>device/control/off.json?id=1"><?php echo $path; ?>device/control/off.json?id=1</a></td></tr>
+</table>
+
 <a class="anchor" id="expression"></a> 
 <h3><?php echo _('Devices templates documentation'); ?></h3>
 <p><?php echo _('Template files are located at <b>\'\\Modules\\device\\data\\*.json\'</b>'); ?></p>
 <p><?php echo _('Each file defines a device type and provides the default inputs and feeds configurations for that device.'); ?></p>
 <p><?php echo _('A device should only need to be initialized once on instalation. Initiating a device twice will duplicate its default inputs and feeds.'); ?></p>
-
-
-
-

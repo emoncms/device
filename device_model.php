@@ -13,11 +13,15 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Device
 {
+	const TEMPLATE = 'Template';
+	const CONTROL = 'Control';
+	
     public $mysqli;
     public $redis;
     private $log;
     
     private $templates = array();
+    private $outputs = array();
 
     public function __construct($mysqli,$redis)
     {
@@ -314,7 +318,7 @@ class Device
         
         if (isset($this->templates[$device])) {
             $module = $this->templates[$device]['module'];
-            $class = $this->get_module_class($module);
+            $class = $this->get_module_class(self::TEMPLATE, $module);
             if ($class != null) {
                 return $class->get($device);
             }
@@ -333,13 +337,11 @@ class Device
         }
         
         $id = (int) $id;
-        if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
-        
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             if (isset($this->templates[$device['type']])) {
                 $module = $this->templates[$device['type']]['module'];
-                $class = $this->get_module_class($module);
+                $class = $this->get_module_class(self::TEMPLATE, $module);
                 if ($class != null) {
                     return $class->init($device['userid'], $device['nodeid'], $device['name'], $device['type']);
                 }
@@ -355,17 +357,69 @@ class Device
         return array('success'=>false, 'message'=>'Unknown error while initializing device');
     }
 
-    public function get_value_list($userid)
+    public function get_output_list($userid)
     {
+    	if (empty($this->outputs)) { // Cache it now
+    		$this->load_modules();
+    	}
+    	$modules = array();
+    	$outputs = array();
     	
+    	$devices = $this->get_list($userid);
+    	foreach ($devices as $device) {
+    		if (isset($device['type']) && isset($this->outputs[$device['type']])) {
+    			$device["output"] = $this->outputs[$device['type']];
+    			
+    			$module = $this->templates[$device['type']]['module'];
+    			if (!isset($modules[$module])) {
+    				$modules[$module] = array();
+    			}
+    			$modules[$module][] = $device;
+    		}
+    	}
+    	foreach ($modules as $key => $value) {
+    		$class = $this->get_module_class(self::CONTROL, $key);
+    		if ($class != null) {
+    			$outputs = array_merge($outputs, $class->get_list($value));
+    		}
+    	}
+    	
+    	return $outputs;
     }
 
-    public function get_value($id)
+    public function get_output($id, $outputid)
     {
+    	if (empty($this->outputs)) { // Cache it now
+    		$this->load_modules();
+    	}
     	
+    	$id = (int) $id;
+    	$device = $this->get($id);
+    	if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+    		if (isset($this->templates[$device['type']]) && isset($this->outputs[$device['type']])) {
+    			$module = $this->templates[$device['type']]['module'];
+    			$class = $this->get_module_class(self::CONTROL, $module);
+    			if ($class != null) {
+    				foreach ($this->outputs[$device['type']] as $output) {
+    					$output = (array) $output;
+    					if ($output['id'] == $outputid) {
+    						return $class->get($device['name'], $device['type'], $output);
+    					}
+    				}
+    			}
+    		}
+    		else {
+    			return array('success'=>false, 'message'=>'Device template does not exist');
+    		}
+    	}
+    	else {
+    		return array('success'=>false, 'message'=>'Device type not specified');
+    	}
+    	
+    	return array('success'=>false, 'message'=>'Unknown error while getting device control value');
     }
 
-    public function set_value($id, $value)
+    public function set_output($id, $outputid, $value)
     {
     	
     }
@@ -386,14 +440,14 @@ class Device
         $dir = scandir("Modules");
         for ($i=2; $i<count($dir); $i++) {
             if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
-                $class = $this->get_module_class($dir[$i]);
+            	$class = $this->get_module_class(self::TEMPLATE, $dir[$i]);
                 if ($class != null) {
                     $module_templates = $class->get_list();
                     foreach($module_templates as $key => $value){
                         $list[$key] = $value;
                         
                         $device = array(
-                                'module'=>$dir[$i]
+                                "module"=>$dir[$i]
                         );
                         $device["name"] = ((!isset($value->name) || $value->name == "" ) ? $key : $value->name);
                         $device["category"] = ((!isset($value->category) || $value->category== "" ) ? "General" : $value->category);
@@ -401,6 +455,10 @@ class Device
                         $device["description"] = (!isset($value->description) ? "" : $value->description);
                         $device["control"] = (!isset($value->control) ? false : true);
                         $this->templates[$key] = $device;
+                        
+                        if (isset($value->control) && isset($value->control->output)) {
+                        	$this->outputs[$key] = $value->control->output;
+                        }
                     }
                 }
             }
@@ -408,7 +466,7 @@ class Device
         return $list;
     }
 
-    private function get_module_class($module)
+    private function get_module_class($type, $module)
     {
         /*
          magic function __call (above) MUST BE USED with this.
@@ -416,12 +474,12 @@ class Device
          Looks in the folder Modules/modulename/ for a file modulename_template.php
          (module_name all lowercase but class ModulenameTemplate in php file that is CamelCase)
          */
-        $module_file = "Modules/".$module."/".$module."_template.php";
+    	$module_file = "Modules/".$module."/".$module."_".strtolower($type).".php";
         $module_class = null;
         if(file_exists($module_file)){
             require_once($module_file);
             
-            $module_class_name = ucfirst(strtolower($module)."Template");
+            $module_class_name = ucfirst(strtolower($module).$type);
             $module_class = new $module_class_name($this);
         }
         return $module_class;
