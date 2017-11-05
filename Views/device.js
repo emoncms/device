@@ -22,25 +22,85 @@ var device = {
 
     'remove':function(id)
     {
-        $.ajax({ url: path+"device/delete.json", data: "id="+id, async: false, success: function(data){} });
+        var result = {};
+        $.ajax({ url: path+"device/delete.json", data: "id="+id, async: false, success: function(data) {result = data;} });
+        return result;
     },
 
     'create':function(nodeid, name, description, type)
     {
-        $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type, async: false, success: function(data){} });
+        var result = {};
+        $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type, async: false, success: function(data) {result = data;} });
+        return result;
     },
 
-    'listtemplates':function()
+    'listTemplates':function()
     {
         var result = {};
         $.ajax({ url: path+"device/template/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'inittemplate':function(id)
+    'initTemplate':function(id)
     {
         var result = {};
         $.ajax({ url: path+"device/template/init.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'listControls':function()
+    {
+        var result = {};
+        $.ajax({ url: path+"device/control/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'getControl':function(id)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/control/get.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'setControlOn':function(id, ctrlid)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/control/on.json", data: "id="+id+"&controlid="+ctrlid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'setControlOff':function(id, ctrlid)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/control/off.json", data: "id="+id+"&controlid="+ctrlid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'toggleControlValue':function(id, ctrlid)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/control/toggle.json", data: "id="+id+"&controlid="+ctrlid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'increaseControlValue':function(id, ctrlid)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/control/increase.json", data: "id="+id+"&controlid="+ctrlid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'decreaseControlValue':function(id, ctrlid)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/control/decrease.json", data: "id="+id+"&controlid="+ctrlid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'setControlPercent':function(id, ctrlid)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/control/percent.json", data: "id="+id+"&controlid="+ctrlid, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     }
 }
