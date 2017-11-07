@@ -93,7 +93,7 @@ class Device
         return $deviceexist;
     }
 
-    public function exists_name($userid,$name)
+    public function exists_name($userid, $name)
     {
         $userid = intval($userid);
         $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$name);
@@ -119,7 +119,7 @@ class Device
     		$device = $this->redis->hGetAll("device:$id");
     	} else {
     		// Get from mysql db
-    		$result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE userid = '$userid'");
+    		$result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE id = '$id'");
     		$device = (array) $result->fetch_object();
     	}
         return $device;
@@ -401,7 +401,10 @@ class Device
         $devices = $this->get_list($userid);
         foreach ($devices as $device) {
             if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
-                $controls[] = $this->get_control_values($device);
+                $template = $this->get_template_meta($device['type']);
+                if (isset($template) && $template['control']) {
+                    $controls[] = $this->get_control_values($device);
+                }
             }
         }
         return $controls;
@@ -493,12 +496,12 @@ class Device
     			}
     		}
     	}
-    	else if (!empty($this->controls) && isset($this->controls[$key])) {
+    	else if (!empty($this->controls) && isset($this->controls[$id])) {
     		$items = $this->controls[$id];
     	}
     	if (empty($items)) {
     		$template = $this->get_template_meta($type);
-    		if (isset($template)) {
+    		if (isset($template) && $template['control']) {
     			$module = $template['module'];
     			$class = $this->get_module_class($module);
     			if ($class != null) {
@@ -679,11 +682,7 @@ class Device
     		if (empty($this->controls)) {
     			$this->controls = array();
     		}
-    		$this->controls[$id] = array();
-    		foreach ($control as $value) {
-    			$controlid = $value['id'];
-    			$this->controls[$id][$controlid] = $value;
-    		}
+    		$this->controls[$id] = $control;
     	}
     }
 }

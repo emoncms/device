@@ -52,7 +52,10 @@ class DeviceControl
         } else {
             return array('success'=>false, 'message'=>"Template file not found '".$file."'");
         }
-        $prefix = $this->parse_prefix($node, $name, $template->prefix);
+        if (isset($template->prefix)) {
+            $prefix = $this->parse_prefix($node, $name, $template->prefix);
+        }
+        else $prefix = "";
         
         $controls = array();
         for ($i=0; $i<count($template->control); $i++) {
