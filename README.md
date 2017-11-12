@@ -1,4 +1,4 @@
-# Device module
+# Emoncms Device module
 
 ## Installation
 
