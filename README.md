@@ -1,5 +1,14 @@
 # Emoncms Device module
 
+![3.png](files/3.png)
+
+- Auto-configuration of inputs and feeds from pre-defined device templates
+- Device templates available for all standard OpenEnergyMonitor hardware units
+- Device level access keys
+
+Original author: [Chaveiro](https://github.com/chaveiro/)
+Contributions from: [Trystan Lea](http://github.com/trystanlea), [Adminde](https://github.com/adminde)
+
 ## Installation
 
 The following steps document the installation of the device module on a stock emonpi/emonbase running the latest emonSD image.
@@ -66,3 +75,7 @@ The input list will now show the input processes created:
 and the feeds page the feeds created:
 
 ![7.png](files/7.png)
+
+## Development
+
+See: [Development: Devices, Inputs and Feeds in emoncms](https://community.openenergymonitor.org/t/development-devices-inputs-and-feeds-in-emoncms/4281/17)
