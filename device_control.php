@@ -13,9 +13,9 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class DeviceControl
 {
-    private $mysqli;
-    private $redis;
-    private $log;
+    protected $mysqli;
+    protected $redis;
+    protected $log;
 
     // Module required constructor, receives parent as reference
     public function __construct(&$parent) {
@@ -28,7 +28,7 @@ class DeviceControl
         return $this->load_template_list();
     }
 
-    private function load_template_list() {
+    protected function load_template_list() {
         $list = array();
         foreach (glob("Modules/device/data/*.json") as $file) {
             $content = json_decode(file_get_contents($file));
@@ -44,7 +44,7 @@ class DeviceControl
             return json_decode(file_get_contents("Modules/device/data/$device.json"));
         }
     }
-    
+
     public function get_control($userid, $node, $name, $device) {
         $file = "Modules/device/data/".$device.".json";
         if (file_exists($file)) {
@@ -139,8 +139,8 @@ class DeviceControl
         
         return array('success'=>true, 'message'=>'Device initialized');
     }
-    
-    private function parse_prefix($node, $name, $prefix) {
+
+    protected function parse_prefix($node, $name, $prefix) {
         if ($prefix === "node") {
             return $node."_";
         }
@@ -149,9 +149,9 @@ class DeviceControl
         }
         else return "";
     }
-    
+
     // Create the feeds
-    private function create_feeds($userid, $node, $prefix, &$feeds) {
+    protected function create_feeds($userid, $node, $prefix, &$feeds) {
         global $feed_settings;
         
         require_once "Modules/feed/feed_model.php";
@@ -191,7 +191,7 @@ class DeviceControl
     }
 
     // Create the inputs
-    private function create_inputs($userid, $node, $prefix, &$inputs) {
+    protected function create_inputs($userid, $node, $prefix, &$inputs) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
 
@@ -221,7 +221,7 @@ class DeviceControl
     }
 
     // Create the inputs process lists
-    private function create_input_processes($feeds, $inputs) {
+    protected function create_input_processes($feeds, $inputs) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
 
@@ -245,7 +245,7 @@ class DeviceControl
         return array('success'=>true);
     }
 
-    private function create_feed_processes($feeds, $inputs) {
+    protected function create_feed_processes($feeds, $inputs) {
         global $feed_settings;
 
         require_once "Modules/feed/feed_model.php";
@@ -270,9 +270,9 @@ class DeviceControl
 
         return array('success'=>true);
     }
-    
+
     // Converts template processList
-    private function convert_processes($feeds, $inputs, $processes){
+    protected function convert_processes($feeds, $inputs, $processes){
         $result = array();
         
         if (is_array($processes)) {
@@ -361,7 +361,7 @@ class DeviceControl
         return $result;
     }
 
-    private function search_array($array, $key, $val) {
+    protected function search_array($array, $key, $val) {
         foreach ($array as $item) {
             if (isset($item->$key) && $item->$key == $val) {
                 return $item;
@@ -369,8 +369,8 @@ class DeviceControl
         }
         return null;
     }
-    
-    private function get_input_id($userid, $node, $prefix, $name, $inputs) {
+
+    protected function get_input_id($userid, $node, $prefix, $name, $inputs) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
         
@@ -388,8 +388,8 @@ class DeviceControl
         }
         return false;
     }
-    
-    private function get_feed_id($userid, $prefix, $name) {
+
+    protected function get_feed_id($userid, $prefix, $name) {
         require_once "Modules/feed/feed_model.php";
         $feed = new Feed($this->mysqli, $this->redis, null);
         
