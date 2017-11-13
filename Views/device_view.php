@@ -30,7 +30,7 @@
         <div class="alert alert-block">
             <h4 class="alert-heading"><?php echo _('No devices'); ?></h4><br>
             <p>
-                <?php echo _('Devices are used to configure and prepare the communication with different metering units.'); ?>
+                <?php echo _('Devices are used to configure and prepare the communication with different physical devices.'); ?>
                 <br><br>
                 <?php echo _('A device configures and prepares inputs, feeds possible other settings, representing e.g. different registers of defined metering units.'); ?>
                 <br>

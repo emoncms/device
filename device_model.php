@@ -111,17 +111,17 @@ class Device
 
     public function get($id)
     {
-    	$id = (int) $id;
-    	if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
-    	
-    	if ($this->redis) {
-    		// Get from redis cache
-    		$device = $this->redis->hGetAll("device:$id");
-    	} else {
-    		// Get from mysql db
-    		$result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE id = '$id'");
-    		$device = (array) $result->fetch_object();
-    	}
+        $id = (int) $id;
+        if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
+        
+        if ($this->redis) {
+            // Get from redis cache
+            $device = $this->redis->hGetAll("device:$id");
+        } else {
+            // Get from mysql db
+            $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE id = '$id'");
+            $device = (array) $result->fetch_object();
+        }
         return $device;
     }
 
@@ -173,7 +173,7 @@ class Device
             $this->redis->sAdd("user:device:$userid", $row->id);
             $this->redis->hMSet("device:".$row->id,array(
                 'id'=>$row->id,
-            	'userid'=>$row->userid,
+                'userid'=>$row->userid,
                 'nodeid'=>$row->nodeid,
                 'name'=>$row->name,
                 'description'=>$row->description,
@@ -254,8 +254,8 @@ class Device
         
         if ($this->redis) {
             if (isset($row['userid']) && $row['userid']) {
-            	$this->redis->delete("device:$id");
-            	$this->redis->delete("device:control:$id");
+                $this->redis->delete("device:$id");
+                $this->redis->delete("device:control:$id");
                 $this->load_to_redis($row['userid']);
             }
         }
@@ -426,40 +426,37 @@ class Device
     
     private function get_control_values($device)
     {
-    	$id = (int) $device['id'];
-    	
-    	$control = array(
-    			'id' => $device['id'],
-    			'userid' => $device['userid'],
-    			'nodeid' => $device['nodeid'],
-    			'name' => $device['name'],
-    			'description' => $device['description'],
-    			'type' => $device['type']
-    	);
-    	
-    	$items = $this->get_control_items($device['id'], $device['userid'], $device['nodeid'], $device['name'], $device['type']);
-    	if (isset($items)) {
-    		$control['control'] = array();
-    		foreach ($items as $item) {
-    		    $control['control'][] = $this->get_control_value($item);
-    		}
-    	}
-    	return $control;
+        $id = (int) $device['id'];
+        
+        $control = array(
+                'id' => $device['id'],
+                'userid' => $device['userid'],
+                'nodeid' => $device['nodeid'],
+                'name' => $device['name'],
+                'description' => $device['description'],
+                'type' => $device['type']
+        );
+        
+        $items = $this->get_control_items($device['id'], $device['userid'], $device['nodeid'], $device['name'], $device['type']);
+        if (isset($items)) {
+            $control['control'] = array();
+            foreach ($items as $item) {
+                $control['control'][] = $this->get_control_value($item);
+            }
+        }
+        return $control;
     }
     
-    private function get_control_value($item) {
+    private function get_control_value($item)
+    {
         $control = array(
             'id' => $item['id'],
-            'name' => $item['name'],
-            'type' => $item['type']
+            'type' => $item['type'],
+            'label' => $item['label']
         );
-        if (isset($item['mode'])) {
-            $control['mode'] = $item['mode'];
-        }
-        else {
-            $control['mode'] = 'read';
-        }
-        if (isset($item['unit'])) $control['unit'] = $item['unit'];
+        if (isset($item['format'])) $control['format'] = $item['format'];
+        if (isset($item['max'])) $control['max'] = $item['max'];
+        if (isset($item['min'])) $control['min'] = $item['min'];
         
         $value = null;
         if (isset($item['inputid'])) {
@@ -475,9 +472,6 @@ class Device
             
             $value = $feed->get_value($item['feedid']);
         }
-        if ($value == null && isset($item['default'])) {
-            $value = $item['default'];
-        }
         $control['value'] = $value;
         
         return $control;
@@ -485,99 +479,146 @@ class Device
     
     private function get_control_items($id, $userid, $nodeid, $name, $type)
     {
-    	$items = null;
-    	if ($this->redis) {
-    		if ($this->redis->exists("device:control:$id")) {
-    			$items = array();
-    			
-    			$controlids = $this->redis->sMembers("device:control:$id");
-    			foreach ($controlids as $i) {
-    				$items[] = $this->redis->hGetAll("device:".$id.":control:".$i);
-    			}
-    		}
-    	}
-    	else if (!empty($this->controls) && isset($this->controls[$id])) {
-    		$items = $this->controls[$id];
-    	}
-    	if (empty($items)) {
-    		$template = $this->get_template_meta($type);
-    		if (isset($template) && $template['control']) {
-    			$module = $template['module'];
-    			$class = $this->get_module_class($module);
-    			if ($class != null) {
-    				$items = $class->get_control($userid, $nodeid, $name, $type);
-    				$this->cache_control($id, $items);
-    			}
-    		}
-    		else {
-    			return array('success'=>false, 'message'=>'Device template does not exist');
-    		}
-    	}
-    	return $items;
+        $items = null;
+        if ($this->redis) {
+            if ($this->redis->exists("device:control:$id")) {
+                $items = array();
+                
+                $itemids = $this->redis->sMembers("device:control:$id");
+                foreach ($itemids as $i) {
+                    $item = (array) $this->redis->hGetAll("device:".$id.":control:".$i);
+                    if (isset($item['mapping'])) {
+                        $item['mapping'] = json_decode($item['mapping']);
+                    }
+                    $items[] = $item;
+                }
+            }
+        }
+        else if (!empty($this->controls) && isset($this->controls[$id])) {
+            $items = array();
+            foreach ($this->controls[$id] as $item) {
+                $items[] = $item;
+            }
+        }
+        if (empty($items)) {
+            $template = $this->get_template_meta($type);
+            if (isset($template)) {
+                $module = $template['module'];
+                $class = $this->get_module_class($module);
+                if ($class != null) {
+                    $items = $class->get_control($userid, $nodeid, $name, $type);
+                    $this->cache_control($id, $items);
+                }
+            }
+            else {
+                return array('success'=>false, 'message'=>'Device template does not exist');
+            }
+        }
+        return $items;
     }
     
-    private function get_control_item($id, $controlid)
+    public function get_control_item($id, $itemid)
     {
         $id = (int) $id;
-        $device = $this->get($id);
-        $items = $this->get_control_items($id, $device['userid'], $device['nodeid'], $device['name'], $device['type']);
-        foreach ($items as $item) {
-            if ($item['id'] == $controlid) return $item;
-        }
-        return null;
-    }
-
-    public function set_control_on($id, $controlid)
-    {
-    	$id = (int) $id;
-    	$item = $this->get_control_item($id, $controlid);
-    	if (isset($item) && isset($item['on'])) {
-    	    return $this->set_control_value($id, $controlid, $item['on']);
-    	}
-    	
-    	return array('success'=>false, 'message'=>'Incomplete device control template "on"');
-    }
-
-    public function set_control_off($id, $controlid)
-    {
-        $id = (int) $id;
-        $item = $this->get_control_item($id, $controlid);
-        if (isset($item) && isset($item['off'])) {
-            return $this->set_control_value($id, $controlid, $item['off']);
-        }
         
-        return array('success'=>false, 'message'=>'Incomplete device control template "off"');
+        $item = null;
+        if ($this->redis) {
+            if ($this->redis->exists("device:control:$id")) {
+                $item = (array) $this->redis->hGetAll("device:".$id.":control:".$itemid);
+                if (isset($item['mapping'])) {
+                    $item['mapping'] = json_decode($item['mapping']);
+                }
+            }
+        }
+        else if (!empty($this->controls) && isset($this->controls[$id])) {
+            $item = $this->controls[$id][$itemid];
+        }
+        if (empty($item)) {
+            $device = $this->get($id);
+            if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+                $template = $this->get_template_meta($device['type']);
+                if (isset($template)) {
+                    $module = $template['module'];
+                    $class = $this->get_module_class($module);
+                    if ($class != null) {
+                        $items = $class->get_control($device['userid'], $device['nodeid'], $device['name'], $device['type']);
+                        $this->cache_control($id, $items);
+                        foreach ($items as $i) {
+                            if ($i['id'] == $itemid) $item = $i;
+                        }
+                    }
+                }
+                else {
+                    return array('success'=>false, 'message'=>'Device template does not exist');
+                }
+            }
+            else {
+                return array('success'=>false, 'message'=>'Device type not specified');
+            }
+        }
+        if (empty($item)) {
+            return array('success'=>false, 'message'=>'Unknown error retrieving device item');
+        }
+        return $item;
     }
 
-    public function toggle_control_value($id, $controlid)
+    public function set_control_on($id, $itemid)
     {
-    	$id = (int) $id;
-    	
-    	return array('success'=>false, 'message'=>'Device control "toggle" not implemented yet');
+        $id = (int) $id;
+        $item = $this->get_control_item($id, $itemid);
+        if (isset($item) && isset($item['mapping'])) {
+            $map = (array) $item['mapping'];
+            if (isset($map['ON'])) {
+                $entry = (array) $map['ON'];
+                return $this->set_control_value($id, $entry['channelid'], $entry['value']);
+            }
+        }
+        return array('success'=>false, 'message'=>'Unknown device control item or incomplete device control template mappings "ON"');
     }
 
-    public function increase_control_value($id, $controlid)
+    public function set_control_off($id, $itemid)
     {
-    	$id = (int) $id;
-    	
-    	return array('success'=>false, 'message'=>'Device control "increase" not implemented yet');
+        $id = (int) $id;
+        $item = $this->get_control_item($id, $itemid);
+        if (isset($item) && isset($item['mapping'])) {
+            $map = (array) $item['mapping'];
+            if (isset($map['OFF'])) {
+                $entry = (array) $map['OFF'];
+                return $this->set_control_value($id, $entry['channelid'], $entry['value']);
+            }
+        }
+        return array('success'=>false, 'message'=>'Unknown device control item or incomplete device control template mappings "OFF"');
     }
 
-    public function decrease_control_value($id, $controlid)
+    public function toggle_control_value($id, $itemid)
     {
-    	$id = (int) $id;
-    	
-    	return array('success'=>false, 'message'=>'Device control "decrease" not implemented yet');
+        $id = (int) $id;
+        
+        return array('success'=>false, 'message'=>'Device control "toggle" not implemented yet');
     }
 
-    public function set_control_percent($id, $controlid, $value)
+    public function increase_control_value($id, $itemid)
     {
-    	$id = (int) $id;
-    	
-    	return array('success'=>false, 'message'=>'Device control "percent" not implemented yet');
+        $id = (int) $id;
+        
+        return array('success'=>false, 'message'=>'Device control "increase" not implemented yet');
     }
 
-    public function set_control_value($id, $controlid, $value)
+    public function decrease_control_value($id, $itemid)
+    {
+        $id = (int) $id;
+        
+        return array('success'=>false, 'message'=>'Device control "decrease" not implemented yet');
+    }
+
+    public function set_control_percent($id, $itemid, $value)
+    {
+        $id = (int) $id;
+        
+        return array('success'=>false, 'message'=>'Device control "percent" not implemented yet');
+    }
+
+    public function set_control_value($id, $channelid, $value)
     {
         $id = (int) $id;
         $device = $this->get($id);
@@ -587,7 +628,7 @@ class Device
                 $module = $template['module'];
                 $class = $this->get_module_class($module);
                 if ($class != null) {
-                    return $class->set_control($controlid, $value);
+                    return $class->set_control($channelid, $value);
                 }
             }
             else {
@@ -669,20 +710,28 @@ class Device
     
     private function cache_control($id, $control)
     {
-    	if ($this->redis) {
-    		$this->redis->delete("device:control:$id");
-    		
-    		foreach ($control as $value) {
-    			$controlid = $value['id'];
-    			$this->redis->sAdd("device:control:$id", $controlid);
-    			$this->redis->hMSet("device:$id:control:$controlid", $value);
-    		}
-    	}
-    	else {
-    		if (empty($this->controls)) {
-    			$this->controls = array();
-    		}
-    		$this->controls[$id] = $control;
-    	}
+        if ($this->redis) {
+            $this->redis->delete("device:control:$id");
+            
+            foreach ($control as $value) {
+                if (isset($value['mapping'])) $value['mapping'] = json_encode($value['mapping']);
+                $itemid = $value['id'];
+                $this->redis->sAdd("device:control:$id", $itemid);
+                $this->redis->hMSet("device:$id:control:$itemid", $value);
+            }
+        }
+        else {
+            if (empty($this->controls)) {
+                $this->controls = array();
+                
+            }
+            $items = array();
+            foreach ($control as $value) {
+                $itemid = $value['id'];
+                $items[$itemid] = $value;
+            }
+            
+            $this->controls[$id] = $items;
+        }
     }
 }

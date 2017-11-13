@@ -59,18 +59,25 @@ class DeviceControl
         
         $controls = array();
         for ($i=0; $i<count($template->control); $i++) {
-        	$control = (array) $template->control[$i];
-        	
-        	$inputid = $this->get_input_id($userid, $node, $prefix, $control['id'], $template->inputs);
-        	if ($inputid == false) {
-        		continue;
-        	}
-        	$control['id'] = $inputid;
-        	
-        	if (isset($control['input'])) {
-        		unset($control['input']);
-        		$control = array_merge($control, array('inputid'=>$inputid));
-        	}
+            $control = (array) $template->control[$i];
+            
+            $inputid = $this->get_input_id($userid, $node, $prefix, $control['id'], $template->inputs);
+            if ($inputid == false) {
+                continue;
+            }
+            
+            if (isset($control['mapping'])) {
+                foreach($control['mapping'] as &$entry) {
+                    if (isset($entry->channel)) {
+                        unset($entry->channel);
+                        $entry = array_merge(array('channelid'=>$inputid), (array) $entry);
+                    }
+                }
+            }
+            if (isset($control['input'])) {
+                unset($control['input']);
+                $control = array_merge($control, array('inputid'=>$inputid));
+            }
             if (isset($control['feed'])) {
                 $feedid = $this->get_feed_id($userid, $prefix, $control['feed']);
                 if ($feedid == false) {
@@ -85,11 +92,11 @@ class DeviceControl
         return $controls;
     }
 
-    public function set_control($controlid, $value) {
+    public function set_control($channelid, $value) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
         
-        $input->set_timevalue($controlid, time(), $value);
+        $input->set_timevalue($channelid, time(), $value);
         
         return array('success'=>true, 'message'=>"Value set");
     }

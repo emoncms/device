@@ -1,40 +1,40 @@
 {
-	"name": "Smartplug",
-	"category": "OpenEnergyMonitor",
-	"group": "Switches",
+    "name": "Smartplug",
+    "category": "OpenEnergyMonitor",
+    "group": "Switches",
     "description": "Smartplug prototype",
     
-	"prefix": "name",
+    "prefix": "name",
     "control": [
         {
             "id": "status",
-            "name": "Status",
             "type": "Switch",
-            "mode": "write",
-            "on": 1,
-            "off": 0,
-            "default": 0,
+            "label": "Status",
+            "mapping": {
+                "ON": { "channel": "status", "value": 1 },
+                "OFF": { "channel": "status", "value": 0 }
+            },
             "input": "status"
         },
         {
             "id": "frequency",
-            "name": "Grid frequency",
-            "type": "Number",
-            "unit": "Hz",
+            "type": "Text",
+            "label": "Grid frequency",
+            "format": "%.1f Hz",
             "input": "frequency"
         },
         {
             "id": "voltage",
-            "name": "Grid voltage",
-            "type": "Number",
-            "unit": "V",
+            "type": "Text",
+            "label": "Grid voltage",
+            "format": "%.1f V",
             "input": "voltage"
         },
         {
             "id": "power",
-            "name": "Grid Power",
-            "type": "Number",
-            "unit": "W",
+            "type": "Text",
+            "label": "Grid Power",
+            "format": "%.1f W",
             "input": "power"
         }
     ],

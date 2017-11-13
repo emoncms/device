@@ -53,13 +53,14 @@
 <table class="table">
     <tr><td><?php echo _('List device controls'); ?></td><td><a href="<?php echo $path; ?>device/control/list.json"><?php echo $path; ?>device/control/list.json</a></td></tr>
     <tr><td><?php echo _('Get device control'); ?></td><td><a href="<?php echo $path; ?>device/control/get.json?id=1"><?php echo $path; ?>device/control/get.json?id=1</a></td></tr>
-    <tr><td><?php echo _('Set control on'); ?></td><td><a href="<?php echo $path; ?>device/control/on.json?id=1&controlid=1"><?php echo $path; ?>device/control/on.json?id=1&controlid=1</a></td></tr>
-    <tr><td><?php echo _('Set control off'); ?></td><td><a href="<?php echo $path; ?>device/control/off.json?id=1&controlid=1"><?php echo $path; ?>device/control/off.json?id=1&controlid=1</a></td></tr>
-    <tr><td><?php echo _('Toggle control value'); ?></td><td><a href="<?php echo $path; ?>device/control/toggle.json?id=1&controlid=1"><?php echo $path; ?>device/control/toggle.json?id=1&controlid=1</a></td></tr>
-    <tr><td><?php echo _('Increase control value'); ?></td><td><a href="<?php echo $path; ?>device/control/increase.json?id=1&controlid=1"><?php echo $path; ?>device/control/increase.json?id=1&controlid=1</a></td></tr>
-    <tr><td><?php echo _('Decrease control value'); ?></td><td><a href="<?php echo $path; ?>device/control/decrease.json?id=1&controlid=1"><?php echo $path; ?>device/control/decrease.json?id=1&controlid=1</a></td></tr>
-    <tr><td><?php echo _('Set percent of control value'); ?></td><td><a href="<?php echo $path; ?>device/control/percent.json?id=1&controlid=1&value=0"><?php echo $path; ?>device/control/percent.json?id=1&controlid=1&value=0</a></td></tr>
-    <tr><td><?php echo _('Set control value'); ?></td><td><a href="<?php echo $path; ?>device/control/set.json?id=1&controlid=1&value=0"><?php echo $path; ?>device/control/set.json?id=1&controlid=1&value=0</a></td></tr>
+    <tr><td><?php echo _('Get device control item'); ?></td><td><a href="<?php echo $path; ?>device/control/getitem.json?id=1&itemid=1"><?php echo $path; ?>device/control/getitem.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Set device control on'); ?></td><td><a href="<?php echo $path; ?>device/control/on.json?id=1&itemid=1"><?php echo $path; ?>device/control/on.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Set device control off'); ?></td><td><a href="<?php echo $path; ?>device/control/off.json?id=1&itemid=1"><?php echo $path; ?>device/control/off.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Toggle device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/toggle.json?id=1&itemid=1"><?php echo $path; ?>device/control/toggle.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Increase device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/increase.json?id=1&itemid=1"><?php echo $path; ?>device/control/increase.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Decrease device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/decrease.json?id=1&itemid=1"><?php echo $path; ?>device/control/decrease.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Set percent of device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/percent.json?id=1&itemid=1&value=0"><?php echo $path; ?>device/control/percent.json?id=1&itemid=1&value=0</a></td></tr>
+    <tr><td><?php echo _('Set device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/set.json?id=1&channelid=1&value=0"><?php echo $path; ?>device/control/set.json?id=1&channelid=1&value=0</a></td></tr>
 </table>
 
 <a class="anchor" id="expression"></a> 
