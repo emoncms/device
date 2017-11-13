@@ -276,11 +276,15 @@ var device_dialog =
                     }
                 }
                 else {
-                    var id = device.create(node, name, desc, device_dialog.deviceType);
+                    var result = device.create(node, name, desc, device_dialog.deviceType);
+                    if (typeof result.success !== 'undefined' && !result.success) {
+                        alert('Unable to create device:\n'+result.message);
+                        return false;
+                    }
                     update();
                     
-                    if (id && device_dialog.deviceType != null) {
-                        var result = device.initTemplate(id);
+                    if (result && device_dialog.deviceType != null) {
+                        var result = device.initTemplate(result);
                         if (typeof result.success !== 'undefined' && !result.success) {
                             alert('Unable to initialize device:\n'+result.message);
                             return false;
