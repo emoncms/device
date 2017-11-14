@@ -28,11 +28,11 @@
 
     <div id="device-none" class="hide">
         <div class="alert alert-block">
-            <h4 class="alert-heading"><?php echo _('No device connections'); ?></h4><br>
+            <h4 class="alert-heading"><?php echo _('No devices'); ?></h4><br>
             <p>
-                <?php echo _('Device connections are used to configure and prepare the communication with different metering units.'); ?>
+                <?php echo _('Devices are used to configure and prepare the communication with different physical devices.'); ?>
                 <br><br>
-                <?php echo _('A device configures and prepares inputs, feeds possible device channels, representing e.g. different registers of defined metering units (see the channels tab).'); ?>
+                <?php echo _('A device configures and prepares inputs, feeds possible other settings, representing e.g. different registers of defined metering units.'); ?>
                 <br>
                 <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Device API helper'); ?></a>
             </p>
@@ -104,11 +104,11 @@
 
       table.draw();
       if (table.data.length != 0) {
-        $("#nodevices").hide();
-        $("#localheading").show();
+        $("#device-none").hide();
+        $("#local-header").show();
       } else {
-        $("#nodevices").show();
-        $("#localheading").hide();
+        $("#device-none").show();
+        $("#local-header").hide();
       }
     }});
   }
