@@ -41,10 +41,10 @@ var device = {
         return result;
     },
 
-    'initTemplate':function(id)
+    'initTemplate':function(id, options)
     {
         var result = {};
-        $.ajax({ url: path+"device/template/init.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/template/init.json", data: "id="+id+"&options="+options, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 

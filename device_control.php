@@ -101,7 +101,7 @@ class DeviceControl
         return array('success'=>true, 'message'=>"Value set");
     }
 
-    public function init_template($userid, $node, $name, $device) {
+    public function init_template($userid, $node, $name, $device, $options) {
         $file = "Modules/device/data/".$device.".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));

@@ -72,19 +72,19 @@
         
         <div id="content-wrapper" style="max-width:1280px">
             
-            <h3>Configuration</h3>
+            <h3><?php echo _('Configuration'); ?></h3>
             
             <div id="navigation" style="padding-bottom:5px;">
                 <button class="btn" id="sidebar-open"><i class="icon-list"></i></button>
             </div>
-
+            
             <span id="template-info" style="display:none;">
                 <span id="template-description"></span>
                 <span id="template-tooltip" data-toggle="tooltip" data-placement="bottom">
                     <i class="icon-info-sign" style="cursor:pointer; padding-left:6px;"></i>
                 </span>
             </span>
-
+            
             <div class="divider"></div>
             
             <label><b><?php echo _('Node'); ?></b></label>
@@ -95,6 +95,21 @@
                     
             <label><b><?php echo _('Location'); ?></b></label>
             <input id="device-config-description" class="input-large" type="text">
+            
+            <div id="template-options" style="display:none">
+                <div id="template-options-divider" class="divider"></div>
+                                
+                <div id="template-options-ctrl" style="display:none">
+                    <label><b><?php echo _('Controller'); ?></b>
+                        <span id="template-options-ctrl-tooltip" data-toggle="tooltip" data-placement="right">
+                            <i class="icon-info-sign" style="cursor:pointer; padding-left:6px;"></i>
+                        </span>
+                    </label>
+                    <select id="template-options-ctrl-select" class="input-large"></select>
+                </div>
+                
+                
+            </div>
         </div>
     </div>
     <div class="modal-footer">

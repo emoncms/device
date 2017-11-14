@@ -370,7 +370,7 @@ class Device
         return $template;
     }
 
-    public function init_template($id)
+    public function init_template($id, $options)
     {
         $id = (int) $id;
         $device = $this->get($id);
@@ -380,7 +380,7 @@ class Device
                 $module = $template['module'];
                 $class = $this->get_module_class($module);
                 if ($class != null) {
-                    return $class->init_template($device['userid'], $device['nodeid'], $device['name'], $device['type']);
+                	return $class->init_template($device['userid'], $device['nodeid'], $device['name'], $device['type'], $options);
                 }
             }
             else {

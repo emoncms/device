@@ -3,7 +3,7 @@ var device_dialog =
     templates: null,
     deviceType: null,
     device: null,
-    
+
     'loadConfig':function(templates, device) {
         this.templates = templates;
         
@@ -111,6 +111,43 @@ var device_dialog =
         }
     },
 
+    'drawTemplate':function() {
+        if (this.deviceType !== null) {
+            var template = this.templates[this.deviceType];
+            $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+            $('#template-info').show();
+
+            if (template.module == 'muc' && this.device == null) {
+                // Append Controllers from database to select
+                $.ajax({ url: path+"muc/controller/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+                    
+                    var tooltip = "The communication controller this device should be registered for.";
+                    $('#template-options-ctrl-tooltip').attr("title", tooltip).tooltip({html: true});
+                    
+                    var ctrlSelect = $("#template-options-ctrl-select").empty();
+                    ctrlSelect.append("<option selected hidden='true' value=''>Select a controller</option>").val('');
+                    $.each(data, function() {
+                        ctrlSelect.append($("<option />").val(this.id).text(this.description));
+                    });
+                    
+                    $("#template-options-ctrl").show();
+                    $("#template-options").show();
+                }});
+            }
+            else {
+                $("#template-options").hide();
+                $("#template-options-ctrl").hide();
+                $("#template-options-ctrl-select").empty();
+            }
+        }
+        else {
+            $('#template-description').text('');
+            $('#template-info').hide();
+            $("#template-options-ctrl").hide();
+            $("#template-options-ctrl-select").empty();
+        }
+    },
+
     'clearConfigModal':function() {
         $("#template-table").text('');
         
@@ -135,6 +172,7 @@ var device_dialog =
 
             $('#device-config-delete').hide();
         }
+        device_dialog.drawTemplate();
     },
 
     'adjustConfigModal':function() {
@@ -216,16 +254,11 @@ var device_dialog =
             if (device_dialog.deviceType !== type) {
                 $(this).addClass("device-selected");
                 device_dialog.deviceType = type;
-                
-                var template = device_dialog.templates[type];
-                $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
-                $('#template-info').show();
             }
             else {
                 device_dialog.deviceType = null;
-                $('#template-description').text('');
-                $('#template-info').hide();
             }
+            device_dialog.drawTemplate();
         });
 
         $("#sidebar-open").off('click').on('click', function () {
@@ -280,7 +313,10 @@ var device_dialog =
                     update();
                     
                     if (id && device_dialog.deviceType != null) {
-                        var result = device.initTemplate(id);
+                        var options = {};
+                        options['ctrlid'] = $('#template-options-ctrl-select').val();
+                        
+                        var result = device.initTemplate(id, options);
                         if (typeof result.success !== 'undefined' && !result.success) {
                             alert('Unable to initialize device:\n'+result.message);
                             return false;
