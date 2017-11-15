@@ -227,9 +227,10 @@ class DeviceControl
 
         foreach($inputs as $i) {
             // for each input
-            if (isset($i->processlist)) {
+        	if (isset($f->processList) || isset($f->processlist)) {
+        		$processes = isset($f->processList) ? $f->processList : $f->processlist;
                 $inputid = $i->inputid;
-                $result = $this->convert_processes($feeds, $inputs, $i->processlist);
+                $result = $this->convert_processes($feeds, $inputs, $processes);
                 if (isset($result["success"])) {
                     return $result; // success is only filled if it was an error
                 }
@@ -253,9 +254,10 @@ class DeviceControl
 
         foreach($feeds as $f) {
             // for each feed
-            if (($f->engine == Engine::VIRTUALFEED) && isset($f->processlist)) {
+        	if (($f->engine == Engine::VIRTUALFEED) && (isset($f->processList) || isset($f->processlist))) {
+        		$processes = isset($f->processList) ? $f->processList : $f->processlist;
                 $feedid = $f->feedid;
-                $result = $this->convert_processes($feeds, $inputs, $f->processlist);
+                $result = $this->convert_processes($feeds, $inputs, $processes);
                 if (isset($result["success"])) {
                     return $result; // success is only filled if it was an error
                 }
@@ -286,7 +288,7 @@ class DeviceControl
                 $process_list_by_name[$name] = $process_id;
             }
 
-            // create each processlist
+            // create each processList
             foreach($processes as $p) {
                 $proc_name = $p->process;
                 
@@ -353,8 +355,8 @@ class DeviceControl
                     $result[] = $proc_name.":".$value;
 
                 } else {
-                    $this->log->error("convertProcess() Bad device template. Missing processlist arguments. process='$proc_name'");
-                    return array('success'=>false, 'message'=>"Bad device template. Missing processlist arguments. process='$proc_name'");
+                    $this->log->error("convertProcess() Bad device template. Missing processList arguments. process='$proc_name'");
+                    return array('success'=>false, 'message'=>"Bad device template. Missing processList arguments. process='$proc_name'");
                 }
             }
         }
