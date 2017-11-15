@@ -143,6 +143,7 @@ var device_dialog =
         else {
             $('#template-description').text('');
             $('#template-info').hide();
+            $("#template-options").hide();
             $("#template-options-ctrl").hide();
             $("#template-options-ctrl-select").empty();
         }
@@ -314,7 +315,7 @@ var device_dialog =
                     
                     if (id && device_dialog.deviceType != null) {
                         var options = {};
-                        options['ctrlid'] = $('#template-options-ctrl-select').val();
+                        options['ctrlid'] = $('#template-options-ctrl-select option:selected').val();
                         
                         var result = device.initTemplate(id, options);
                         if (typeof result.success !== 'undefined' && !result.success) {

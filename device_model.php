@@ -373,6 +373,9 @@ class Device
     public function init_template($id, $options)
     {
         $id = (int) $id;
+        
+        if (isset($options)) $options = json_decode($options);
+        
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $template = $this->get_template_meta($device['type']);
