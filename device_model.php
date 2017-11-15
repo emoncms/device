@@ -86,7 +86,7 @@ class Device
             $deviceexist = $device_exists_cache[$id]; // Retrieve from static cache
         } else {
             $result = $this->mysqli->query("SELECT id FROM device WHERE id = '$id'");
-            $deviceexist = $result->num_rows>0;
+            $deviceexist = $result->num_rows > 0;
             $device_exists_cache[$id] = $deviceexist; // Cache it
             $this->log->info("exist() $id");
         }
@@ -383,7 +383,12 @@ class Device
                 $module = $template['module'];
                 $class = $this->get_module_class($module);
                 if ($class != null) {
-                	return $class->init_template($device['userid'], $device['nodeid'], $device['name'], $device['type'], $options);
+                	$result = $class->init_template($device['userid'], $device['nodeid'], $device['name'], $device['type'], $options);
+                	if ($template['control'] && isset($result['success']) && $result['success']) {
+                		$items = $class->get_control($device['userid'], $device['nodeid'], $device['name'], $device['type'], $options);
+                		$this->cache_control($id, $items);
+                	}
+                	return $result;
                 }
             }
             else {
@@ -505,16 +510,16 @@ class Device
         }
         if (empty($items)) {
             $template = $this->get_template_meta($type);
-            if (isset($template)) {
+            if (isset($template) && $template['control']) {
                 $module = $template['module'];
                 $class = $this->get_module_class($module);
                 if ($class != null) {
-                    $items = $class->get_control($userid, $nodeid, $name, $type);
+                    $items = $class->get_control($userid, $nodeid, $name, $type, null);
                     $this->cache_control($id, $items);
                 }
             }
             else {
-                return array('success'=>false, 'message'=>'Device template does not exist');
+                return array('success'=>false, 'message'=>'Device control does not exist');
             }
         }
         return $items;
@@ -540,11 +545,12 @@ class Device
             $device = $this->get($id);
             if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
                 $template = $this->get_template_meta($device['type']);
-                if (isset($template)) {
+                if (isset($template) && $template['control']) {
                     $module = $template['module'];
                     $class = $this->get_module_class($module);
                     if ($class != null) {
-                        $items = $class->get_control($device['userid'], $device['nodeid'], $device['name'], $device['type']);
+                        $items = $class->get_control($device['userid'], $device['nodeid'], $device['name'], $device['type'], null);
+                        return array('success'=>false, 'message'=>$items);
                         $this->cache_control($id, $items);
                         foreach ($items as $i) {
                             if ($i['id'] == $itemid) $item = $i;
@@ -552,7 +558,7 @@ class Device
                     }
                 }
                 else {
-                    return array('success'=>false, 'message'=>'Device template does not exist');
+                    return array('success'=>false, 'message'=>'Device control does not exist');
                 }
             }
             else {
@@ -572,8 +578,14 @@ class Device
         if (isset($item) && isset($item['mapping'])) {
             $map = (array) $item['mapping'];
             if (isset($map['ON'])) {
-                $entry = (array) $map['ON'];
-                return $this->set_control_value($id, $entry['channelid'], $entry['value']);
+                $options = (array) $map['ON'];
+                
+                $channelid = $options['channelid'];
+                unset($options['channelid']);
+                $value = $options['value'];
+                unset($options['value']);
+                
+                return $this->set_control_value($id, $channelid, $options, $value);
             }
         }
         return array('success'=>false, 'message'=>'Unknown device control item or incomplete device control template mappings "ON"');
@@ -621,21 +633,21 @@ class Device
         return array('success'=>false, 'message'=>'Device control "percent" not implemented yet');
     }
 
-    public function set_control_value($id, $channelid, $value)
+    public function set_control_value($id, $channelid, $options, $value)
     {
         $id = (int) $id;
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $template = $this->get_template_meta($device['type']);
-            if (isset($template)) {
+            if (isset($template) && $template['control']) {
                 $module = $template['module'];
                 $class = $this->get_module_class($module);
                 if ($class != null) {
-                    return $class->set_control($channelid, $value);
+                    return $class->set_control($channelid, $options, $value);
                 }
             }
             else {
-                return array('success'=>false, 'message'=>'Device template does not exist');
+                return array('success'=>false, 'message'=>'Device control does not exist');
             }
         }
         else {

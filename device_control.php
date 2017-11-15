@@ -37,23 +37,23 @@ class DeviceControl
         return $list;
     }
 
-    public function get_template($device) {
-        $device = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$device);
+    public function get_template($type) {
+    	$type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
         
-        if (file_exists("Modules/device/data/$device.json")) {
-            return json_decode(file_get_contents("Modules/device/data/$device.json"));
+    	if (file_exists("Modules/device/data/$type.json")) {
+    		return json_decode(file_get_contents("Modules/device/data/$type.json"));
         }
     }
 
-    public function get_control($userid, $node, $name, $device) {
-        $file = "Modules/device/data/".$device.".json";
+    public function get_control($userid, $nodeid, $name, $type, $options) {
+    	$file = "Modules/device/data/".$type.".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
         } else {
             return array('success'=>false, 'message'=>"Template file not found '".$file."'");
         }
         if (isset($template->prefix)) {
-            $prefix = $this->parse_prefix($node, $name, $template->prefix);
+            $prefix = $this->parse_prefix($nodeid, $name, $template->prefix);
         }
         else $prefix = "";
         
@@ -61,20 +61,23 @@ class DeviceControl
         for ($i=0; $i<count($template->control); $i++) {
             $control = (array) $template->control[$i];
             
-            $inputid = $this->get_input_id($userid, $node, $prefix, $control['id'], $template->inputs);
-            if ($inputid == false) {
-                continue;
-            }
-            
             if (isset($control['mapping'])) {
-                foreach($control['mapping'] as &$entry) {
-                    if (isset($entry->channel)) {
-                        unset($entry->channel);
-                        $entry = array_merge(array('channelid'=>$inputid), (array) $entry);
+                foreach($control['mapping'] as &$options) {
+                    if (isset($options->channel)) {
+                        $channelid = $this->get_input_id($userid, $nodeid, $prefix, $options->channel, $template->inputs);
+                        if ($channelid == false) {
+                            continue;
+                        }
+                        unset($options->channel);
+                        $options = array_merge(array('channelid'=>$channelid), (array) $options);
                     }
                 }
             }
             if (isset($control['input'])) {
+                $inputid = $this->get_input_id($userid, $nodeid, $prefix, $control['input'], $template->inputs);
+                if ($inputid == false) {
+                    continue;
+                }
                 unset($control['input']);
                 $control = array_merge($control, array('inputid'=>$inputid));
             }
@@ -92,7 +95,7 @@ class DeviceControl
         return $controls;
     }
 
-    public function set_control($channelid, $value) {
+    public function set_control($channelid, $options, $value) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
         
@@ -101,26 +104,26 @@ class DeviceControl
         return array('success'=>true, 'message'=>"Value set");
     }
 
-    public function init_template($userid, $node, $name, $device, $options) {
-        $file = "Modules/device/data/".$device.".json";
+    public function init_template($userid, $nodeid, $name, $type, $options) {
+    	$file = "Modules/device/data/".$type.".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
         } else {
             return array('success'=>false, 'message'=>"Template file not found '".$file."'");
         }
-        $prefix = $this->parse_prefix($node, $name, $template->prefix);
+        $prefix = $this->parse_prefix($nodeid, $name, $template->prefix);
         
         $feeds = $template->feeds;
         $inputs = $template->inputs;
         
         // Create feeds
-        $result = $this->create_feeds($userid, $node, $prefix, $feeds);
+        $result = $this->create_feeds($userid, $nodeid, $prefix, $feeds);
         if ($result["success"] !== true) {
             return array('success'=>false, 'message'=>'Error while creating the feeds. ' . $result['message']);
         }
         
         // Create inputs
-        $result = $this->create_inputs($userid, $node, $prefix, $inputs);
+        $result = $this->create_inputs($userid, $nodeid, $prefix, $inputs);
         if ($result !== true) {
             return array('success'=>false, 'message'=>'Error while creating the inputs.');
         }
@@ -140,9 +143,9 @@ class DeviceControl
         return array('success'=>true, 'message'=>'Device initialized');
     }
 
-    protected function parse_prefix($node, $name, $prefix) {
+    protected function parse_prefix($nodeid, $name, $prefix) {
         if ($prefix === "node") {
-            return $node."_";
+            return $nodeid."_";
         }
         else if ($prefix === "name") {
             return $name."_";
@@ -151,7 +154,7 @@ class DeviceControl
     }
 
     // Create the feeds
-    protected function create_feeds($userid, $node, $prefix, &$feeds) {
+    protected function create_feeds($userid, $nodeid, $prefix, &$feeds) {
         global $feed_settings;
         
         require_once "Modules/feed/feed_model.php";
@@ -165,7 +168,7 @@ class DeviceControl
             if (property_exists($f, "tag")) {
                 $tag = $f->tag;
             } else {
-                $tag = $node;
+                $tag = $nodeid;
             }
             $datatype = constant($f->type); // DataType::
             $engine = constant($f->engine); // Engine::
@@ -191,7 +194,7 @@ class DeviceControl
     }
 
     // Create the inputs
-    protected function create_inputs($userid, $node, $prefix, &$inputs) {
+    protected function create_inputs($userid, $nodeid, $prefix, &$inputs) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
 
@@ -200,16 +203,16 @@ class DeviceControl
             $name = $prefix.$i->name;
             $description = $i->description;
             if(property_exists($i, "node")) {
-                $nodeid = $i->node;
+                $node = $i->node;
             } else {
-                $nodeid = $node;
+                $node = $nodeid;
             }
             
-            $inputid = $input->exists_nodeid_name($userid, $nodeid, $name);
+            $inputid = $input->exists_nodeid_name($userid, $node, $name);
             
             if ($inputid == false) {
-                $this->log->info("create_inputs() userid=$userid nodeid=$nodeid name=$name description=$description");
-                $inputid = $input->create_input($userid, $nodeid, $name);
+                $this->log->info("create_inputs() userid=$userid nodeid=$node name=$name description=$description");
+                $inputid = $input->create_input($userid, $node, $name);
                 if(!$input->exists($inputid)) {
                     return false;
                 }
@@ -227,8 +230,8 @@ class DeviceControl
 
         foreach($inputs as $i) {
             // for each input
-        	if (isset($f->processList) || isset($f->processlist)) {
-        		$processes = isset($f->processList) ? $f->processList : $f->processlist;
+            if (isset($i->processList) || isset($i->processlist)) {
+        		$processes = isset($i->processList) ? $i->processList : $i->processlist;
                 $inputid = $i->inputid;
                 $result = $this->convert_processes($feeds, $inputs, $processes);
                 if (isset($result["success"])) {
@@ -372,16 +375,16 @@ class DeviceControl
         return null;
     }
 
-    protected function get_input_id($userid, $node, $prefix, $name, $inputs) {
+    protected function get_input_id($userid, $nodeid, $prefix, $name, $inputs) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
         
         foreach($inputs as $i) {
             if ($i->name == $name) {
                 if(property_exists($i, "node")) {
-                    $nodeid = $i->node;
+                    $node = $i->node;
                 } else {
-                    $nodeid = $node;
+                    $node = $nodeid;
                 }
                 $fullname = $prefix.$name;
                 
