@@ -138,6 +138,8 @@ class Device
         if ($this->redis) {
             // Get from redis cache
             $device = (array) $this->redis->hGetAll("device:$id");
+            // Verify, if the cached device contains the userid, to avoid compatibility issues
+            // with former versions where the userid was not cached.
             if (empty($device['userid'])) {
                 $device = $this->load_device_to_redis($id);
             }
@@ -174,6 +176,8 @@ class Device
         foreach ($deviceids as $id)
         {
             $device = $this->redis->hGetAll("device:$id");
+            // Verify, if the cached device contains the userid, to avoid compatibility issues
+            // with former versions where the userid was not cached.
             if (empty($device['userid'])) {
                 $device = $this->load_device_to_redis($id);
             }
