@@ -111,12 +111,11 @@
     </div>
     <div class="modal-body">
         <p><?php echo _('Defaults, like inputs and associated feeds will be automaticaly configured.'); ?>
+           <br>
+           <?php echo _('Only missing inputs and feeds will be recreated. Feed configurations will be considered unique in combination with their tag.'); ?>
            <br><br>
-           <?php echo _('Make sure the selected device node and type are correcly configured before proceding.'); ?>
-           <br>
-           <?php echo _('Initializing a device usualy should only be done once on installation.'); ?>
-           <br>
-           <?php echo _('If the configuration was already applied, missing feeds and inputs will be created and configured processes reset to their original state.'); ?>
+           <b><?php echo _('Warning: '); ?></b>
+           <?php echo _('All configured input and feed processes will be reset to their original state.'); ?>
            <br><br>
         </p>
     </div>
@@ -136,7 +135,7 @@
            <br><br>
            <?php echo _('If this device is active and is using a device key, it will no longer be able to post data.'); ?>
            <br><br>
-           <?php echo _('Inputs and Feeds that this device uses are not deleted and all historic data is kept. To remove them, deleted manualy afterwards.'); ?>
+           <?php echo _('Inputs and Feeds that this device uses are not deleted and all historic data is kept. To remove them, delete them manualy afterwards.'); ?>
            <br><br>
            <?php echo _('Are you sure you want to delete?'); ?>
         </p>
