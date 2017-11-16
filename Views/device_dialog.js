@@ -248,7 +248,7 @@ var device_dialog =
                 
                 if (device_dialog.device != null) {
                     var fields = {};
-                    if (device_dialog.device.nodeid != node) fields['node'] = node;
+                    if (device_dialog.device.nodeid != node) fields['nodeid'] = node;
                     if (device_dialog.device.name != name) fields['name'] = name;
                     if (device_dialog.device.description != desc) fields['description'] = desc;
                     if (device_dialog.device.type != device_dialog.deviceType) {
@@ -268,7 +268,7 @@ var device_dialog =
                     if (device_dialog.device.type != device_dialog.deviceType
                             && device_dialog.deviceType != null) {
                         
-                        var result = device.inittemplate(device_dialog.device.id);
+                        var result = device.initTemplate(device_dialog.device.id);
                         if (typeof result.success !== 'undefined' && !result.success) {
                             alert('Unable to initialize device:\n'+result.message);
                             return false;
@@ -276,11 +276,15 @@ var device_dialog =
                     }
                 }
                 else {
-                    var id = device.create(node, name, desc, device_dialog.deviceType);
+                    var result = device.create(node, name, desc, device_dialog.deviceType);
+                    if (typeof result.success !== 'undefined' && !result.success) {
+                        alert('Unable to create device:\n'+result.message);
+                        return false;
+                    }
                     update();
                     
-                    if (id && device_dialog.deviceType != null) {
-                        var result = device.inittemplate(id);
+                    if (result && device_dialog.deviceType != null) {
+                        var result = device.initTemplate(result);
                         if (typeof result.success !== 'undefined' && !result.success) {
                             alert('Unable to initialize device:\n'+result.message);
                             return false;
@@ -316,7 +320,7 @@ var device_dialog =
     'registerInitEvents':function() {
         
         $("#device-init-confirm").off('click').on('click', function() {
-            var result = device.inittemplate(device_dialog.device.id);
+            var result = device.initTemplate(device_dialog.device.id);
 
             if (typeof result.success !== 'undefined' && !result.success) {
                 alert('Unable to initialize device:\n'+result.message);

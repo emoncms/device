@@ -116,7 +116,7 @@
            <br>
            <?php echo _('Initializing a device usualy should only be done once on installation.'); ?>
            <br>
-           <?php echo _('If the configuration was already applied, only missing inputs and feeds will be created.'); ?>
+           <?php echo _('If the configuration was already applied, missing feeds and inputs will be created and configured processes reset to their original state.'); ?>
            <br><br>
         </p>
     </div>

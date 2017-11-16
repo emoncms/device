@@ -94,16 +94,15 @@ class Device
         }
         return $deviceexist;
     }
-    
-    
-    public function exists_name($userid,$name)
+
+    public function exists_name($userid, $name)
     {
         $userid = intval($userid);
         $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$name);
         $result = $this->mysqli->query("SELECT id FROM device WHERE userid = '$userid' AND name = '$name'");
         if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
     }
-    
+
     public function exists_nodeid($userid,$nodeid)
     {
         $userid = intval($userid);
@@ -123,23 +122,28 @@ class Device
     {
         $id = (int) $id;
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
-
-        $result = $this->mysqli->query("SELECT * FROM device WHERE id = '$id'");
-        $row = (array) $result->fetch_object();
-
-        return $row;
+        
+        if ($this->redis) {
+            // Get from redis cache
+            $device = $this->redis->hGetAll("device:$id");
+        } else {
+            // Get from mysql db
+            $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE id = '$id'");
+            $device = (array) $result->fetch_object();
+        }
+        return $device;
     }
-    
+
     public function get_list($userid)
     {
         if ($this->redis) {
-            return $this->redis_getlist($userid);
+            return $this->get_list_redis($userid);
         } else {
-            return $this->mysql_getlist($userid);
+            return $this->get_list_mysql($userid);
         }
     }
 
-    private function redis_getlist($userid)
+    private function get_list_redis($userid)
     {
         $userid = (int) $userid;
         
@@ -160,12 +164,12 @@ class Device
         return $devices;
     }
 
-    private function mysql_getlist($userid)
+    private function get_list_mysql($userid)
     {
         $userid = (int) $userid;
         $devices = array();
 
-        $result = $this->mysqli->query("SELECT `id`, `userid`, `name`, `description`, `type`, `nodeid`, `devicekey`, `time` FROM device WHERE userid = '$userid'");
+        $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE userid = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
             $devices[] = $row;
@@ -176,7 +180,8 @@ class Device
     private function load_to_redis($userid)
     {
         $this->redis->delete("user:device:$userid");
-        $result = $this->mysqli->query("SELECT `id`, `name`, `description`, `type`, `nodeid`, `devicekey` FROM device WHERE userid = '$userid'");
+
+        $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey` FROM device WHERE userid = '$userid'");
         if (!$result) { 
             $this->log->warn("load_to_redis error, result=false, userid = $userid");
             return false;
@@ -187,15 +192,16 @@ class Device
             $this->redis->sAdd("user:device:$userid", $row->id);
             $this->redis->hMSet("device:".$row->id,array(
                 'id'=>$row->id,
+                'userid'=>$row->userid,
+                'nodeid'=>$row->nodeid,
                 'name'=>$row->name,
                 'description'=>$row->description,
                 'type'=>$row->type,
-                'nodeid'=>$row->nodeid,
                 'devicekey'=>$row->devicekey
             ));
         }
     }
-    
+
     public function autocreate($userid,$_nodeid,$_type)
     {
         $userid = intval($userid);
@@ -222,7 +228,7 @@ class Device
             return $result;
         }
     }   
-    
+
     public function create($userid, $nodeid, $name, $description, $type)
     {
         $userid = intval($userid);
@@ -237,16 +243,22 @@ class Device
         }
         else $description = '';
         
-        if (!$this->exists_nodeid($userid,$nodeid)) {
+        if (!$this->exists_nodeid($userid, $nodeid)) {
             $devicekey = md5(uniqid(mt_rand(), true));
-            $this->mysqli->query("INSERT INTO device (`userid`, `nodeid`, `name`, `description`, `type`, `devicekey`) VALUES ('$userid','$nodeid','$name','$description','$type','$devicekey')");
-            if ($this->redis) {
-                $this->log->warn("calling load_to_redis in device->create");
-                $this->load_to_redis($userid);
-            }
-            return $this->mysqli->insert_id;
+
+            $result = $this->mysqli->query("INSERT INTO device (`userid`, `nodeid`, `name`, `description`, `type`, `devicekey`) VALUES ('$userid','$nodeid','$name','$description','$type','$devicekey')");
+            $deviceid = $this->mysqli->insert_id;
+            
+            if ($deviceid > 0) {
+                if ($this->redis) {
+                    $this->log->warn("calling load_to_redis in device->create");
+                    $this->load_to_redis($userid);
+                }
+            } else return array('success'=>false, 'result'=>"SQL returned invalid insert feed id");
+            
+            return $deviceid;
         } else {
-            return false;
+            return array('success'=>false, 'message'=>'Device for the node "'.$nodeid.'" already exists');
         }
     }
 
@@ -271,8 +283,8 @@ class Device
             }
         }
     }
-    
-    public function set_fields($id,$fields)
+
+    public function set_fields($id, $fields)
     {
         $id = (int) $id;
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');

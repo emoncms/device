@@ -22,22 +22,26 @@ var device = {
 
     'remove':function(id)
     {
-        $.ajax({ url: path+"device/delete.json", data: "id="+id, async: false, success: function(data){} });
+        var result = {};
+        $.ajax({ url: path+"device/delete.json", data: "id="+id, async: false, success: function(data) {result = data;} });
+        return result;
     },
 
     'create':function(nodeid, name, description, type)
     {
-        $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type, async: false, success: function(data){} });
+        var result = {};
+        $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type, async: false, success: function(data) {result = data;} });
+        return result;
     },
 
-    'listtemplates':function()
+    'listTemplates':function()
     {
         var result = {};
         $.ajax({ url: path+"device/template/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'inittemplate':function(id)
+    'initTemplate':function(id)
     {
         var result = {};
         $.ajax({ url: path+"device/template/init.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });

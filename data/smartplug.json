@@ -30,9 +30,11 @@
     
     "control": 
     {
-        "period": {"type":"text","default":0},
-        "end": {"type":"text","default":0},
+        "period": {"name":"Run period", "type":"time","default":0,"resolution":0.5},
+        "end": {"name":"Complete by", "type":"time","default":0,"resolution":0.5},
+        "repeat": {"type":"weekly-scheduler","default":[1,1,1,1,1,0,0]},
         "interruptible": {"type":"checkbox","default":0},
-        "status": {"type":"checkbox","default":0}
+        "runonce": {"type":"","default":true},
+        "basic": {"type":"","default":0}
     }
 }
