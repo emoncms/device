@@ -598,8 +598,14 @@ class Device
         if (isset($item) && isset($item['mapping'])) {
             $map = (array) $item['mapping'];
             if (isset($map['OFF'])) {
-                $entry = (array) $map['OFF'];
-                return $this->set_control_value($id, $entry['channelid'], $entry['value']);
+                $options = (array) $map['OFF'];
+                
+                $channelid = $options['channelid'];
+                unset($options['channelid']);
+                $value = $options['value'];
+                unset($options['value']);
+                
+                return $this->set_control_value($id, $channelid, $options, $value);
             }
         }
         return array('success'=>false, 'message'=>'Unknown device control item or incomplete device control template mappings "OFF"');
