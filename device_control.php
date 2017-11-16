@@ -1,12 +1,12 @@
 <?php
 /*
-     Released under the GNU Affero General Public License.
-     See COPYRIGHT.txt and LICENSE.txt.
-
-     Device module contributed by Nuno Chaveiro nchaveiro(at)gmail.com 2015
-     ---------------------------------------------------------------------
-     Sponsored by http://archimetrics.co.uk/
-*/
+ Released under the GNU Affero General Public License.
+ See COPYRIGHT.txt and LICENSE.txt.
+ 
+ Device module contributed by Nuno Chaveiro nchaveiro(at)gmail.com 2015
+ ---------------------------------------------------------------------
+ Sponsored by http://archimetrics.co.uk/
+ */
 
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
@@ -224,73 +224,85 @@ class DeviceControl
     }
 
     // Create the inputs process lists
-    protected function create_input_processes($feeds, $inputs) {
+    protected function create_input_processes($userid, $feeds, $inputs) {
+        global $user, $feed_settings;
+        
+        require_once "Modules/feed/feed_model.php";
+        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
+        
         require_once "Modules/input/input_model.php";
-        $input = new Input($this->mysqli, $this->redis, null);
-
+        $input = new Input($this->mysqli, $this->redis, $feed);
+        
+        require_once "Modules/process/process_model.php";
+        $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
+        $process_list = $process->get_process_list(); // emoncms supported processes
+        
         foreach($inputs as $i) {
             // for each input
             if (isset($i->processList) || isset($i->processlist)) {
-        		$processes = isset($i->processList) ? $i->processList : $i->processlist;
+                $processes = isset($i->processList) ? $i->processList : $i->processlist;
                 $inputid = $i->inputid;
-                $result = $this->convert_processes($feeds, $inputs, $processes);
+                $result = $this->convert_processes($feeds, $inputs, $processes, $process_list);
                 if (isset($result["success"])) {
                     return $result; // success is only filled if it was an error
                 }
-
+                
                 $processes = implode(",", $result);
                 if ($processes != "") {
                     $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
-                    $input->set_processlist($inputid, $processes);
+                    $input->set_processlist($userid, $inputid, $processes, $process_list);
                 }
             }
         }
-
+        
         return array('success'=>true);
     }
 
-    protected function create_feed_processes($feeds, $inputs) {
-        global $feed_settings;
-
+    protected function create_feed_processes($userid, $feeds, $inputs) {
+        global $user, $feed_settings;
+        
         require_once "Modules/feed/feed_model.php";
         $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
-
+        
+        require_once "Modules/input/input_model.php";
+        $input = new Input($this->mysqli, $this->redis, $feed);
+        
+        require_once "Modules/process/process_model.php";
+        $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
+        $process_list = $process->get_process_list(); // emoncms supported processes
+        
         foreach($feeds as $f) {
             // for each feed
-        	if (($f->engine == Engine::VIRTUALFEED) && (isset($f->processList) || isset($f->processlist))) {
-        		$processes = isset($f->processList) ? $f->processList : $f->processlist;
+            if (($f->engine == Engine::VIRTUALFEED) && (isset($f->processList) || isset($f->processlist))) {
+                $processes = isset($f->processList) ? $f->processList : $f->processlist;
                 $feedid = $f->feedid;
-                $result = $this->convert_processes($feeds, $inputs, $processes);
+                $result = $this->convert_processes($feeds, $inputs, $processes, $process_list);
                 if (isset($result["success"])) {
                     return $result; // success is only filled if it was an error
                 }
-
+                
                 $processes = implode(",", $result);
                 if ($processes != "") {
                     $this->log->info("create_feeds_processes() calling feed->set_processlist feedId=$feedid processes=$processes");
-                    $feed->set_processlist($feedid, $processes);
+                    $feed->set_processlist($userid, $feedid, $processes, $process_list);
                 }
             }
         }
-
+        
         return array('success'=>true);
     }
 
     // Converts template processList
-    protected function convert_processes($feeds, $inputs, $processes){
+    protected function convert_processes($feeds, $inputs, $processes, $process_list){
         $result = array();
         
         if (is_array($processes)) {
-            require_once "Modules/process/process_model.php";
-            $process = new Process(null, null, null, null);
-            $process_list = $process->get_process_list(); // emoncms supported processes
-
             $process_list_by_name = array();
-            foreach ($process_list as $process_id=>$process_item) {
+            foreach ($process_list as $process_id => $process_item) {
                 $name = $process_item[2];
                 $process_list_by_name[$name] = $process_id;
             }
-
+            
             // create each processList
             foreach($processes as $p) {
                 $proc_name = $p->process;
@@ -302,18 +314,18 @@ class DeviceControl
                     $this->log->error("convertProcess() Process '$proc_name' not supported. Module missing?");
                     return array('success'=>false, 'message'=>"Process '$proc_name' not supported. Module missing?");
                 }
-
+                
                 // Arguments
                 if(isset($p->arguments)) {
                     if(isset($p->arguments->type)) {
                         $type = @constant($p->arguments->type); // ProcessArg::
                         $process_type = $process_list[$proc_name][1]; // get emoncms process ProcessArg
-
+                        
                         if ($process_type != $type) {
                             $this->log->error("convertProcess() Bad device template. Missmatch ProcessArg type. Got '$type' expected '$process_type'. process='$proc_name' type='".$p->arguments->type."'");
                             return array('success'=>false, 'message'=>"Bad device template. Missmatch ProcessArg type. Got '$type' expected '$process_type'. process='$proc_name' type='".$p->arguments->type."'");
                         }
-
+                        
                         if (isset($p->arguments->value)) {
                             $value = $p->arguments->value;
                         } else if ($type === ProcessArg::NONE) {
@@ -322,7 +334,7 @@ class DeviceControl
                             $this->log->error("convertProcess() Bad device template. Undefined argument value. process='$proc_name' type='".$p->arguments->type."'");
                             return array('success'=>false, 'message'=>"Bad device template. Undefined argument value. process='$proc_name' type='".$p->arguments->type."'");
                         }
-
+                        
                         if ($type === ProcessArg::VALUE) {
                         } else if ($type === ProcessArg::INPUTID) {
                             $temp = $this->search_array($inputs, 'name', $value); // return input array that matches $inputArray[]['name']=$value
@@ -343,20 +355,20 @@ class DeviceControl
                         } else if ($type === ProcessArg::NONE) {
                             $value = 0;
                         } else if ($type === ProcessArg::TEXT) {
-//                      } else if ($type === ProcessArg::SCHEDULEID) { //not supporte for now
+                            //                      } else if ($type === ProcessArg::SCHEDULEID) { //not supporte for now
                         } else {
-                                $this->log->error("convertProcess() Bad device template. Unsuported argument type. process='$proc_name' type='".$p->arguments->type."'");
-                                return array('success'=>false, 'message'=>"Bad device template. Unsuported argument type. process='$proc_name' type='".$p->arguments->type."'");
+                            $this->log->error("convertProcess() Bad device template. Unsuported argument type. process='$proc_name' type='".$p->arguments->type."'");
+                            return array('success'=>false, 'message'=>"Bad device template. Unsuported argument type. process='$proc_name' type='".$p->arguments->type."'");
                         }
-
+                        
                     } else {
                         $this->log->error("convertProcess() Bad device template. Argument type is missing, set to NONE if not required. process='$proc_name' type='".$p->arguments->type."'");
                         return array('success'=>false, 'message'=>"Bad device template. Argument type is missing, set to NONE if not required. process='$proc_name' type='".$p->arguments->type."'");
                     }
-
+                    
                     $this->log->info("convertProcess() process process='$proc_name' type='".$p->arguments->type."' value='" . $value . "'");
                     $result[] = $proc_name.":".$value;
-
+                    
                 } else {
                     $this->log->error("convertProcess() Bad device template. Missing processList arguments. process='$proc_name'");
                     return array('success'=>false, 'message'=>"Bad device template. Missing processList arguments. process='$proc_name'");
