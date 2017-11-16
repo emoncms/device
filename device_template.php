@@ -107,7 +107,7 @@ class DeviceTemplate
                 $options->interval = $f->interval;
             }
             
-            $feedid = $feed->get_id($userid, $name);
+            $feedid = $feed->exists_tag_name($userid, $name);
             
             if ($feedid == false) {
                 $this->log->info("create_feeds() userid=$userid tag=$tag name=$name datatype=$datatype engine=$engine");
