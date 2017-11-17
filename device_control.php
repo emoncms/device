@@ -38,10 +38,10 @@ class DeviceControl
     }
 
     public function get_template($type) {
-    	$type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
+        $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
         
-    	if (file_exists("Modules/device/data/$type.json")) {
-    		return json_decode(file_get_contents("Modules/device/data/$type.json"));
+        if (file_exists("Modules/device/data/$type.json")) {
+            return json_decode(file_get_contents("Modules/device/data/$type.json"));
         }
     }
 
@@ -129,13 +129,13 @@ class DeviceControl
         }
         
         // Create inputs processes
-        $result = $this->create_input_processes($feeds, $inputs);
+        $result = $this->create_input_processes($userid, $feeds, $inputs);
         if ($result["success"] !== true) {
             return array('success'=>false, 'message'=>'Error while creating the inputs process list. ' . $result['message']);
         }
         
         // Create feeds processes
-        $result = $this->create_feed_processes($feeds, $inputs);
+        $result = $this->create_feed_processes($userid, $feeds, $inputs);
         if ($result["success"] !== true) {
             return array('success'=>false, 'message'=>'Error while creating the feeds process list. ' . $result['message']);
         }

@@ -761,7 +761,7 @@ class Device
     private function cache_template($module, $key, $template)
     {
         $meta = array(
-                "module"=>$module
+            "module"=>$module
         );
         $meta["name"] = ((!isset($template->name) || $template->name == "" ) ? $key : $template->name);
         $meta["category"] = ((!isset($template->category) || $template->category== "" ) ? "General" : $template->category);
