@@ -85,6 +85,7 @@ class DeviceTemplate
 
     // Create the feeds
     protected function create_feeds($userid, $nodeid, &$feeds) {
+        $this->log->info("create_feeds");
         global $feed_settings;
         
         require_once "Modules/feed/feed_model.php";
@@ -107,7 +108,7 @@ class DeviceTemplate
                 $options->interval = $f->interval;
             }
             
-            $feedid = $feed->exists_tag_name($userid, $name);
+            $feedid = $feed->exists_tag_name($userid, $tag, $name);
             
             if ($feedid == false) {
                 $this->log->info("create_feeds() userid=$userid tag=$tag name=$name datatype=$datatype engine=$engine");
@@ -116,6 +117,9 @@ class DeviceTemplate
                     return $result;
                 }
                 $feedid = $result["feedid"]; // Assign the created feed id to the feeds array
+                $this->log->info("-- $name:$tag create feedid=$feedid");
+            } else {
+                $this->log->info("-- $name:$tag exists feedid=$feedid");
             }
             
             $f->feedid = $feedid;

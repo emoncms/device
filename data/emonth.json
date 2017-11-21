@@ -1,7 +1,7 @@
 {
-	"name": "EmonTH",
-	"category": "OpenEnergyMonitor",
-	"group": "Temperature & Humidity",
+        "name": "test",
+        "category": "OpenEnergyMonitor",
+        "group": "Temperature & Humidity",
     "description": "Automatic inputs and feeds creation for emonTH device.",
     "inputs": [
         {
@@ -31,7 +31,8 @@
             "name": "emonth_temperature",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+            "tag": "mytag"
         },
         {
             "name": "emonth_humidity",
