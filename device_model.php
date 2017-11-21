@@ -131,12 +131,21 @@ class Device
     public function get($id)
     {
         $id = intval($id);
-        if (!$this->exist($id)) $this->load_device_to_redis($id);
+        if (!$this->exist($id) && !$this->load_device_to_redis($id)) {
+            return array('success'=>false, 'message'=>'Device does not exist');
+        }
         
         if ($this->redis) {
             // Get from redis cache
-            $device = $this->redis->hGetAll("device:$id");
-        } else {
+            $device = (array) $this->redis->hGetAll("device:$id");
+            // Verify, if the cached device contains the userid, to avoid compatibility issues
+            // with former versions where the userid was not cached.
+            if (empty($device['userid'])) {
+                $device = $this->load_device_to_redis($id);
+            }
+            $device['time'] = $this->redis->hget("device:lastvalue:".$id, 'time');
+        }
+        else {
             // Get from mysql db
             $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE id = '$id'");
             $device = (array) $result->fetch_object();
@@ -166,10 +175,14 @@ class Device
         $deviceids = $this->redis->sMembers("user:device:$userid");
         foreach ($deviceids as $id)
         {
-            $row = $this->redis->hGetAll("device:$id");
-            $lastvalue = $this->redis->hMget("device:lastvalue:".$id,array('time'));
-            $row['time'] = $lastvalue['time'];
-            $devices[] = $row;
+            $device = $this->redis->hGetAll("device:$id");
+            // Verify, if the cached device contains the userid, to avoid compatibility issues
+            // with former versions where the userid was not cached.
+            if (empty($device['userid'])) {
+                $device = $this->load_device_to_redis($id);
+            }
+            $device['time'] = $this->redis->hget("device:lastvalue:".$id, 'time');
+            $devices[] = $device;
         }
         return $devices;
     }
@@ -180,7 +193,7 @@ class Device
         $devices = array();
         
         $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE userid = '$userid' ORDER BY nodeid, name asc");
-        while ($row = (array)$result->fetch_object())
+        while ($row = (array) $result->fetch_object())
         {
             $devices[] = $row;
         }
@@ -208,14 +221,12 @@ class Device
 
     private function load_device_to_redis($id)
     {
-        $this->redis->delete("user:device:$userid");
         $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey` FROM device WHERE id = '$id' ORDER BY nodeid, name asc");
         if ($result->num_rows>0) {
-            $row = $result->fetch_array();
+            $row = $result->fetch_object();
             $userid = $row->userid;
             
-            $this->redis->sAdd("user:device:$userid", $row->id);
-            $this->redis->hMSet("device:".$row->id, array(
+            $device = array(
                 'id'=>$row->id,
                 'userid'=>$row->userid,
                 'nodeid'=>$row->nodeid,
@@ -223,8 +234,10 @@ class Device
                 'description'=>$row->description,
                 'type'=>$row->type,
                 'devicekey'=>$row->devicekey
-            ));
-            return true;
+            );
+            $this->redis->sAdd("user:device:$userid", $row->id);
+            $this->redis->hMSet("device:".$row->id, $device);
+            return $device;
         }
         return false;
     }
