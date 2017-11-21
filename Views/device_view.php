@@ -68,17 +68,15 @@
   table.deletedata = false;
   table.fields = {
     //'id':{'type':"fixed"},
-    'nodeid':{'title':'<?php echo _("Node"); ?>','type':"text"},
-    'name':{'title':'<?php echo _("Name"); ?>','type':"text"},
-    'description':{'title':'<?php echo _('Location'); ?>','type':"text"},
+    'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
+    'name':{'title':'<?php echo _("Name"); ?>','type':"fixed"},
+    'description':{'title':'<?php echo _('Location'); ?>','type':"fixed"},
     'typename':{'title':'<?php echo _("Type"); ?>','type':"fixed"},
-    'devicekey':{'title':'<?php echo _('Device access key'); ?>','type':"text"},
+    'devicekey':{'title':'<?php echo _('Device access key'); ?>','type':"fixed"},
     'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
-    //'public':{'title':"<?php echo _('tbd'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
+    // 'public':{'title':"<?php echo _('tbd'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
     // Actions
-    'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
-    'init-action':{'title':'', 'type':"iconbasic", 'icon':'icon-refresh'},
     'config-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'}
   }
 
@@ -139,13 +137,6 @@
     // Get device of clicked row
     var localDevice = device.get(id);
     device_dialog.loadDelete(localDevice, row);
-  });
-
-  $("#table").on('click', '.icon-refresh', function() {
-
-    // Get device of clicked row
-    var localDevice = table.data[$(this).attr('row')];
-    device_dialog.loadInit(localDevice);
   });
 
   $("#table").on('click', '.icon-wrench', function() {

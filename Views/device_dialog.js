@@ -323,6 +323,11 @@ var device_dialog =
             
             device_dialog.loadDelete(device_dialog.device, null);
         });
+        
+        $("#device-init").off('click').on('click', function () {
+          $('#device-config-modal').modal('hide');
+          device_dialog.loadInit(device_dialog.device);
+        });
     },
 
     'loadInit': function(device) {

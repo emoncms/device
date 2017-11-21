@@ -26,7 +26,12 @@ class Device
 
     public function devicekey_session($devicekey)
     {
-        $devicekey = $this->mysqli->real_escape_string($devicekey);
+        // 1. Only allow alphanumeric characters
+        // if (!ctype_alnum($devicekey)) return array();
+        
+        // 2. Only allow 32 character length
+        if (strlen($devicekey)!=32) return array();
+        
         $session = array();
         $time = time();
         
@@ -47,30 +52,31 @@ class Device
         }
         else
         {
-            $result = $this->mysqli->query("SELECT id, userid, nodeid FROM device WHERE devicekey='$devicekey'");
-            if ($result->num_rows == 1)
-            {
-                $row = $result->fetch_array();
-                if ($row['id'] != 0)
-                {
-                    $session['userid'] = $row['userid'];
-                    $session['read'] = 0;
-                    $session['write'] = 1;
-                    $session['admin'] = 0;
-                    $session['lang'] = "en"; // API access is always in english
-                    $session['username'] = "API";
-                    $session['deviceid'] = $row['id'];
-                    $session['nodeid'] = $row['nodeid'];
+            $stmt = $this->mysqli->prepare("SELECT id, userid, nodeid FROM device WHERE devicekey=?");
+            $stmt->bind_param("s",$devicekey);
+            $stmt->execute();
+            $stmt->bind_result($id,$userid,$nodeid);
+            $result = $stmt->fetch();
+            $stmt->close();
+            
+            if ($result && $id>0) {
+                $session['userid'] = $userid;
+                $session['read'] = 0;
+                $session['write'] = 1;
+                $session['admin'] = 0;
+                $session['lang'] = "en"; // API access is always in english
+                $session['username'] = "API";
+                $session['deviceid'] = $id;
+                $session['nodeid'] = $nodeid;
                     
-                    if ($this->redis) {
-                        $this->redis->set("device:key:$devicekey:user",$row['userid']);
-                        $this->redis->set("device:key:$devicekey:device",$row['id']);
-                        $this->redis->set("device:key:$devicekey:node",$row['nodeid']);
-                        $this->redis->hMset("device:lastvalue:".$row['id'], array('time' => $time));
-                    } else {
-                        //$time = date("Y-n-j H:i:s", $time);
-                        $this->mysqli->query("UPDATE device SET time='$time' WHERE id = '".$row['id']."'");
-                    }
+                if ($this->redis) {
+                    $this->redis->set("device:key:$devicekey:user",$userid);
+                    $this->redis->set("device:key:$devicekey:device",$id);
+                    $this->redis->set("device:key:$devicekey:node",$nodeid);
+                    $this->redis->hMset("device:lastvalue:$id", array('time' => $time));
+                } else {
+                    //$time = date("Y-n-j H:i:s", $time);
+                    $this->mysqli->query("UPDATE device SET time='$time' WHERE id = '$id");
                 }
             }
         }
@@ -97,7 +103,7 @@ class Device
                 }
             }
             else {
-                $id = intval($id);
+                $id = (int) $id;
                 $result = $this->mysqli->query("SELECT id FROM device WHERE id = '$id'");
                 if ($result->num_rows > 0) $device_exist = true;
             }
@@ -108,29 +114,37 @@ class Device
 
     public function exists_name($userid, $name)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$name);
-        $result = $this->mysqli->query("SELECT id FROM device WHERE userid = '$userid' AND name = '$name'");
-        if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
+        
+        $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND name=?");
+        $stmt->bind_param("is",$userid,$name);
+        $stmt->execute();
+        $stmt->bind_result($id);
+        $result = $stmt->fetch();
+        $stmt->close();
+        
+        if ($result && $id>0) return $id; else return false;
     }
 
     public function exists_nodeid($userid,$nodeid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$nodeid);
-        $result = $this->mysqli->query("SELECT id FROM device WHERE userid = '$userid' AND nodeid = '$nodeid'");
+
+        $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND nodeid=?");
+        $stmt->bind_param("is",$userid,$nodeid);
+        $stmt->execute();
+        $stmt->bind_result($id);
+        $result = $stmt->fetch();
+        $stmt->close();
         
-        if (isset($result->num_rows) && $result->num_rows > 0) { 
-            $row = $result->fetch_array(); 
-            return $row['id']; 
-        } else {
-            return false;
-        }
+        if ($result && $id>0) return $id; else return false;
     }
 
     public function get($id)
     {
-        $id = intval($id);
+        $id = (int) $id;
         if (!$this->exist($id) && !$this->load_device_to_redis($id)) {
             return array('success'=>false, 'message'=>'Device does not exist');
         }
@@ -147,7 +161,7 @@ class Device
         }
         else {
             // Get from mysql db
-            $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE id = '$id'");
+            $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`time` FROM device WHERE id = '$id'");
             $device = (array) $result->fetch_object();
         }
         return $device;
@@ -164,7 +178,7 @@ class Device
 
     private function get_list_redis($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         
         if (!$this->redis->exists("user:device:$userid")) {
             $this->log->info("Load devices to redis in get_list_redis");
@@ -189,19 +203,18 @@ class Device
 
     private function get_list_mysql($userid)
     {
-        $userid = intval($userid);
-        $devices = array();
+        $userid = (int) $userid;
         
+        $devices = array();
         $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey`, `time` FROM device WHERE userid = '$userid' ORDER BY nodeid, name asc");
-        while ($row = (array) $result->fetch_object())
-        {
-            $devices[] = $row;
-        }
+        while ($row = (array) $result->fetch_object()) $devices[] = $row;
+        
         return $devices;
     }
 
     private function load_list_to_redis($userid)
     {
+        $userid = (int) $userid;
         $this->redis->delete("user:device:$userid");
         $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey` FROM device WHERE userid = '$userid' ORDER BY nodeid, name asc");
         while ($row = $result->fetch_object())
@@ -221,6 +234,7 @@ class Device
 
     private function load_device_to_redis($id)
     {
+        $id = (int) $id;
         $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey` FROM device WHERE id = '$id' ORDER BY nodeid, name asc");
         if ($result->num_rows>0) {
             $row = $result->fetch_object();
@@ -244,7 +258,7 @@ class Device
 
     public function autocreate($userid, $_nodeid, $_type)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         
         $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$_nodeid);
         if ($_nodeid != $nodeid) return array("success"=>false, "message"=>"Invalid nodeid");
@@ -271,22 +285,37 @@ class Device
 
     public function create($userid, $nodeid, $name, $description, $type)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
+        
         $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $nodeid);
+        
         if (isset($name)) {
             $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $name);
+        } else {
+            $name = $nodeid;
         }
-        else $name = $nodeid;
         
         if (isset($description)) {
             $description= preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $description);
+        } else {
+            $description = '';
         }
-        else $description = '';
+        
+        if (isset($type)) {
+            $type= preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $type);
+        } else {
+            $type = '';
+        }
         
         if (!$this->exists_nodeid($userid, $nodeid)) {
             $devicekey = md5(uniqid(mt_rand(), true));
             
-            $result = $this->mysqli->query("INSERT INTO device (`userid`, `nodeid`, `name`, `description`, `type`, `devicekey`) VALUES ('$userid','$nodeid','$name','$description','$type','$devicekey')");
+            $stmt = $this->mysqli->prepare("INSERT INTO device (userid,nodeid,name,description,type,devicekey) VALUES (?,?,?,?,?,?)");
+            $stmt->bind_param("isssss",$userid,$nodeid,$name,$description,$type,$devicekey);
+            $result = $stmt->execute();
+            $stmt->close();
+            if (!$result) return array('success'=>false, 'message'=>_("Error creating device"));
+            
             $deviceid = $this->mysqli->insert_id;
             
             if ($deviceid > 0) {
@@ -298,12 +327,12 @@ class Device
             }
             else return array('success'=>false, 'result'=>"SQL returned invalid insert feed id");
         }
-        else return array('success'=>false, 'message'=>'Device for the node "'.$nodeid.'" already exists');
+        else return array('success'=>false, 'message'=>'Device already exists');
     }
 
     public function delete($id)
     {
-        $id = intval($id);
+        $id = (int) $id;
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
         
         if ($this->redis) {
@@ -323,35 +352,48 @@ class Device
         }
     }
 
-    public function set_fields($id, $fields)
+    public function set_fields($id,$fields)
     {
-        $id = intval($id);
+        $id = (int) $id;
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
-        
         $fields = json_decode(stripslashes($fields));
         
-        $array = array();
-        
-        // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->name)."'";
-        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->description)."'";
-        if (isset($fields->nodeid)) $array[] = "`nodeid` = '".preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->nodeid)."'";
-        if (isset($fields->devicekey)) {
-            $devicekey = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->devicekey);
-            $result = $this->mysqli->query("SELECT devicekey FROM device WHERE devicekey='$devicekey'");
-            if ($result->num_rows > 0)
-            {
-                return array('success'=>false, 'message'=>'Field devicekey is invalid'); // is duplicate
-            }
-            $array[] = "`devicekey` = '".$devicekey."'";
+        $success = false;
+
+        if (isset($fields->name)) {
+            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in device name');
+            $stmt = $this->mysqli->prepare("UPDATE device SET name = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->name,$id);
+            if ($stmt->execute()) $success = true;
+            $stmt->close();
         }
-        if (isset($fields->type)) $array[] = "`type` = '".preg_replace('/[^\/\|\,\w\s-:]/','',$fields->type)."'";
         
-        // Convert to a comma seperated string for the mysql query
-        $fieldstr = implode(",",$array);
-        $this->mysqli->query("UPDATE device SET ".$fieldstr." WHERE `id` = '$id'");
+        if (isset($fields->description)) {
+            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->description)!=$fields->description) return array('success'=>false, 'message'=>'invalid characters in device description');
+            $stmt = $this->mysqli->prepare("UPDATE device SET description = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->description,$id);
+            if ($stmt->execute()) $success = true;
+            $stmt->close();
+        }
+
+        if (isset($fields->nodeid)) {
+            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->nodeid)!=$fields->nodeid) return array('success'=>false, 'message'=>'invalid characters in device nodeid');
+            $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->nodeid,$id);
+            if ($stmt->execute()) $success = true;
+            $stmt->close();
+        }
+
+        if (isset($fields->type)) {
+            if (preg_replace('/[^\/\|\,\w\s-:]/','',$fields->type)!=$fields->type) return array('success'=>false, 'message'=>'invalid characters in device type');
+            $stmt = $this->mysqli->prepare("UPDATE device SET type = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->type,$id);
+            if ($stmt->execute()) $success = true;
+            $stmt->close();
+        }
+
+        if ($success){
         
-        if ($this->mysqli->affected_rows>0){
             if ($this->redis) {
                 $result = $this->mysqli->query("SELECT userid FROM device WHERE id='$id'");
                 $row = (array) $result->fetch_object();
@@ -359,6 +401,7 @@ class Device
                     $this->load_list_to_redis($row['userid']);
                 }
             }
+        
             return array('success'=>true, 'message'=>'Field updated');
         } else {
             return array('success'=>false, 'message'=>'Field could not be updated');
@@ -434,7 +477,7 @@ class Device
 
     public function init_template($id)
     {
-        $id = intval($id);
+        $id = (int) $id;
         
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
