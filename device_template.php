@@ -65,7 +65,7 @@ class DeviceTemplate
         $log .= $this->create_inputs($userid, $nodeid, $inputs);
         
         // Create inputs processes
-        $log .= $this->create_input_processes($userid, $feeds, $inputs);
+        $log .= $this->create_input_processes($userid, $feeds, $inputs, $nodeid);
         
         // Create feeds processes
         $log .= $this->create_feed_processes($userid, $feeds, $inputs);
@@ -103,18 +103,18 @@ class DeviceTemplate
                 $this->log->info("create_feeds() userid=$userid tag=$tag name=$name datatype=$datatype engine=$engine");
                 $result = $feed->create($userid, $tag, $name, $datatype, $engine, $options);
                 if($result["success"] !== true) {
-                    $log .= "-- ERROR $name:$tag\n";
+                    $log .= "-- ERROR $tag:$name\n";
                 } else {
                     $feedid = $result["feedid"]; // Assign the created feed id to the feeds array
-                    $log .= "-- CREATE $name:$tag\n";
+                    $log .= "-- CREATE $tag:$name\n";
                 }
             } else {
-                $log .= "-- EXISTS $name:$tag\n";
+                $log .= "-- EXISTS $tag:$name\n";
             }
             
             $f->feedid = $feedid;
         }
-        return $log;
+        return $log."\n";
     }
 
     // Create the inputs
@@ -150,11 +150,11 @@ class DeviceTemplate
             }
             $i->inputid = $inputid; // Assign the created input id to the inputs array
         }
-        return $log;
+        return $log."\n";
     }
 
     // Create the inputs process lists
-    protected function create_input_processes($userid, $feeds, $inputs) {
+    protected function create_input_processes($userid, $feeds, $inputs, $nodeid) {
         global $user, $feed_settings;
         
         require_once "Modules/feed/feed_model.php";
@@ -183,12 +183,12 @@ class DeviceTemplate
                 if ($processes != "") {
                     $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
                     $input->set_processlist($userid, $inputid, $processes, $process_list);
-                    $log .= "-- set processlist inputid=$inputid\n  $processes\n";
+                    $log .= "-- SET ".$nodeid.":".$i->name."\n   $processes\n";
                 }
             }
         }
 
-        return $log;
+        return $log."\n";
     }
 
     protected function create_feed_processes($userid, $feeds, $inputs) {
@@ -225,7 +225,7 @@ class DeviceTemplate
             }
         }
         
-        return $log;
+        return $log."\n";
     }
 
     // Converts template processList

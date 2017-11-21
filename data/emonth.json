@@ -9,7 +9,7 @@
             "description": "Temperature C",
             "processList": [
             {
-                "process": "1",
+                "process": "log_to_feed",
                 "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_temperature" }
             }
             ]
@@ -19,7 +19,7 @@
             "description": "Humidity Rh%",
             "processList": [
             {
-                "process": "1",
+                "process": "log_to_feed",
                 "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_humidity" }
             }
             ]
