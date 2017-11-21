@@ -183,7 +183,7 @@ class DeviceTemplate
                 if ($processes != "") {
                     $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
                     $input->set_processlist($userid, $inputid, $processes, $process_list);
-                    $log .= "-- set processlist inputid=$inputid processes=$processes\n";
+                    $log .= "-- set processlist inputid=$inputid\n  $processes\n";
                 }
             }
         }
@@ -220,7 +220,7 @@ class DeviceTemplate
                 if ($processes != "") {
                     $this->log->info("create_feeds_processes() calling feed->set_processlist feedId=$feedid processes=$processes");
                     $feed->set_processlist($userid, $feedid, $processes, $process_list);
-                    $log .= "-- set processlist feedid=$inputid processes=$processes\n";
+                    $log .= "-- set processlist feedid=$inputid  $processes\n";
                 }
             }
         }

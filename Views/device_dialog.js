@@ -278,7 +278,7 @@ var device_dialog =
                             $('#device-config-modal').modal('hide');
                             
                             $('#device-init-modal').modal('show');
-                            $('#device-init-modal-label').html('Initialize Device: <b>'+device.name+'</b>');
+                            $('#device-init-modal-label').html('Initialize Device: <b>'+name+'</b>');
                             $("#device-init-modal-log").html("<b>Device initialized</b><br><pre>"+result.log+"</pre>");
                             $(".pre-init").hide(); $(".post-init").show();
                         } 
@@ -301,11 +301,9 @@ var device_dialog =
                         
                         if (result.log!=undefined) {
                             $('#device-config-modal').modal('hide');
+                            
                             $('#device-init-modal').modal('show');
-                            $('#device-init-modal-label').html('Initialize Device: <b>'+device.name+'</b>');
-            
-                            $('#device-init-modal').modal('show');
-                            $('#device-init-modal-label').html('Initialize Device: <b>'+device.name+'</b>');
+                            $('#device-init-modal-label').html('Initialize Device: <b>'+name+'</b>');
                             $("#device-init-modal-log").html("<b>Device initialized</b><br><pre>"+result.log+"</pre>");
                             $(".pre-init").hide(); $(".post-init").show();
                         } 
