@@ -56,42 +56,31 @@ class DeviceTemplate
         $feeds = $template->feeds;
         $inputs = $template->inputs;
         
+        $log = "";
+        
         // Create feeds
-        $result = $this->create_feeds($userid, $nodeid, $feeds);
-        if ($result["success"] !== true) {
-            return array('success'=>false, 'message'=>'Error while creating the feeds. ' . $result['message']);
-        }
+        $log .= $this->create_feeds($userid, $nodeid, $feeds);
         
         // Create inputs
-        $result = $this->create_inputs($userid, $nodeid, $inputs);
-        if ($result !== true) {
-            return array('success'=>false, 'message'=>'Error while creating the inputs.');
-        }
+        $log .= $this->create_inputs($userid, $nodeid, $inputs);
         
         // Create inputs processes
-        $result = $this->create_input_processes($userid, $feeds, $inputs);
-        if ($result["success"] !== true) {
-            return array('success'=>false, 'message'=>'Error while creating the inputs process list. ' . $result['message']);
-        }
+        $log .= $this->create_input_processes($userid, $feeds, $inputs);
         
         // Create feeds processes
-        $result = $this->create_feed_processes($userid, $feeds, $inputs);
-        if ($result["success"] !== true) {
-            return array('success'=>false, 'message'=>'Error while creating the feeds process list. ' . $result['message']);
-        }
+        $log .= $this->create_feed_processes($userid, $feeds, $inputs);
         
-        return array('success'=>true, 'message'=>'Device initialized');
+        return array('success'=>true, 'message'=>'Device initialized', 'log'=>$log);
     }
 
     // Create the feeds
     protected function create_feeds($userid, $nodeid, &$feeds) {
-        $this->log->info("create_feeds");
         global $feed_settings;
+        
+        $log = "feeds:\n";
         
         require_once "Modules/feed/feed_model.php";
         $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
-        
-        $result = array("success"=>true);
         
         foreach($feeds as $f) {
             // Create each feed
@@ -114,23 +103,26 @@ class DeviceTemplate
                 $this->log->info("create_feeds() userid=$userid tag=$tag name=$name datatype=$datatype engine=$engine");
                 $result = $feed->create($userid, $tag, $name, $datatype, $engine, $options);
                 if($result["success"] !== true) {
-                    return $result;
+                    $log .= "-- ERROR $name:$tag\n";
+                } else {
+                    $feedid = $result["feedid"]; // Assign the created feed id to the feeds array
+                    $log .= "-- CREATE $name:$tag\n";
                 }
-                $feedid = $result["feedid"]; // Assign the created feed id to the feeds array
-                $this->log->info("-- $name:$tag create feedid=$feedid");
             } else {
-                $this->log->info("-- $name:$tag exists feedid=$feedid");
+                $log .= "-- EXISTS $name:$tag\n";
             }
             
             $f->feedid = $feedid;
         }
-        return $result;
+        return $log;
     }
 
     // Create the inputs
     protected function create_inputs($userid, $nodeid, &$inputs) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
+        
+        $log = "inputs:\n";
 
         foreach($inputs as $i) {
             // Create each input
@@ -148,13 +140,17 @@ class DeviceTemplate
                 $this->log->info("create_inputs() userid=$userid nodeid=$node name=$name description=$description");
                 $inputid = $input->create_input($userid, $node, $name);
                 if(!$input->exists($inputid)) {
-                    return false;
+                    $log .= "-- ERROR $node:$name\n";
+                } else {
+                    $log .= "-- CREATE $node:$name\n";
                 }
                 $input->set_fields($inputid, '{"description":"'.$description.'"}');
+            } else {
+                $log .= "-- EXISTS $node:$name\n";
             }
             $i->inputid = $inputid; // Assign the created input id to the inputs array
         }
-        return true;
+        return $log;
     }
 
     // Create the inputs process lists
@@ -171,6 +167,8 @@ class DeviceTemplate
         $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
         $process_list = $process->get_process_list(); // emoncms supported processes
         
+        $log = "input processes:\n";
+        
         foreach($inputs as $i) {
             // for each input
             if (isset($i->processList) || isset($i->processlist)) {
@@ -178,18 +176,19 @@ class DeviceTemplate
                 $inputid = $i->inputid;
                 $result = $this->convert_processes($feeds, $inputs, $processes, $process_list);
                 if (isset($result["success"])) {
-                    return $result; // success is only filled if it was an error
+                    $log .= "-- set processlist ERROR $inputid ".$result["message"];
                 }
 
                 $processes = implode(",", $result);
                 if ($processes != "") {
                     $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
                     $input->set_processlist($userid, $inputid, $processes, $process_list);
+                    $log .= "-- set processlist inputid=$inputid processes=$processes\n";
                 }
             }
         }
 
-        return array('success'=>true);
+        return $log;
     }
 
     protected function create_feed_processes($userid, $feeds, $inputs) {
@@ -205,6 +204,8 @@ class DeviceTemplate
         $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
         $process_list = $process->get_process_list(); // emoncms supported processes
         
+        $log = "feed processes:\n";
+        
         foreach($feeds as $f) {
             // for each feed
         	if (($f->engine == Engine::VIRTUALFEED) && (isset($f->processList) || isset($f->processlist))) {
@@ -212,18 +213,19 @@ class DeviceTemplate
                 $feedid = $f->feedid;
                 $result = $this->convert_processes($feeds, $inputs, $processes, $process_list);
                 if (isset($result["success"])) {
-                    return $result; // success is only filled if it was an error
+                    $log .= "-- set processlist ERROR $feedid ".$result["message"];
                 }
 
                 $processes = implode(",", $result);
                 if ($processes != "") {
                     $this->log->info("create_feeds_processes() calling feed->set_processlist feedId=$feedid processes=$processes");
                     $feed->set_processlist($userid, $feedid, $processes, $process_list);
+                    $log .= "-- set processlist feedid=$inputid processes=$processes\n";
                 }
             }
         }
         
-        return array('success'=>true);
+        return $log;
     }
 
     // Converts template processList

@@ -110,6 +110,7 @@
         <h3 id="device-init-modal-label"><?php echo _('Initialize device'); ?></h3>
     </div>
     <div class="modal-body">
+        <div id="device-init-modal-content" class="pre-init">
         <p><?php echo _('Defaults, like inputs and associated feeds will be automaticaly configured.'); ?>
            <br>
            <?php echo _('Only missing inputs and feeds will be recreated. Feed configurations will be considered unique in combination with their tag.'); ?>
@@ -118,10 +119,13 @@
            <?php echo _('All configured input and feed processes will be reset to their original state.'); ?>
            <br><br>
         </p>
+        </div>
+        <div id="device-init-modal-log" class="hide post-init"></div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="device-init-confirm" class="btn btn-primary"><?php echo _('Initialize'); ?></button>
+        <button id="device-init-ok" class="btn post-init hide" data-dismiss="modal" aria-hidden="true"><?php echo _('Ok'); ?></button>
+        <button id="device-init-cancel" class="btn pre-init" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="device-init-confirm" class="btn btn-primary pre-init"><?php echo _('Initialize'); ?></button>
     </div>
 </div>
 
