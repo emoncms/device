@@ -33,6 +33,13 @@ var device = {
         $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type, async: false, success: function(data) {result = data;} });
         return result;
     },
+    
+    'setnewdevicekey':function(id)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/setnewdevicekey.json", data: "id="+id, async: false, success: function(data) {result = data;} });
+        return result;
+    },
 
     'listTemplates':function()
     {

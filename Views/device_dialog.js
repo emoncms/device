@@ -12,12 +12,14 @@ var device_dialog =
             this.device = device;
             $("#device-init").show();
             $("#device-save").html("Save");
+            $("#device-new-devicekey").show();
         }
         else {
             this.deviceType = null;
             this.device = null;
             $("#device-init").hide();
             $("#device-save").html("Save & Initialize");
+            $("#device-new-devicekey").hide();
         }
         
         this.drawConfig();
@@ -126,17 +128,18 @@ var device_dialog =
         $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
         
         if (this.device != null) {
+        
             $('#device-config-node').val(this.device.nodeid);
             $('#device-config-name').val(this.device.name);
             $('#device-config-description').val(this.device.description);
-
+            $('#device-config-devicekey').html(this.device.devicekey);
             $('#device-config-delete').show();
         }
         else {
             $('#device-config-node').val('');
             $('#device-config-name').val('');
             $('#device-config-description').val('');
-
+            $('#device-config-devicekey').html("<i>Device not yet created</i>");
             $('#device-config-delete').hide();
         }
     },
@@ -307,6 +310,13 @@ var device_dialog =
             $('#device-config-modal').modal('hide');
             device_dialog.loadInit(true); // skip_check = true
         });
+        
+        $("#device-new-devicekey").off('click').on('click', function () {
+            device_dialog.device.devicekey = device.setnewdevicekey(device_dialog.device.id);
+            $('#device-config-devicekey').html(device_dialog.device.devicekey);
+        });        
+        
+       
     },
 
     'loadInit': function(skip_check) {

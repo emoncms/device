@@ -140,14 +140,12 @@
   });
 
   $("#table").on('click', '.icon-wrench', function() {
-
     // Get device of clicked row
     var localDevice = table.data[$(this).attr('row')];
     device_dialog.loadConfig(devices, localDevice);
   });
 
   $("#device-new").on('click', function () {
-
     device_dialog.loadConfig(devices, null);
   });
 

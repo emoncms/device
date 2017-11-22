@@ -103,6 +103,7 @@ function device_controller()
                 $deviceget = $device->get($deviceid);
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
                     if ($route->action == "get") $result = $deviceget;
+                    else if ($route->action == "setnewdevicekey") $result = $device->set_new_devicekey($deviceid);
                     else if ($route->action == "delete") $result = $device->delete($deviceid);
                     else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
                     else if ($route->action == 'template' && 

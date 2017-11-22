@@ -358,13 +358,15 @@ class Device
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
         $fields = json_decode(stripslashes($fields));
         
-        $success = false;
+        $success = true;
 
         if (isset($fields->name)) {
             if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in device name');
             $stmt = $this->mysqli->prepare("UPDATE device SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
-            if ($stmt->execute()) $success = true;
+            if ($stmt->execute()) {
+                $this->redis->hSet("device:".$id,"name",$fields->name);
+            } else $success = false;
             $stmt->close();
         }
         
@@ -372,7 +374,9 @@ class Device
             if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->description)!=$fields->description) return array('success'=>false, 'message'=>'invalid characters in device description');
             $stmt = $this->mysqli->prepare("UPDATE device SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->description,$id);
-            if ($stmt->execute()) $success = true;
+            if ($stmt->execute()) {
+                $this->redis->hSet("device:".$id,"description",$fields->description);
+            } else $success = false;
             $stmt->close();
         }
 
@@ -380,7 +384,9 @@ class Device
             if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->nodeid)!=$fields->nodeid) return array('success'=>false, 'message'=>'invalid characters in device nodeid');
             $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->nodeid,$id);
-            if ($stmt->execute()) $success = true;
+            if ($stmt->execute()) {
+                $this->redis->hSet("device:".$id,"nodeid",$fields->nodeid);
+            } else $success = false;
             $stmt->close();
         }
 
@@ -388,25 +394,38 @@ class Device
             if (preg_replace('/[^\/\|\,\w\s-:]/','',$fields->type)!=$fields->type) return array('success'=>false, 'message'=>'invalid characters in device type');
             $stmt = $this->mysqli->prepare("UPDATE device SET type = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->type,$id);
-            if ($stmt->execute()) $success = true;
+            if ($stmt->execute()) {
+                $this->redis->hSet("device:".$id,"type",$fields->type);
+            } else $success = false;
             $stmt->close();
         }
 
         if ($success){
-        
-            if ($this->redis) {
-                $result = $this->mysqli->query("SELECT userid FROM device WHERE id='$id'");
-                $row = (array) $result->fetch_object();
-                if (isset($row['userid']) && $row['userid']) {
-                    $this->load_list_to_redis($row['userid']);
-                }
-            }
-        
             return array('success'=>true, 'message'=>'Field updated');
         } else {
             return array('success'=>false, 'message'=>'Field could not be updated');
         }
     }
+    
+    public function set_new_devicekey($id)
+    {
+        $id = (int) $id;
+        if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
+        
+        $devicekey = md5(uniqid(mt_rand(), true));
+        
+        $stmt = $this->mysqli->prepare("UPDATE device SET devicekey = ? WHERE id = ?");
+        $stmt->bind_param("si",$devicekey,$id);
+        $result = $stmt->execute();
+        $stmt->close();
+        
+        if ($result) {
+            $this->redis->hSet("device:".$id,"devicekey",$devicekey);
+            return $devicekey; 
+        } else {
+            return false;
+        }
+    } 
 
     public function get_template_list()
     {

@@ -95,6 +95,10 @@
                     
             <label><b><?php echo _('Location'); ?></b></label>
             <input id="device-config-description" class="input-large" type="text">
+            
+            <label><b><?php echo _('Device Key'); ?></b></label>
+            <div id="device-config-devicekey"></div>
+            <button id="device-new-devicekey" class="btn">New</button>
         </div>
     </div>
     <div class="modal-footer">
