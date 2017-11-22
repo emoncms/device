@@ -29,29 +29,32 @@ class DeviceTemplate
     }
 
     protected function load_template_list() {
-        $list = array();
-        foreach (glob("Modules/device/data/*.json") as $file) {
-            $content = json_decode(file_get_contents($file));
-            $list[basename($file, ".json")] = $content;
+        $list = array();        
+
+        $iti = new RecursiveDirectoryIterator("Modules/device/data");
+        foreach(new RecursiveIteratorIterator($iti) as $file){
+            if(strpos($file ,".json") !== false){
+                $content = json_decode(file_get_contents($file));
+                $list[basename($file, ".json")] = $content;
+            }
         }
+        
         return $list;
     }
 
     public function get_template($type) {
-    	$type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
-        
-    	if (file_exists("Modules/device/data/$type.json")) {
-    		return json_decode(file_get_contents("Modules/device/data/$type.json"));
-        }
+        $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
+        $list = $this->load_template_list();
+        return $list[$type];
     }
 
     public function init_template($userid, $nodeid, $name, $type) {
-    	$file = "Modules/device/data/".$type.".json";
-        if (file_exists($file)) {
-            $template = json_decode(file_get_contents($file));
-        } else {
-            return array('success'=>false, 'message'=>"Template file not found '".$file."'");
-        }
+
+        $userid = (int) $userid;
+
+        $list = $this->load_template_list();
+        if (!isset($list[$type])) return array('success'=>false, 'message'=>"Template file not found '".$type."'");
+        $template = $list[$type];
         
         $feeds = $template->feeds;
         $inputs = $template->inputs;
