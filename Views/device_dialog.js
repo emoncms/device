@@ -269,23 +269,9 @@ var device_dialog =
                     }
                     update();
                     
-                    if (device_dialog.device.type != device_dialog.deviceType
-                            && device_dialog.deviceType != null) {
-                        
-                        var result = device.initTemplate(device_dialog.device.id);
-                        if (typeof result.success !== 'undefined' && !result.success) {
-                            alert('Unable to initialize device:\n'+result.message);
-                            return false;
-                        }
-                        
-                        if (result.log!=undefined) {
-                            $('#device-config-modal').modal('hide');
-                            
-                            $('#device-init-modal').modal('show');
-                            $('#device-init-modal-label').html('Initialize Device: <b>'+name+'</b>');
-                            $("#device-init-modal-log").html("<b>Device initialized</b><br><pre>"+result.log+"</pre>");
-                            $(".pre-init").hide(); $(".post-init").show();
-                        } 
+                    if (device_dialog.device.type != device_dialog.deviceType && device_dialog.deviceType != null) {
+                        $('#device-config-modal').modal('hide');
+                        device_dialog.loadInit(false); // skip_check = false
                     }
                 }
                 else {
@@ -297,20 +283,9 @@ var device_dialog =
                     update();
                     
                     if (result && device_dialog.deviceType != null) {
-                        var result = device.initTemplate(result);
-                        if (typeof result.success !== 'undefined' && !result.success) {
-                            alert('Unable to initialize device:\n'+result.message);
-                            return false;
-                        }
-                        
-                        if (result.log!=undefined) {
-                            $('#device-config-modal').modal('hide');
-                            
-                            $('#device-init-modal').modal('show');
-                            $('#device-init-modal-label').html('Initialize Device: <b>'+name+'</b>');
-                            $("#device-init-modal-log").html("<b>Device initialized</b><br><pre>"+result.log+"</pre>");
-                            $(".pre-init").hide(); $(".post-init").show();
-                        } 
+                        $('#device-config-modal').modal('hide');
+                        device_dialog.device = {id: result, name: name};
+                        device_dialog.loadInit(false); // skip_check = false
                     }
                 }
                 $('#device-config-modal').modal('hide');
@@ -322,49 +297,49 @@ var device_dialog =
         });
 
         $("#device-delete").off('click').on('click', function () {
-            
             $('#device-config-modal').modal('hide');
-            
             device_dialog.loadDelete(device_dialog.device, null);
         });
         
         $("#device-init").off('click').on('click', function () {
-          $('#device-config-modal').modal('hide');
-          device_dialog.loadInit(device_dialog.device);
+            $('#device-config-modal').modal('hide');
+            device_dialog.loadInit(true); // skip_check = true
         });
     },
 
-    'loadInit': function(device) {
-        this.device = device;
+    'loadInit': function(skip_check) {
         
-        $(".pre-init").show(); $(".post-init").hide();
-                
         $('#device-init-modal').modal('show');
-        $('#device-init-modal-label').html('Initialize Device: <b>'+device.name+'</b>');
+        $('#device-init-modal-label').html('Initialize Device: <b>'+device_dialog.device.name+'</b>');             
         
         // Initialize callbacks
-        this.registerInitEvents();
-    },
-
-    'registerInitEvents':function() {
-        
-        $("#device-init-confirm").off('click').on('click', function() {
-            var result = device.initTemplate(device_dialog.device.id);
-
-            if (typeof result.success !== 'undefined' && !result.success) {
-                alert('Unable to initialize device:\n'+result.message);
-                return false;
-            }
-                  
-            if (result.log!=undefined) {
-                $("#device-init-modal-log").html("<b>Device initialized</b><br><pre>"+result.log+"</pre>");
-                $(".pre-init").hide(); $(".post-init").show();
-            } 
-
-            // $('#device-init-modal').modal('hide');
+        if (!skip_check) {
+            $(".pre-init").show(); $(".post-init").hide();  
             
-            return true;
-        });
+            $("#device-init-confirm").off('click').on('click', function() {
+                var result = device.initTemplate(device_dialog.device.id);
+                device_dialog.showInitLog(result);
+            });
+        } else {
+            var result = device.initTemplate(device_dialog.device.id);
+            device_dialog.showInitLog(result);
+        }
+    },
+    
+    'showInitLog': function (result) {
+
+        $(".pre-init").hide(); $(".post-init").show();
+        
+        if (typeof result.success !== 'undefined' && !result.success) {
+            alert('Unable to initialize device:\n'+result.message);
+            return false;
+        }
+              
+        if (result.log!=undefined) {
+            $("#device-init-modal-log").html("<b>Device initialized</b><br><pre>"+result.log+"</pre>");
+        } 
+        
+        return true;
     },
 
     'loadDelete': function(device, tablerow) {
