@@ -10,10 +10,14 @@ var device_dialog =
         if (device != null) {
             this.deviceType = device.type;
             this.device = device;
+            $("#device-init").show();
+            $("#device-save").html("Save");
         }
         else {
             this.deviceType = null;
             this.device = null;
+            $("#device-init").hide();
+            $("#device-save").html("Save & Initialize");
         }
         
         this.drawConfig();
