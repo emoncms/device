@@ -176,14 +176,15 @@ class DeviceTemplate
                 $inputid = $i->inputid;
                 $result = $this->convert_processes($feeds, $inputs, $processes, $process_list);
                 if (isset($result["success"])) {
-                    $log .= "-- set processlist ERROR $inputid ".$result["message"];
+                    $log .= "-- SET ERROR ".$nodeid.":".$i->name." ".$result["message"];
                 }
 
                 $processes = implode(",", $result);
                 if ($processes != "") {
                     $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
                     $input->set_processlist($userid, $inputid, $processes, $process_list);
-                    $log .= "-- SET ".$nodeid.":".$i->name."\n   $processes\n";
+                    $log .= "-- SET ".$nodeid.":".$i->name."\n";
+                    $log .= $this->log_processlist($processes,$input,$feed,$process_list);
                 }
             }
         }
@@ -213,14 +214,15 @@ class DeviceTemplate
                 $feedid = $f->feedid;
                 $result = $this->convert_processes($feeds, $inputs, $processes, $process_list);
                 if (isset($result["success"])) {
-                    $log .= "-- set processlist ERROR $feedid ".$result["message"];
+                    $log .= "-- SET ERROR $feedid ".$result["message"];
                 }
 
                 $processes = implode(",", $result);
                 if ($processes != "") {
                     $this->log->info("create_feeds_processes() calling feed->set_processlist feedId=$feedid processes=$processes");
                     $feed->set_processlist($userid, $feedid, $processes, $process_list);
-                    $log .= "-- set processlist feedid=$inputid  $processes\n";
+                    $log .= "-- SET feedid=$feedid\n";
+                    $log .= $this->log_processlist($processes,$input,$feed,$process_list);
                 }
             }
         }
@@ -321,5 +323,26 @@ class DeviceTemplate
             }
         }
         return null;
+    }
+    
+    private function log_processlist($processes,$input,$feed,$process_list) {
+        $log = "";
+        $process_parts = explode(",",$processes);
+        foreach ($process_parts as $pair) {
+            $pair = explode(":",$pair);
+            $pid = $pair[0]; 
+            $arg = $pair[1];
+            
+            if ($process_list[$pid][1]==ProcessArg::INPUTID) {
+                $i = $input->get_details($arg);
+                $arg = $f['nodeid'].":".$f['name'];
+            }
+            else if ($process_list[$pid][1]==ProcessArg::FEEDID) {
+                $f = $feed->get($arg);
+                $arg = $f['tag'].":".$f['name'];
+            }
+            $log .= "   ".$process_list[$pid][2]." ".$arg."\n";
+        }
+        return $log;
     }
 }
