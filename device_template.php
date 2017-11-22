@@ -335,7 +335,7 @@ class DeviceTemplate
             
             if ($process_list[$pid][1]==ProcessArg::INPUTID) {
                 $i = $input->get_details($arg);
-                $arg = $f['nodeid'].":".$f['name'];
+                $arg = $i['nodeid'].":".$i['name'];
             }
             else if ($process_list[$pid][1]==ProcessArg::FEEDID) {
                 $f = $feed->get($arg);
