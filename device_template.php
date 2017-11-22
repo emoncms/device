@@ -106,13 +106,13 @@ class DeviceTemplate
                 $this->log->info("create_feeds() userid=$userid tag=$tag name=$name datatype=$datatype engine=$engine");
                 $result = $feed->create($userid, $tag, $name, $datatype, $engine, $options);
                 if($result["success"] !== true) {
-                    $log .= "-- ERROR $tag:$name\n";
+                    $log .= "-- ERROR $tag|$name\n";
                 } else {
                     $feedid = $result["feedid"]; // Assign the created feed id to the feeds array
-                    $log .= "-- CREATE $tag:$name\n";
+                    $log .= "-- CREATE $tag|$name\n";
                 }
             } else {
-                $log .= "-- EXISTS $tag:$name\n";
+                $log .= "-- EXISTS $tag|$name\n";
             }
             
             $f->feedid = $feedid;
@@ -143,13 +143,13 @@ class DeviceTemplate
                 $this->log->info("create_inputs() userid=$userid nodeid=$node name=$name description=$description");
                 $inputid = $input->create_input($userid, $node, $name);
                 if(!$input->exists($inputid)) {
-                    $log .= "-- ERROR $node:$name\n";
+                    $log .= "-- ERROR $node|$name\n";
                 } else {
-                    $log .= "-- CREATE $node:$name\n";
+                    $log .= "-- CREATE $node|$name\n";
                 }
                 $input->set_fields($inputid, '{"description":"'.$description.'"}');
             } else {
-                $log .= "-- EXISTS $node:$name\n";
+                $log .= "-- EXISTS $node|$name\n";
             }
             $i->inputid = $inputid; // Assign the created input id to the inputs array
         }
@@ -179,14 +179,14 @@ class DeviceTemplate
                 $inputid = $i->inputid;
                 $result = $this->convert_processes($feeds, $inputs, $processes, $process_list);
                 if (isset($result["success"])) {
-                    $log .= "-- SET ERROR ".$nodeid.":".$i->name." ".$result["message"];
+                    $log .= "-- SET ERROR ".$nodeid."|".$i->name." ".$result["message"];
                 }
 
                 $processes = implode(",", $result);
                 if ($processes != "") {
                     $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
                     $input->set_processlist($userid, $inputid, $processes, $process_list);
-                    $log .= "-- SET ".$nodeid.":".$i->name."\n";
+                    $log .= "-- SET ".$nodeid."|".$i->name."\n";
                     $log .= $this->log_processlist($processes,$input,$feed,$process_list);
                 }
             }
@@ -338,13 +338,13 @@ class DeviceTemplate
             
             if ($process_list[$pid][1]==ProcessArg::INPUTID) {
                 $i = $input->get_details($arg);
-                $arg = $i['nodeid'].":".$i['name'];
+                $arg = $i['nodeid']."|".$i['name'];
             }
             else if ($process_list[$pid][1]==ProcessArg::FEEDID) {
                 $f = $feed->get($arg);
-                $arg = $f['tag'].":".$f['name'];
+                $arg = $f['tag']."|".$f['name'];
             }
-            $log .= "   ".$process_list[$pid][2]." ".$arg."\n";
+            $log .= "   ".$process_list[$pid][2].":".$arg."\n";
         }
         return $log;
     }
