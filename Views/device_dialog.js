@@ -230,6 +230,8 @@ var device_dialog =
                 $('#template-description').text('');
                 $('#template-info').hide();
             }
+            
+            if (device_dialog.deviceType!=device_dialog.device.type) $("#device-init").hide(); else $("#device-init").show();
         });
 
         $("#sidebar-open").off('click').on('click', function () {
