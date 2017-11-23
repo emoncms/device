@@ -399,6 +399,21 @@ class Device
             } else $success = false;
             $stmt->close();
         }
+        
+        if (isset($fields->devicekey)) {
+            // 1. Only allow alphanumeric characters
+            if (!ctype_alnum($fields->devicekey)) return array('success'=>false, 'message'=>'invalid characters in device key');
+            
+            // 2. Only allow 32 character length
+            if (strlen($fields->devicekey)!=32) return array('success'=>false, 'message'=>'device key must be 32 characters long');
+        
+            $stmt = $this->mysqli->prepare("UPDATE device SET devicekey = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->devicekey,$id);
+            if ($stmt->execute()) {
+                $this->redis->hSet("device:".$id,"devicekey",$fields->devicekey);
+            } else $success = false;
+            $stmt->close();
+        }
 
         if ($success){
             return array('success'=>true, 'message'=>'Field updated');

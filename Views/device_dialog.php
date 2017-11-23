@@ -2,7 +2,7 @@
     global $path;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=1"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=2"></script>
 
 <style>
     .group-body tr:hover > td {
@@ -97,8 +97,10 @@
             <input id="device-config-description" class="input-large" type="text">
             
             <label><b><?php echo _('Device Key'); ?></b></label>
-            <div id="device-config-devicekey"></div>
+            <div class="input-append">
+            <input id="device-config-devicekey" class="input-large" type="text" style="width:260px">
             <button id="device-new-devicekey" class="btn">New</button>
+            </div>
         </div>
     </div>
     <div class="modal-footer">

@@ -132,14 +132,14 @@ var device_dialog =
             $('#device-config-node').val(this.device.nodeid);
             $('#device-config-name').val(this.device.name);
             $('#device-config-description').val(this.device.description);
-            $('#device-config-devicekey').html(this.device.devicekey);
+            $('#device-config-devicekey').val(this.device.devicekey);
             $('#device-config-delete').show();
         }
         else {
             $('#device-config-node').val('');
             $('#device-config-name').val('');
             $('#device-config-description').val('');
-            $('#device-config-devicekey').html("<i>Device not yet created</i>");
+            $('#device-config-devicekey').val("<i>Device not yet created</i>");
             $('#device-config-delete').hide();
         }
     },
@@ -254,12 +254,15 @@ var device_dialog =
             
             if (name && node) {
                 var desc = $('#device-config-description').val();
+                var devicekey = $('#device-config-devicekey').val();
                 
                 if (device_dialog.device != null) {
                     var fields = {};
                     if (device_dialog.device.nodeid != node) fields['nodeid'] = node;
                     if (device_dialog.device.name != name) fields['name'] = name;
                     if (device_dialog.device.description != desc) fields['description'] = desc;
+                    if (device_dialog.device.devicekey != devicekey) fields['devicekey'] = devicekey;
+                    
                     if (device_dialog.device.type != device_dialog.deviceType) {
                         if (device_dialog.deviceType != null) {
                             fields['type'] = device_dialog.deviceType;
@@ -313,7 +316,7 @@ var device_dialog =
         
         $("#device-new-devicekey").off('click').on('click', function () {
             device_dialog.device.devicekey = device.setnewdevicekey(device_dialog.device.id);
-            $('#device-config-devicekey').html(device_dialog.device.devicekey);
+            $('#device-config-devicekey').val(device_dialog.device.devicekey);
         });        
         
        

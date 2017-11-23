@@ -332,19 +332,7 @@ class DeviceTemplate
         $log = "";
         $process_parts = explode(",",$processes);
         foreach ($process_parts as $pair) {
-            $pair = explode(":",$pair);
-            $pid = $pair[0]; 
-            $arg = $pair[1];
-            
-            if ($process_list[$pid][1]==ProcessArg::INPUTID) {
-                $i = $input->get_details($arg);
-                $arg = $i['nodeid']."|".$i['name'];
-            }
-            else if ($process_list[$pid][1]==ProcessArg::FEEDID) {
-                $f = $feed->get($arg);
-                $arg = $f['tag']."|".$f['name'];
-            }
-            $log .= "   ".$process_list[$pid][2].":".$arg."\n";
+            $log .= "   ".$pair."\n";
         }
         return $log;
     }
