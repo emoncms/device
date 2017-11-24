@@ -108,7 +108,25 @@
                     <select id="template-options-ctrl-select" class="input-large"></select>
                 </div>
                 
-                
+                <div id="template-options-table" style="display:none">
+                	<table class="table table-hover table-config">
+                		<tbody>
+                			<tr>
+            					<th id="options-header" colspan="5">
+                					<i class="toggle-header icon-minus-sign" style="cursor:pointer"></i>
+                					<a class="toggle-header" style="cursor:pointer">Options</a>
+                				</th>
+                			</tr>
+                			<tr id="option-header" style="display: table-row;" colspan="5">
+                				<th>Option</th>
+                				<th>Value</th>
+                				<th colspan="3"></th>
+                			</tr>
+                		</tbody>
+                		<tbody id="options-table" style="display: table-row-group;">
+                		</tbody>
+                	</table>
+                </div>
             </div>
         </div>
     </div>

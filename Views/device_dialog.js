@@ -139,6 +139,36 @@ var device_dialog =
                 $("#template-options-ctrl").hide();
                 $("#template-options-ctrl-select").empty();
             }
+            if (template.options) {
+            	$.ajax({ url: path+"device/template/get.json",
+            		dataType: 'json',
+            		async: true,
+            		data: "device="+template.id,
+            		success: function(result) {
+            			var table = $("#options-table").empty();
+            			for(var opt in result.options) {
+            				var option = result.options[opt];
+            				table.append("<tr id='"+option.key+"-row'><td>" + opt + "<span id='template-"+option.key+"-option-tooltip' data-toggle='tooltip' data-placement='right'>" +
+            						"<i class='icon-info-sign' style='cursor:pointer; padding-left:6px;'></i></span></td></tr>");
+                            var tooltip = option.description;
+                            $('#template-'+option.key+'-option-tooltip').attr("title", tooltip).tooltip({html: true});
+                            
+            				if(option.type === 'text') {
+            					$("#"+option.key+"-row").append("<td><input type='text' class='input-large' /></td>");
+            				} else if(option.type === 'selection') {
+            					$("#"+option.key+"-row").append("<td><select id='template-"+option.key+"-option-select' class='input-large'></select></td>");
+                                var optSelect = $("#template-"+option.key+"-option-select").empty();
+                                optSelect.append("<option selected hidden='true' value=''>Select input/output</option>").val('');
+                                option.select.forEach(function(o) {
+                                	optSelect.append($("<option />").val(o).text(o));
+                                });
+            				}
+            			}
+                    	$("#template-options").show();
+                    	$("#template-options-table").show();
+            		}
+            	});
+            }
         }
         else {
             $('#template-description').text('');
@@ -316,6 +346,14 @@ var device_dialog =
                     if (id && device_dialog.deviceType != null) {
                         var options = {};
                         options['ctrlid'] = $('#template-options-ctrl-select option:selected').val();
+                        
+                        $("#options-table").children().each(function() {
+                        	var key = this.id.split("-")[0];
+                        	var value = $('#template-'+key+'-option-select option:selected').val();
+                        	if(value != "") {
+                        		options[key] = value;
+                        	}
+                        });
                         
                         var result = device.initTemplate(id, options);
                         if (typeof result.success !== 'undefined' && !result.success) {

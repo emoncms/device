@@ -368,6 +368,7 @@ class Device
             foreach ($keys as $key)    {
                 $template = $this->redis->hGetAll("device:template:$key");
                 $template["control"] = (bool) $template["control"];
+                $template["options"] = (bool) $template["options"];
                 $templates[$key] = $template;
             }
         }
@@ -768,6 +769,7 @@ class Device
         $meta["group"] = ((!isset($template->group) || $template->group== "" ) ? "Miscellaneous" : $template->group);
         $meta["description"] = (!isset($template->description) ? "" : $template->description);
         $meta["control"] = (!isset($template->control) ? false : true);
+        $meta["options"] = (!isset($template->options) ? false : true);
         
         if ($this->redis) {
             $this->redis->sAdd("device:template:keys", $key);
