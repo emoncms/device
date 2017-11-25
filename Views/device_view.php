@@ -1,10 +1,13 @@
 <?php
     global $path;
+    
+    $version = 1;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
+
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $version; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js?v=<?php echo $version; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js?v=<?php echo $version; ?>"></script>
 
 <style>
 #table input[type="text"] {

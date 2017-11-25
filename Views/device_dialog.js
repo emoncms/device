@@ -139,7 +139,7 @@ var device_dialog =
             $('#device-config-node').val('');
             $('#device-config-name').val('');
             $('#device-config-description').val('');
-            $('#device-config-devicekey').val("<i>Device not yet created</i>");
+            $('#device-config-devicekey').val("Device not yet created");
             $('#device-config-delete').hide();
         }
     },
