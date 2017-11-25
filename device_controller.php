@@ -15,6 +15,10 @@ function device_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "view" && $session['write']) {
+        
+            // Clear template cache, force reload
+            if ($redis) $redis->delete("device:template:keys");
+            
             $device_templates = $device->get_template_list_meta();
             $result = view("Modules/device/Views/device_view.php",array('devices'=>$device_templates));
         }
