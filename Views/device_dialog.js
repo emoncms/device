@@ -146,9 +146,8 @@ var device_dialog =
             		data: "device="+template.id,
             		success: function(result) {
             			var table = $("#options-table").empty();
-            			for(var opt in result.options) {
-            				var option = result.options[opt];
-            				table.append("<tr id='"+option.key+"-row'><td>" + opt + "<span id='template-"+option.key+"-option-tooltip' data-toggle='tooltip' data-placement='right'>" +
+            			result.options.forEach(function(option) {
+            				table.append("<tr id='"+option.key+"-row'><td>" + option.name + "<span id='template-"+option.key+"-option-tooltip' data-toggle='tooltip' data-placement='right'>" +
             						"<i class='icon-info-sign' style='cursor:pointer; padding-left:6px;'></i></span></td></tr>");
                             var tooltip = option.description;
                             $('#template-'+option.key+'-option-tooltip').attr("title", tooltip).tooltip({html: true});
@@ -158,16 +157,18 @@ var device_dialog =
             				} else if(option.type === 'selection') {
             					$("#"+option.key+"-row").append("<td><select id='template-"+option.key+"-option-select' class='input-large'></select></td>");
                                 var optSelect = $("#template-"+option.key+"-option-select").empty();
-                                optSelect.append("<option selected hidden='true' value=''>Select input/output</option>").val('');
+                                optSelect.append("<option selected hidden='true' value=''>Select a "+option.name+"</option>").val('');
                                 option.select.forEach(function(o) {
-                                	optSelect.append($("<option />").val(o).text(o));
+                                	optSelect.append($("<option />").val(o.value).text(o.name));
                                 });
             				}
-            			}
+            			});
                     	$("#template-options").show();
                     	$("#template-options-table").show();
             		}
             	});
+            } else {
+            	$("#template-options-table").hide();
             }
         }
         else {
