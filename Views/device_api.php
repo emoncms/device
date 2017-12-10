@@ -39,6 +39,7 @@
     <tr><td><?php echo _('Add a device'); ?></td><td><a href="<?php echo $path; ?>device/create.json?nodeid=Test&name=Test"><?php echo $path; ?>device/create.json?nodeid=Test&name=Test</a></td></tr>
     <tr><td><?php echo _('Delete device'); ?></td><td><a href="<?php echo $path; ?>device/delete.json?id=1"><?php echo $path; ?>device/delete.json?id=1</a></td></tr>
     <tr><td><?php echo _('Update device'); ?></td><td><a href="<?php echo $path; ?>device/set.json?id=1&fields={%22name%22:%22Test%22,%22description%22:%22Room%22,%22nodeid%22:%22House%22,%22type%22:%22test%22}"><?php echo $path; ?>device/set.json?id=1&fields={"name":"Test","description":"Room","nodeid":"House","type":"test"}</a></td></tr>
+    <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/init.json?id=1"><?php echo $path; ?>device/init.json?id=1</a></td></tr>
 </table>
 
 <p><b><?php echo _('Template actions'); ?></b></p>
@@ -46,21 +47,22 @@
     <tr><td><?php echo _('List templates'); ?></td><td><a href="<?php echo $path; ?>device/template/list.json"><?php echo $path; ?>device/template/list.json</a></td></tr>
     <tr><td><?php echo _('List templates short'); ?></td><td><a href="<?php echo $path; ?>device/template/listshort.json"><?php echo $path; ?>device/template/listshort.json</a></td></tr>
     <tr><td><?php echo _('get template details'); ?></td><td><a href="<?php echo $path; ?>device/template/get.json?device=example"><?php echo $path; ?>device/template/get.json?device=example</a></td></tr>
-    <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/template/init.json?id=1"><?php echo $path; ?>device/template/init.json?id=1</a></td></tr>
+    <tr><td><?php echo _('Initialize device template'); ?></td><td><a href="<?php echo $path; ?>device/template/init.json?id=1"><?php echo $path; ?>device/template/init.json?id=1</a></td></tr>
 </table>
 
 <p><b><?php echo _('Control actions'); ?></b></p>
 <table class="table">
-    <tr><td><?php echo _('List device controls'); ?></td><td><a href="<?php echo $path; ?>device/control/list.json"><?php echo $path; ?>device/control/list.json</a></td></tr>
-    <tr><td><?php echo _('Get device control'); ?></td><td><a href="<?php echo $path; ?>device/control/get.json?id=1"><?php echo $path; ?>device/control/get.json?id=1</a></td></tr>
-    <tr><td><?php echo _('Get device control item'); ?></td><td><a href="<?php echo $path; ?>device/control/getitem.json?id=1&itemid=1"><?php echo $path; ?>device/control/getitem.json?id=1&itemid=1</a></td></tr>
-    <tr><td><?php echo _('Set device control on'); ?></td><td><a href="<?php echo $path; ?>device/control/on.json?id=1&itemid=1"><?php echo $path; ?>device/control/on.json?id=1&itemid=1</a></td></tr>
-    <tr><td><?php echo _('Set device control off'); ?></td><td><a href="<?php echo $path; ?>device/control/off.json?id=1&itemid=1"><?php echo $path; ?>device/control/off.json?id=1&itemid=1</a></td></tr>
-    <tr><td><?php echo _('Toggle device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/toggle.json?id=1&itemid=1"><?php echo $path; ?>device/control/toggle.json?id=1&itemid=1</a></td></tr>
-    <tr><td><?php echo _('Increase device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/increase.json?id=1&itemid=1"><?php echo $path; ?>device/control/increase.json?id=1&itemid=1</a></td></tr>
-    <tr><td><?php echo _('Decrease device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/decrease.json?id=1&itemid=1"><?php echo $path; ?>device/control/decrease.json?id=1&itemid=1</a></td></tr>
-    <tr><td><?php echo _('Set percent of device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/percent.json?id=1&itemid=1&value=0"><?php echo $path; ?>device/control/percent.json?id=1&itemid=1&value=0</a></td></tr>
-    <tr><td><?php echo _('Set device control value'); ?></td><td><a href="<?php echo $path; ?>device/control/set.json?id=1&channelid=1&value=0"><?php echo $path; ?>device/control/set.json?id=1&channelid=1&value=0</a></td></tr>
+    <tr><td><?php echo _('List things'); ?></td><td><a href="<?php echo $path; ?>device/thing/list.json"><?php echo $path; ?>device/thing/list.json</a></td></tr>
+    <tr><td><?php echo _('Get thing'); ?></td><td><a href="<?php echo $path; ?>device/thing/get.json?id=1"><?php echo $path; ?>device/thing/get.json?id=1</a></td></tr>
+    <tr><td><?php echo _('Initialize thing'); ?></td><td><a href="<?php echo $path; ?>device/thing/init.json?id=1"><?php echo $path; ?>device/thing/init.json?id=1</a></td></tr>
+    <tr><td><?php echo _('Get item'); ?></td><td><a href="<?php echo $path; ?>device/item/get.json?id=1&itemid=1"><?php echo $path; ?>device/item/get.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Set item on'); ?></td><td><a href="<?php echo $path; ?>device/item/on.json?id=1&itemid=1"><?php echo $path; ?>device/item/on.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Set item off'); ?></td><td><a href="<?php echo $path; ?>device/item/off.json?id=1&itemid=1"><?php echo $path; ?>device/item/off.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Toggle item value'); ?></td><td><a href="<?php echo $path; ?>device/item/toggle.json?id=1&itemid=1"><?php echo $path; ?>device/item/toggle.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Increase item value'); ?></td><td><a href="<?php echo $path; ?>device/item/increase.json?id=1&itemid=1"><?php echo $path; ?>device/item/increase.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Decrease item value'); ?></td><td><a href="<?php echo $path; ?>device/item/decrease.json?id=1&itemid=1"><?php echo $path; ?>device/item/decrease.json?id=1&itemid=1</a></td></tr>
+    <tr><td><?php echo _('Set percent of item value'); ?></td><td><a href="<?php echo $path; ?>device/item/percent.json?id=1&itemid=1&value=0"><?php echo $path; ?>device/item/percent.json?id=1&itemid=1&value=0</a></td></tr>
+    <tr><td><?php echo _('Set item value'); ?></td><td><a href="<?php echo $path; ?>device/item/set.json?id=1&itemid=1&value=0"><?php echo $path; ?>device/item/set.json?id=1&itemid=1&value=0</a></td></tr>
 </table>
 
 <a class="anchor" id="expression"></a> 

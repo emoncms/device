@@ -13,9 +13,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Device
 {
+    const TEMPLATE = 'template';
+    const THING = 'thing';
+
     public $mysqli;
     public $redis;
     private $log;
+
+    private static $cache = array();
 
     public function __construct($mysqli,$redis)
     {
@@ -304,6 +309,7 @@ class Device
         if ($this->redis) {
             if (isset($row['userid']) && $row['userid']) {
                 $this->redis->delete("device:".$id);
+                $this->redis->delete("device:items:".$id);
                 $this->log->info("Load devices to redis in delete");
                 $this->load_list_to_redis($row['userid']);
             }
@@ -362,20 +368,21 @@ class Device
         $templates = array();
         
         if ($this->redis) {
-            if (!$this->redis->exists("device:template:keys")) $this->load_modules();
+            if (!$this->redis->exists("device:template:meta")) $this->load_modules();
             
-            $keys = $this->redis->sMembers("device:template:keys");
-            foreach ($keys as $key)    {
-                $template = $this->redis->hGetAll("device:template:$key");
+            $ids = $this->redis->sMembers("device:template:meta");
+            foreach ($ids as $id)    {
+                $template = $this->redis->hGetAll("device:template:$id");
+                $template["thing"] = (bool) $template["thing"];
                 $template["control"] = (bool) $template["control"];
-                $templates[$key] = $template;
+                $templates[$id] = $template;
             }
         }
         else {
-            if (empty($this->templates)) { // Cache it now
+            if (empty(self::$cache['templates'])) { // Cache it now
                 $this->load_modules();
             }
-            $templates = $this->templates;
+            $templates = self::$cache['templates'];
         }
         return $templates;
     }
@@ -385,7 +392,7 @@ class Device
         $template = $this->get_template_meta($key);
         if (isset($template)) {
             $module = $template['module'];
-            $class = $this->get_module_class($module);
+            $class = $this->get_module_class($module, self::TEMPLATE);
             if ($class != null) {
                 return $class->get_template($key);
             }
@@ -396,24 +403,24 @@ class Device
         return array('success'=>false, 'message'=>'Unknown error while loading device template details');
     }
 
-    private function get_template_meta($key)
+    private function get_template_meta($id)
     {
         $template = null;
         
         if ($this->redis) {
-            if (!$this->redis->exists("device:template:$key")) {
+            if (!$this->redis->exists("device:template:$id")) {
                 $this->load_modules();
             }
-            if ($this->redis->exists("device:template:$key")) {
-                $template = $this->redis->hGetAll("device:template:$key");
+            if ($this->redis->exists("device:template:$id")) {
+                $template = $this->redis->hGetAll("device:template:$id");
             }
         }
         else {
-            if (empty($this->templates)) { // Cache it now
+            if (empty(self::$cache['templates'])) { // Cache it now
                 $this->load_modules();
             }
-            if (isset($this->templates[$key])) {
-                $template = $this->templates[$key];
+            if (isset(self::$cache['templates'][$id])) {
+                $template = self::$cache['templates'][$id];
             }
         }
         return $template;
@@ -430,62 +437,58 @@ class Device
             $template = $this->get_template_meta($device['type']);
             if (isset($template)) {
                 $module = $template['module'];
-                $class = $this->get_module_class($module);
+                $class = $this->get_module_class($module, self::TEMPLATE);
                 if ($class != null) {
-                	$result = $class->init_template($device['userid'], $device['nodeid'], $device['name'], $device['type'], $options);
-                	if ($template['control'] && isset($result['success']) && $result['success']) {
-                		$items = $class->get_control($device['userid'], $device['nodeid'], $device['name'], $device['type'], $options);
-                		$this->cache_control($id, $items);
-                	}
-                	return $result;
+                    if (isset($options)) $device['options'] = json_decode($options);
+                    return $class->init_template($device);
                 }
+                return array('success'=>false, 'message'=>'Device template class does not exist');
             }
-            else {
-                return array('success'=>false, 'message'=>'Device template does not exist');
-            }
+            return array('success'=>false, 'message'=>'Device template does not exist');
         }
         else {
             return array('success'=>false, 'message'=>'Device type not specified');
         }
-        
         return array('success'=>false, 'message'=>'Unknown error while initializing device');
     }
 
-    public function get_control_list($userid)
+    public function get_thing_list($userid)
     {
-        $controls = array();
+        $userid = intval($userid);
         
+        $things = array();
         $devices = $this->get_list($userid);
         foreach ($devices as $device) {
             if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
                 $template = $this->get_template_meta($device['type']);
-                if (isset($template) && $template['control']) {
-                    $controls[] = $this->get_control_values($device);
+                if (isset($template) && $template['thing']) {
+                    $things[] = $this->get_thing_values($device);
                 }
             }
         }
-        return $controls;
+        return $things;
     }
 
-    public function get_control($id)
+    public function get_thing($id)
     {
         $id = intval($id);
+        
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
-            return $this->get_control_values($device);
+            return $this->get_thing_values($device);
         }
         else {
             return array('success'=>false, 'message'=>'Device type not specified');
         }
         
-        return array('success'=>false, 'message'=>'Unknown error while getting device control value');
+        return array('success'=>false, 'message'=>'Unknown error while getting device thing value');
     }
 
-    private function get_control_values($device)
+    private function get_thing_values($device)
     {
         $id = intval($device['id']);
         
-        $control = array(
+        $thing = array(
                 'id' => $device['id'],
                 'userid' => $device['userid'],
                 'nodeid' => $device['nodeid'],
@@ -494,26 +497,30 @@ class Device
                 'type' => $device['type']
         );
         
-        $items = $this->get_control_items($device['id'], $device['userid'], $device['nodeid'], $device['name'], $device['type']);
-        if (isset($items)) {
-            $control['control'] = array();
-            foreach ($items as $item) {
-                $control['control'][] = $this->get_control_value($item);
+        $result = $this->get_item_list($device['id'], $device['userid'], $device['nodeid'], $device['name'], $device['type']);
+        if (isset($result)) {
+            // The existence of the success key indicates a failure already
+            if (isset($result['success'])) {
+                return $result;
+            }
+            $thing['items'] = array();
+            foreach ($result as $item) {
+                $thing['items'][] = $this->get_item_value($item);
             }
         }
-        return $control;
+        return $thing;
     }
 
-    private function get_control_value($item)
+    private function get_item_value($item)
     {
-        $control = array(
+        $itemval = array(
             'id' => $item['id'],
             'type' => $item['type'],
             'label' => $item['label']
         );
-        if (isset($item['format'])) $control['format'] = $item['format'];
-        if (isset($item['max'])) $control['max'] = $item['max'];
-        if (isset($item['min'])) $control['min'] = $item['min'];
+        if (isset($item['format'])) $itemval['format'] = $item['format'];
+        if (isset($item['max'])) $itemval['max'] = $item['max'];
+        if (isset($item['min'])) $itemval['min'] = $item['min'];
         
         $value = null;
         if (isset($item['inputid'])) {
@@ -529,21 +536,21 @@ class Device
             
             $value = $feed->get_value($item['feedid']);
         }
-        $control['value'] = $value;
+        $itemval['value'] = $value;
         
-        return $control;
+        return $itemval;
     }
 
-    private function get_control_items($id, $userid, $nodeid, $name, $type)
+    private function get_item_list($id, $userid, $nodeid, $name, $type)
     {
         $items = null;
         if ($this->redis) {
-            if ($this->redis->exists("device:control:$id")) {
+            if ($this->redis->exists("device:thing:$id")) {
                 $items = array();
                 
-                $itemids = $this->redis->sMembers("device:control:$id");
+                $itemids = $this->redis->sMembers("device:thing:$id");
                 foreach ($itemids as $i) {
-                    $item = (array) $this->redis->hGetAll("device:".$id.":control:".$i);
+                    $item = (array) $this->redis->hGetAll("device:".$id.":item:".$i);
                     if (isset($item['mapping'])) {
                         $item['mapping'] = json_decode($item['mapping']);
                     }
@@ -551,181 +558,172 @@ class Device
                 }
             }
         }
-        else if (!empty($this->controls) && isset($this->controls[$id])) {
+        else if (isset(self::$cache['items'][$id])) {
             $items = array();
-            foreach ($this->controls[$id] as $item) {
-                $items[] = $item;
+            foreach (self::$cache['items'][$id] as $item) {
+                $items[] = (array) $item;
             }
         }
-        if (empty($items)) {
+        
+        if ($items == null) {
             $template = $this->get_template_meta($type);
-            if (isset($template) && $template['control']) {
+            if (isset($template) && $template['thing']) {
                 $module = $template['module'];
-                $class = $this->get_module_class($module);
+                $class = $this->get_module_class($module, self::THING);
                 if ($class != null) {
-                    $items = $class->get_control($userid, $nodeid, $name, $type, null);
-                    $this->cache_control($id, $items);
+                    $items = $class->get_item($userid, $nodeid, $name, $type, null);
+                    $this->cache_item($id, $items);
+                }
+                else {
+                    return array('success'=>false, 'message'=>'Device thing class does not exist');
                 }
             }
             else {
-                return array('success'=>false, 'message'=>'Device control does not exist');
+                return array('success'=>false, 'message'=>'Device thing does not exist');
             }
         }
         return $items;
     }
 
-    public function get_control_item($id, $itemid)
+    public function get_item($id, $itemid)
     {
         $id = intval($id);
         
-        $item = null;
         if ($this->redis) {
-            if ($this->redis->exists("device:control:$id")) {
-                $item = (array) $this->redis->hGetAll("device:".$id.":control:".$itemid);
+            if ($this->redis->exists("device:thing:$id")) {
+                $item = (array) $this->redis->hGetAll("device:".$id.":item:".$itemid);
                 if (isset($item['mapping'])) {
                     $item['mapping'] = json_decode($item['mapping']);
                 }
+                return $item;
             }
         }
-        else if (!empty($this->controls) && isset($this->controls[$id])) {
-            $item = $this->controls[$id][$itemid];
+        else if (isset(self::$cache['items'][$id])) {
+            return self::$cache['items'][$id][$itemid];
         }
-        if (empty($item)) {
-            $device = $this->get($id);
-            if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
-                $template = $this->get_template_meta($device['type']);
-                if (isset($template) && $template['control']) {
-                    $module = $template['module'];
-                    $class = $this->get_module_class($module);
-                    if ($class != null) {
-                        $items = $class->get_control($device['userid'], $device['nodeid'], $device['name'], $device['type'], null);
-                        return array('success'=>false, 'message'=>$items);
-                        $this->cache_control($id, $items);
-                        foreach ($items as $i) {
-                            if ($i['id'] == $itemid) $item = $i;
+        
+        $device = $this->get($id);
+        if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+            $template = $this->get_template_meta($device['type']);
+            if (isset($template) && $template['thing']) {
+                $module = $template['module'];
+                $class = $this->get_module_class($module, self::THING);
+                if ($class != null) {
+                    $items = $class->get_item($device['userid'], $device['nodeid'], $device['name'], $device['type'], null);
+                    foreach ($items as $item) {
+                        if ($item['id'] == $itemid) {
+                            return $item;
                         }
                     }
+                    return array('success'=>false, 'message'=>'Item does not exist');
                 }
-                else {
-                    return array('success'=>false, 'message'=>'Device control does not exist');
-                }
+                return array('success'=>false, 'message'=>'Device thing class does not exist');
             }
-            else {
-                return array('success'=>false, 'message'=>'Device type not specified');
-            }
+            return array('success'=>false, 'message'=>'Device thing does not exist');
         }
-        if (empty($item)) {
-            return array('success'=>false, 'message'=>'Unknown error retrieving device item');
-        }
-        return $item;
+        return array('success'=>false, 'message'=>'Device type not specified');
     }
 
-    public function set_control_on($id, $itemid)
+    public function set_item_on($id, $itemid)
     {
         $id = intval($id);
-        $item = $this->get_control_item($id, $itemid);
+        $item = $this->get_item($id, $itemid);
         if (isset($item) && isset($item['mapping'])) {
-            $map = (array) $item['mapping'];
-            if (isset($map['ON'])) {
-                $options = (array) $map['ON'];
-                
-                $channelid = $options['channelid'];
-                unset($options['channelid']);
-                $value = $options['value'];
-                unset($options['value']);
-                
-                return $this->set_control_value($id, $channelid, $options, $value);
+            $mapping = (array) $item['mapping'];
+            if (isset($mapping['ON'])) {
+                return $this->set_item($id, $itemid, (array) $mapping['ON']);
             }
         }
-        return array('success'=>false, 'message'=>'Unknown device control item or incomplete device control template mappings "ON"');
+        return array('success'=>false, 'message'=>'Unknown item or incomplete device template mappings "ON"');
     }
 
-    public function set_control_off($id, $itemid)
+    public function set_item_off($id, $itemid)
     {
         $id = intval($id);
-        $item = $this->get_control_item($id, $itemid);
+        $item = $this->get_item($id, $itemid);
         if (isset($item) && isset($item['mapping'])) {
-            $map = (array) $item['mapping'];
-            if (isset($map['OFF'])) {
-                $options = (array) $map['OFF'];
-                
-                $channelid = $options['channelid'];
-                unset($options['channelid']);
-                $value = $options['value'];
-                unset($options['value']);
-                
-                return $this->set_control_value($id, $channelid, $options, $value);
+            $mapping = (array) $item['mapping'];
+            if (isset($mapping['OFF'])) {
+                return $this->set_item($id, $itemid, (array) $mapping['OFF']);
             }
         }
-        return array('success'=>false, 'message'=>'Unknown device control item or incomplete device control template mappings "OFF"');
+        return array('success'=>false, 'message'=>'Unknown item or incomplete device template mappings "OFF"');
     }
 
-    public function toggle_control_value($id, $itemid)
+    public function toggle_item_value($id, $itemid)
     {
         $id = intval($id);
         
-        return array('success'=>false, 'message'=>'Device control "toggle" not implemented yet');
+        return array('success'=>false, 'message'=>'Item "toggle" not implemented yet');
     }
 
-    public function increase_control_value($id, $itemid)
+    public function increase_item_value($id, $itemid)
     {
         $id = intval($id);
         
-        return array('success'=>false, 'message'=>'Device control "increase" not implemented yet');
+        return array('success'=>false, 'message'=>'Item "increase" not implemented yet');
     }
 
-    public function decrease_control_value($id, $itemid)
+    public function decrease_item_value($id, $itemid)
     {
         $id = intval($id);
         
-        return array('success'=>false, 'message'=>'Device control "decrease" not implemented yet');
+        return array('success'=>false, 'message'=>'Item "decrease" not implemented yet');
     }
 
-    public function set_control_percent($id, $itemid, $value)
+    public function set_item_percent($id, $itemid, $value)
     {
         $id = intval($id);
         
-        return array('success'=>false, 'message'=>'Device control "percent" not implemented yet');
+        return array('success'=>false, 'message'=>'Item "percent" not implemented yet');
+    }
+    
+    public function set_item_value($id, $itemid, $value, $mapping)
+    {
+        if (empty($mapping)) {
+            $mapping = array();
+        }
+        $mapping['value'] = $value;
+        
+        return $this->set_item($id, $itemid, $mapping);
     }
 
-    public function set_control_value($id, $channelid, $options, $value)
+    public function set_item($id, $itemid, $mapping)
     {
         $id = intval($id);
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $template = $this->get_template_meta($device['type']);
-            if (isset($template) && $template['control']) {
+            if (isset($template) && $template['thing']) {
                 $module = $template['module'];
-                $class = $this->get_module_class($module);
+                $class = $this->get_module_class($module, self::THING);
                 if ($class != null) {
-                    return $class->set_control($channelid, $options, $value);
+                    return $class->set_item($itemid, $mapping);
                 }
+                return array('success'=>false, 'message'=>'Device thing class does not exist');
             }
-            else {
-                return array('success'=>false, 'message'=>'Device control does not exist');
-            }
+            return array('success'=>false, 'message'=>'Device thing does not exist');
         }
         else {
             return array('success'=>false, 'message'=>'Device type not specified');
         }
-        
         return array('success'=>false, 'message'=>'Unknown error while setting device value');
     }
 
     private function load_modules()
     {
         if ($this->redis) {
-            $this->redis->delete("device:template:keys");
+            $this->redis->delete("device:template:meta");
         }
         else {
-            $this->templates = array();
+            self::$cache['templates'] = array();
         }
         $templates = array();
         
         $dir = scandir("Modules");
         for ($i=2; $i<count($dir); $i++) {
             if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
-                $class = $this->get_module_class($dir[$i]);
+                $class = $this->get_module_class($dir[$i], self::TEMPLATE);
                 if ($class != null) {
                     $module_templates = $class->get_template_list();
                     foreach($module_templates as $key => $value) {
@@ -739,7 +737,7 @@ class Device
         return $templates;
     }
 
-    private function get_module_class($module)
+    private function get_module_class($module, $type)
     {
         /*
          magic function __call (above) MUST BE USED with this.
@@ -747,61 +745,62 @@ class Device
          Looks in the folder Modules/modulename/ for a file modulename_template.php
          (module_name all lowercase but class ModulenameTemplate in php file that is CamelCase)
          */
-        $module_file = "Modules/".$module."/".$module."_control.php";
+        $module_file = "Modules/".$module."/".$module."_".$type.".php";
         $module_class = null;
         if(file_exists($module_file)){
             require_once($module_file);
             
-            $module_class_name = ucfirst(strtolower($module)."Control");
+            $module_class_name = ucfirst(strtolower($module)).ucfirst($type);
             $module_class = new $module_class_name($this);
         }
         return $module_class;
     }
 
-    private function cache_template($module, $key, $template)
+    private function cache_template($module, $id, $template)
     {
         $meta = array(
             "module"=>$module
         );
-        $meta["name"] = ((!isset($template->name) || $template->name == "" ) ? $key : $template->name);
+        $meta["name"] = ((!isset($template->name) || $template->name == "" ) ? $id : $template->name);
         $meta["category"] = ((!isset($template->category) || $template->category== "" ) ? "General" : $template->category);
         $meta["group"] = ((!isset($template->group) || $template->group== "" ) ? "Miscellaneous" : $template->group);
         $meta["description"] = (!isset($template->description) ? "" : $template->description);
+        $meta["thing"] = (!isset($template->items) ? false : true);
         $meta["control"] = (!isset($template->control) ? false : true);
         
         if ($this->redis) {
-            $this->redis->sAdd("device:template:keys", $key);
-            $this->redis->hMSet("device:template:$key", $meta);
+            $this->redis->sAdd("device:template:meta", $id);
+            $this->redis->hMSet("device:template:$id", $meta);
         }
         else {
-            $this->templates[$key] = $meta;
+            self::$cache['templates'][$id] = $meta;
         }
     }
 
-    private function cache_control($id, $control)
+    private function cache_item($id, $item)
     {
         if ($this->redis) {
-            $this->redis->delete("device:control:$id");
+            $this->redis->delete("device:thing:$id");
             
-            foreach ($control as $value) {
+            foreach ($item as $value) {
                 if (isset($value['mapping'])) $value['mapping'] = json_encode($value['mapping']);
                 $itemid = $value['id'];
-                $this->redis->sAdd("device:control:$id", $itemid);
-                $this->redis->hMSet("device:$id:control:$itemid", $value);
+                $this->redis->sAdd("device:thing:$id", $itemid);
+                $this->redis->hMSet("device:$id:item:$itemid", $value);
             }
         }
         else {
-            if (empty($this->controls)) {
-                $this->controls = array();
-                
+            if (empty(self::$cache['items'])) {
+                self::$cache['items'] = array();
             }
+            
             $items = array();
-            foreach ($control as $value) {
+            foreach ($item as $value) {
                 $itemid = $value['id'];
                 $items[$itemid] = $value;
             }
             
-            $this->controls[$id] = $items;
+            self::$cache['items'][$id] = $items;
         }
     }
 }

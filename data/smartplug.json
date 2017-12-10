@@ -3,16 +3,16 @@
     "category": "OpenEnergyMonitor",
     "group": "Switches",
     "description": "Smartplug prototype",
-    
+
     "prefix": "name",
-    "control": [
+    "items": [
         {
             "id": "status",
             "type": "Switch",
             "label": "Status",
             "mapping": {
-                "ON": { "channel": "status", "value": 1 },
-                "OFF": { "channel": "status", "value": 0 }
+                "ON": { "input": "status", "value": 1 },
+                "OFF": { "input": "status", "value": 0 }
             },
             "input": "status"
         },

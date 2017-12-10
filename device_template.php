@@ -11,7 +11,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-class DeviceControl
+class DeviceTemplate
 {
     protected $mysqli;
     protected $redis;
@@ -45,97 +45,38 @@ class DeviceControl
         }
     }
 
-    public function get_control($userid, $nodeid, $name, $type, $options) {
-    	$file = "Modules/device/data/".$type.".json";
+    public function init_template($device) {
+    	$file = "Modules/device/data/".$device['type'].".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
         } else {
             return array('success'=>false, 'message'=>"Template file not found '".$file."'");
         }
-        if (isset($template->prefix)) {
-            $prefix = $this->parse_prefix($nodeid, $name, $template->prefix);
-        }
-        else $prefix = "";
-        
-        $controls = array();
-        for ($i=0; $i<count($template->control); $i++) {
-            $control = (array) $template->control[$i];
-            
-            if (isset($control['mapping'])) {
-                foreach($control['mapping'] as &$options) {
-                    if (isset($options->channel)) {
-                        $channelid = $this->get_input_id($userid, $nodeid, $prefix, $options->channel, $template->inputs);
-                        if ($channelid == false) {
-                            continue;
-                        }
-                        unset($options->channel);
-                        $options = array_merge(array('channelid'=>$channelid), (array) $options);
-                    }
-                }
-            }
-            if (isset($control['input'])) {
-                $inputid = $this->get_input_id($userid, $nodeid, $prefix, $control['input'], $template->inputs);
-                if ($inputid == false) {
-                    continue;
-                }
-                unset($control['input']);
-                $control = array_merge($control, array('inputid'=>$inputid));
-            }
-            if (isset($control['feed'])) {
-                $feedid = $this->get_feed_id($userid, $prefix, $control['feed']);
-                if ($feedid == false) {
-                    continue;
-                }
-                unset($control['feed']);
-                $control = array_merge($control, array('feedid'=>$feedid));
-            }
-            
-            $controls[] = $control;
-        }
-        return $controls;
-    }
-
-    public function set_control($channelid, $options, $value) {
-        require_once "Modules/input/input_model.php";
-        $input = new Input($this->mysqli, $this->redis, null);
-        
-        $input->set_timevalue($channelid, time(), $value);
-        
-        return array('success'=>true, 'message'=>"Value set");
-    }
-
-    public function init_template($userid, $nodeid, $name, $type, $options) {
-    	$file = "Modules/device/data/".$type.".json";
-        if (file_exists($file)) {
-            $template = json_decode(file_get_contents($file));
-        } else {
-            return array('success'=>false, 'message'=>"Template file not found '".$file."'");
-        }
-        $prefix = $this->parse_prefix($nodeid, $name, $template->prefix);
+        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $template->prefix);
         
         $feeds = $template->feeds;
         $inputs = $template->inputs;
         
         // Create feeds
-        $result = $this->create_feeds($userid, $nodeid, $prefix, $feeds);
+        $result = $this->create_feeds($device['userid'], $device['nodeid'], $prefix, $feeds);
         if ($result["success"] !== true) {
             return array('success'=>false, 'message'=>'Error while creating the feeds. ' . $result['message']);
         }
         
         // Create inputs
-        $result = $this->create_inputs($userid, $nodeid, $prefix, $inputs);
+        $result = $this->create_inputs($device['userid'], $device['nodeid'], $prefix, $inputs);
         if ($result !== true) {
             return array('success'=>false, 'message'=>'Error while creating the inputs.');
         }
         
         // Create inputs processes
-        $result = $this->create_input_processes($userid, $feeds, $inputs);
+        $result = $this->create_input_processes($device['userid'], $feeds, $inputs);
         if ($result["success"] !== true) {
             return array('success'=>false, 'message'=>'Error while creating the inputs process list. ' . $result['message']);
         }
         
         // Create feeds processes
-        $result = $this->create_feed_processes($userid, $feeds, $inputs);
+        $result = $this->create_feed_processes($device['userid'], $feeds, $inputs);
         if ($result["success"] !== true) {
             return array('success'=>false, 'message'=>'Error while creating the feeds process list. ' . $result['message']);
         }
@@ -385,31 +326,5 @@ class DeviceControl
             }
         }
         return null;
-    }
-
-    protected function get_input_id($userid, $nodeid, $prefix, $name, $inputs) {
-        require_once "Modules/input/input_model.php";
-        $input = new Input($this->mysqli, $this->redis, null);
-        
-        foreach($inputs as $i) {
-            if ($i->name == $name) {
-                if(property_exists($i, "node")) {
-                    $node = $i->node;
-                } else {
-                    $node = $nodeid;
-                }
-                $fullname = $prefix.$name;
-                
-                return $input->exists_nodeid_name($userid, $nodeid, $fullname);
-            }
-        }
-        return false;
-    }
-
-    protected function get_feed_id($userid, $prefix, $name) {
-        require_once "Modules/feed/feed_model.php";
-        $feed = new Feed($this->mysqli, $this->redis, null);
-        
-        return $feed->get_id($userid, $prefix.$name);
     }
 }

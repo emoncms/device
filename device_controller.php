@@ -87,9 +87,9 @@ function device_controller()
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('device'));
             }
         }
-        else if ($route->action == "control" && 
+        else if ($route->action == "thing" && 
                 $route->subaction == "list") {
-            if ($session['userid']>0 && $session['write']) $result = $device->get_control_list($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $device->get_thing_list($session['userid']);
         }
         else {
             $deviceid = (int) get('id');
@@ -98,8 +98,9 @@ function device_controller()
                 $deviceget = $device->get($deviceid);
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
                     if ($route->action == "get") $result = $deviceget;
-                    else if ($route->action == "delete") $result = $device->delete($deviceid);
                     else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
+                    else if ($route->action == 'init') $result = $device->init($deviceid, get('options'));
+                    else if ($route->action == "delete") $result = $device->delete($deviceid);
                     else if ($route->action == 'template' && 
                             $route->subaction == 'init') {
                         if (isset($_GET['type'])) {
@@ -107,16 +108,24 @@ function device_controller()
                         }
                         $result = $device->init_template($deviceid, get('options'));
                     }
-                    else if ($route->action == "control") {
-                        if ($route->subaction == "get")  $result = $device->get_control($deviceid);
-                        else if ($route->subaction == "getitem")  $result = $device->get_control_item($deviceid, get('itemid'));
-                        else if ($route->subaction == "on") $result = $device->set_control_on($deviceid, get('itemid'));
-                        else if ($route->subaction == "off") $result = $device->set_control_off($deviceid, get('itemid'));
-                        else if ($route->subaction == "toggle") $result = $device->toggle_control_value($deviceid, get('itemid'));
-                        else if ($route->subaction == "increase") $result = $device->increase_control_value($deviceid, get('itemid'));
-                        else if ($route->subaction == "decrease") $result = $device->decrease_control_value($deviceid, get('itemid'));
-                        else if ($route->subaction == "percent")  $result = $device->set_control_percent($deviceid, get('itemid'), get('value'));
-                        else if ($route->subaction == "set")  $result = $device->set_control_value($deviceid, get('channelid'), get('value'));
+                    else if ($route->action == "thing") {
+                        if ($route->subaction == "get")  $result = $device->get_thing($deviceid);
+                        else if ($route->subaction == 'init') {
+                            if (isset($_GET['type'])) {
+                                $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
+                            }
+                            $result = $device->init_thing($deviceid, get('options'));
+                        }
+                    }
+                    else if ($route->action == "item") {
+                        if ($route->subaction == "get")  $result = $device->get_item($deviceid, get('itemid'));
+                        else if ($route->subaction == "on") $result = $device->set_item_on($deviceid, get('itemid'));
+                        else if ($route->subaction == "off") $result = $device->set_item_off($deviceid, get('itemid'));
+                        else if ($route->subaction == "toggle") $result = $device->toggle_item_value($deviceid, get('itemid'));
+                        else if ($route->subaction == "increase") $result = $device->increase_item_value($deviceid, get('itemid'));
+                        else if ($route->subaction == "decrease") $result = $device->decrease_item_value($deviceid, get('itemid'));
+                        else if ($route->subaction == "percent")  $result = $device->set_item_percent($deviceid, get('itemid'), get('value'));
+                        else if ($route->subaction == "set")  $result = $device->set_item_value($deviceid, get('itemid'), get('value'), get('mappings'));
                     }
                 }
             }
