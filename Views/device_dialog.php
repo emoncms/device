@@ -2,7 +2,7 @@
     global $path;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=2"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=3"></script>
 
 <style>
     .group-body tr:hover > td {

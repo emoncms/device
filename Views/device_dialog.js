@@ -311,7 +311,7 @@ var device_dialog =
         
         $("#device-init").off('click').on('click', function () {
             $('#device-config-modal').modal('hide');
-            device_dialog.loadInit(true); // skip_check = true
+            device_dialog.loadInit(false); // skip_check = true
         });
         
         $("#device-new-devicekey").off('click').on('click', function () {
