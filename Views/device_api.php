@@ -46,6 +46,7 @@
     <tr><td><?php echo _('List templates'); ?></td><td><a href="<?php echo $path; ?>device/template/list.json"><?php echo $path; ?>device/template/list.json</a></td></tr>
     <tr><td><?php echo _('List templates short'); ?></td><td><a href="<?php echo $path; ?>device/template/listshort.json"><?php echo $path; ?>device/template/listshort.json</a></td></tr>
     <tr><td><?php echo _('get template details'); ?></td><td><a href="<?php echo $path; ?>device/template/get.json?device=example"><?php echo $path; ?>device/template/get.json?device=example</a></td></tr>
+    <tr><td><?php echo _('Prepare device initialization'); ?></td><td><a href="<?php echo $path; ?>device/template/prepare.json?id=1"><?php echo $path; ?>device/template/prepare.json?id=1</a></td></tr>
     <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/template/init.json?id=1"><?php echo $path; ?>device/template/init.json?id=1</a></td></tr>
 </table>
 

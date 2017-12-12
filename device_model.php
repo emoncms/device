@@ -517,8 +517,8 @@ class Device
         }
         return $template;
     }
-
-    public function init_template($id)
+    
+    public function prepare_template($id)
     {
         $id = (int) $id;
         
@@ -529,7 +529,31 @@ class Device
                 $module = $template['module'];
                 $class = $this->get_module_class($module);
                 if ($class != null) {
-                    return $class->init_template($device['userid'], $device['nodeid'], $device['name'], $device['type']);
+                    return $class->prepare_template($device);
+                }
+            }
+            return array('success'=>false, 'message'=>'Device template does not exist');
+        }
+        else {
+            return array('success'=>false, 'message'=>'Device type not specified');
+        }
+        return array('success'=>false, 'message'=>'Unknown error while preparing device initialization');
+    }
+
+    public function init_template($id, $template)
+    {
+        $id = intval($id);
+        
+        if (isset($template)) $template = json_decode($template);
+        
+        $device = $this->get($id);
+        if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+            $meta = $this->get_template_meta($device['type']);
+            if (isset($meta)) {
+                $module = $meta['module'];
+                $class = $this->get_module_class($module);
+                if ($class != null) {
+                    return $class->init_template($device['userid'], $template);
                 }
             }
             else {
