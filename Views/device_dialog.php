@@ -3,6 +3,7 @@
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js"></script>
+<link href="<?php echo $path; ?>Modules/app/css/titatoggle-dist-min.css?v=<?php echo $v; ?>" rel="stylesheet">
 
 <style>
     .group-body tr:hover > td {
@@ -51,6 +52,15 @@
 
     #template-info .tooltip-inner {
         max-width: 500px;
+    }
+    .checkbox-slider--b {
+        width: 20px;
+        border-radius: 25px;
+        background-color: gainsboro;
+        height: 20px;
+    }
+    *::before, *::after {
+        box-sizing: border-box;
     }
 </style>
 
@@ -124,6 +134,13 @@
                 			</tr>
                 		</tbody>
                 		<tbody id="options-table" style="display: table-row-group;">
+                		</tbody>
+                		<tbody>
+                			<tr colspan="5"><th>Add option:</th></tr>
+                			<tr>
+                				<td><select id="template-add-options" class="input-large"></select></td>
+                				<td><button id="add-option-button" class="btn btn-info" style="border-radius: 4px;">Add</button></td>
+            				</tr>
                 		</tbody>
                 	</table>
                 </div>

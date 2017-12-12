@@ -140,6 +140,7 @@ var device_dialog =
                 $("#template-options-ctrl-select").empty();
             }
             if (template.options) {
+            	var that = this;
             	$.ajax({ url: path+"device/template/get.json",
             		dataType: 'json',
             		async: true,
@@ -147,22 +148,22 @@ var device_dialog =
             		success: function(result) {
             			var table = $("#options-table").empty();
             			result.options.forEach(function(option) {
-            				table.append("<tr id='"+option.key+"-row'><td>" + option.name + "<span id='template-"+option.key+"-option-tooltip' data-toggle='tooltip' data-placement='right'>" +
-            						"<i class='icon-info-sign' style='cursor:pointer; padding-left:6px;'></i></span></td></tr>");
-                            var tooltip = option.description;
-                            $('#template-'+option.key+'-option-tooltip').attr("title", tooltip).tooltip({html: true});
-                            
-            				if(option.type === 'text') {
-            					$("#"+option.key+"-row").append("<td><input type='text' class='input-large' /></td>");
-            				} else if(option.type === 'selection') {
-            					$("#"+option.key+"-row").append("<td><select id='template-"+option.key+"-option-select' class='input-large'></select></td>");
-                                var optSelect = $("#template-"+option.key+"-option-select").empty();
-                                optSelect.append("<option selected hidden='true' value=''>Select a "+option.name+"</option>").val('');
-                                option.select.forEach(function(o) {
-                                	optSelect.append($("<option />").val(o.value).text(o.name));
-                                });
+            				if(option.mandatory) {
+            					that.optionInputType(table, option.type, option.key, option.name, option.select, option.description, option.mandatory);
+            				} else {
+            					$("#template-add-options").append($("<option />").val(option.key).text(option.name));
             				}
             			});
+                    	$("#add-option-button").click(function() {
+                        	var key = $('#template-add-options option:selected').val();
+                        	if(key != "" && $("#"+key+"-row").val() === undefined) {
+                        		var option = result.options.find(function(opt) {
+                        			return opt.key === key;
+                        		});
+                        		that.optionInputType(table, option.type, option.key, option.name, option.select, option.description, option.mandatory);
+                        	}
+                    	});
+                    	
                     	$("#template-options").show();
                     	$("#template-options-table").show();
             		}
@@ -180,6 +181,46 @@ var device_dialog =
         }
     },
 
+    'optionInputType':function(table, type, key, name, select, description, mandatory) {
+    	table.append("<tr id='"+key+"-row'><td>" + name + "</td></tr>");
+		if(type === 'text') {
+			$("#"+key+"-row").append("<td><input id='template-"+key+"-option-text' type='text' class='input-large' /></td>").hide().fadeIn(300);
+		} else if(type === 'selection') {
+			$("#"+key+"-row").append("<td><select id='template-"+key+"-option-select' class='input-large'></select></td>").hide().fadeIn(300);
+            var optSelect = $("#template-"+key+"-option-select").empty();
+            optSelect.append("<option selected hidden='true' value=''>Select a "+name+"</option>").val('');
+            select.forEach(function(o) {
+            	optSelect.append($("<option />").val(o.value).text(o.name));
+            });
+		} else if(type === 'switch') {
+			$("#"+key+"-row").append(
+				"<td><div class='checkbox checkbox-slider--b checkbox-slider-info'>" +
+        			"<label>" +
+        				"<input id='template-"+key+"-option-switch' type='checkbox'><span></span>" +
+        			"</label>" +
+        		"</div></td>"
+	        ).hide().fadeIn(300);
+		}
+		table.append("<tr><td colspan='3' id='info-"+key+"' style='padding: 8px; display: none; background-color: #ddd'>" + description + "</td></tr>");
+		
+    	$("#"+key+"-row").focusin(function() {
+    		$("#info-"+key).fadeIn(300);
+    	});
+    	$("#"+key+"-row").focusout(function() {
+    		$("#info-"+key).fadeOut(100);
+    	});
+    	
+		if(!mandatory) {
+			$("#"+key+"-row").append("<td><a id='remove-"+key+"-option' title='Remove'><i class='icon-trash' style='cursor:pointer'></i></a></td>");
+			$("#remove-"+key+"-option").click(function() {
+	    		$("#"+key+"-row").fadeOut(500, $("#"+key+"-row").remove());
+	    		$("#info-"+key).remove();
+	    	});
+		} else {
+			$("#"+key+"-row").append("<td><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
+		}
+    },
+    
     'clearConfigModal':function() {
         $("#template-table").text('');
         
@@ -350,9 +391,18 @@ var device_dialog =
                         
                         $("#options-table").children().each(function() {
                         	var key = this.id.split("-")[0];
-                        	var value = $('#template-'+key+'-option-select option:selected').val();
-                        	if(value != "") {
-                        		options[key] = value;
+                        	if($('#template-'+key+'-option-select').val() != undefined) {
+	                        	var value = $('#template-'+key+'-option-select option:selected').val();
+	                        	if(value != "") {
+	                        		options[key] = value;
+	                        	}
+                        	} else if($('#template-'+key+'-option-switch').val() != undefined) {
+                        		options[key] = $('#template-'+key+'-option-switch').is(':checked');
+                        	} else if($('#template-'+key+'-option-text').val() != undefined) {
+                        		var value = $('#template-'+key+'-option-text').val();
+	                        	if(value != "") {
+	                        		options[key] = value;
+	                        	}
                         	}
                         });
                         
