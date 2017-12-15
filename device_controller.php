@@ -19,6 +19,10 @@ function device_controller()
             $result = view("Modules/device/Views/device_view.php",array('devices'=>$device_templates));
         }
         if ($route->action == 'api') $result = view("Modules/device/Views/device_api.php", array());
+        if ($route->action == 'control') {
+            $route->format = "html";
+            $result = view("Modules/device/Views/controldevices.php", array());
+        }
     }
 
     if ($route->format == 'json')

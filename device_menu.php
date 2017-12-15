@@ -11,3 +11,11 @@
             'session'=>"write",
             'order' => 45
     );
+    
+    $menu_dropdown[] = array(
+            'name'=> dgettext($domain, "Devices"),
+            'icon'=>'icon-tasks',//wrench, adjust
+            'path'=>"device/control" ,
+            'session'=>"write",
+            'order' => 42
+    );
