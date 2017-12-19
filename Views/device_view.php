@@ -63,9 +63,7 @@
     'dummy-5':{'title':'', 'type':"blank"},
     'time':{'title':'<?php echo _('Updated'); ?>', 'type':"group-updated"},
     'dummy-7':{'title':'', 'type':"blank"},
-    'dummy-8':{'title':'', 'type':"blank"},
-    'dummy-9':{'title':'', 'type':"blank"},
-    'dummy-10':{'title':'', 'type':"blank"}
+    'dummy-8':{'title':'', 'type':"blank"}
   }
   
   table.deletedata = false;

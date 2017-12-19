@@ -10,11 +10,11 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "use" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "use" }
                 },
                 {
                     "process": "power_to_kwh",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "use_kwh" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "use_kwh" }
                 }
             ]
         }

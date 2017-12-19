@@ -8,20 +8,20 @@
             "name": "temperature",
             "description": "Temperature C",
             "processList": [
-            {
-                "process": "log_to_feed",
-                "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_temperature" }
-            }
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_temperature" }
+                }
             ]
         },
         {
             "name": "humidity",
             "description": "Humidity Rh%",
             "processList": [
-            {
-                "process": "log_to_feed",
-                "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_humidity" }
-            }
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_humidity" }
+                }
             ]
         }
     ],
@@ -31,7 +31,7 @@
             "name": "emonth_temperature",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60",
+            "interval": "60"
         },
         {
             "name": "emonth_humidity",

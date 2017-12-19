@@ -1,6 +1,7 @@
 var device_dialog =
 {
     templates: null,
+    deviceTemplate: null,
     deviceType: null,
     device: null,
     
@@ -8,18 +9,14 @@ var device_dialog =
         this.templates = templates;
         
         if (device != null) {
+            this.deviceTemplate = null;
             this.deviceType = device.type;
             this.device = device;
-            $("#device-init").show();
-            $("#device-save").html("Save");
-            $("#device-new-devicekey").show();
         }
         else {
+            this.deviceTemplate = null;
             this.deviceType = null;
             this.device = null;
-            $("#device-init").hide();
-            $("#device-save").html("Save & Initialize");
-            $("#device-new-devicekey").hide();
         }
         
         this.drawConfig();
@@ -128,19 +125,24 @@ var device_dialog =
         $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
         
         if (this.device != null) {
-        
             $('#device-config-node').val(this.device.nodeid);
             $('#device-config-name').val(this.device.name);
             $('#device-config-description').val(this.device.description);
-            $('#device-config-devicekey').val(this.device.devicekey);
+            $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
+            $("#device-config-devicekey-new").prop("disabled", false);
             $('#device-config-delete').show();
+            $("#device-init").show();
+            $("#device-save").html("Save");
         }
         else {
             $('#device-config-node').val('');
             $('#device-config-name').val('');
             $('#device-config-description').val('');
-            $('#device-config-devicekey').val("Device not yet created");
+            $('#device-config-devicekey').val('').prop("disabled", true);
+            $("#device-config-devicekey-new").prop("disabled", true);
             $('#device-config-delete').hide();
+            $("#device-init").hide();
+            $("#device-save").html("Save & Initialize");
         }
     },
 
@@ -227,14 +229,14 @@ var device_dialog =
                 var template = device_dialog.templates[type];
                 $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
                 $('#template-info').show();
+                $("#device-init").hide();
             }
             else {
                 device_dialog.deviceType = null;
                 $('#template-description').text('');
                 $('#template-info').hide();
+                $("#device-init").show()
             }
-            
-            if (device_dialog.deviceType!=device_dialog.device.type) $("#device-init").hide(); else $("#device-init").show();
         });
 
         $("#sidebar-open").off('click').on('click', function () {
@@ -256,6 +258,7 @@ var device_dialog =
                 var desc = $('#device-config-description').val();
                 var devicekey = $('#device-config-devicekey').val();
                 
+                var init = false;
                 if (device_dialog.device != null) {
                     var fields = {};
                     if (device_dialog.device.nodeid != node) fields['nodeid'] = node;
@@ -266,6 +269,7 @@ var device_dialog =
                     if (device_dialog.device.type != device_dialog.deviceType) {
                         if (device_dialog.deviceType != null) {
                             fields['type'] = device_dialog.deviceType;
+                            init = true;
                         }
                         else fields['type'] = '';
                     }
@@ -276,11 +280,6 @@ var device_dialog =
                         return false;
                     }
                     update();
-                    
-                    if (device_dialog.device.type != device_dialog.deviceType && device_dialog.deviceType != null) {
-                        $('#device-config-modal').modal('hide');
-                        device_dialog.loadInit(false); // skip_check = false
-                    }
                 }
                 else {
                     var result = device.create(node, name, desc, device_dialog.deviceType);
@@ -288,15 +287,17 @@ var device_dialog =
                         alert('Unable to create device:\n'+result.message);
                         return false;
                     }
+                    init = true;
+                    device_dialog.device = {
+                            id: result,
+                            nodeid: node,
+                            name: name,
+                            type: device_dialog.deviceType
+                    };
                     update();
-                    
-                    if (result && device_dialog.deviceType != null) {
-                        $('#device-config-modal').modal('hide');
-                        device_dialog.device = {id: result, name: name};
-                        device_dialog.loadInit(false); // skip_check = false
-                    }
                 }
                 $('#device-config-modal').modal('hide');
+                if (init) device_dialog.loadInit();
             }
             else {
                 alert('Device needs to be configured first.');
@@ -311,50 +312,183 @@ var device_dialog =
         
         $("#device-init").off('click').on('click', function () {
             $('#device-config-modal').modal('hide');
-            device_dialog.loadInit(false); // skip_check = true
+            device_dialog.loadInit();
         });
         
-        $("#device-new-devicekey").off('click').on('click', function () {
-            device_dialog.device.devicekey = device.setnewdevicekey(device_dialog.device.id);
+        $("#device-config-devicekey-new").off('click').on('click', function () {
+            device_dialog.device.devicekey = device.setNewDeviceKey(device_dialog.device.id);
             $('#device-config-devicekey').val(device_dialog.device.devicekey);
         });        
         
-       
     },
 
-    'loadInit': function(skip_check) {
-        
-        $('#device-init-modal').modal('show');
-        $('#device-init-modal-label').html('Initialize Device: <b>'+device_dialog.device.name+'</b>');             
-        
-        // Initialize callbacks
-        if (!skip_check) {
-            $(".pre-init").show(); $(".post-init").hide();  
-            
-            $("#device-init-confirm").off('click').on('click', function() {
-                var result = device.initTemplate(device_dialog.device.id);
-                device_dialog.showInitLog(result);
-            });
-        } else {
-            var result = device.initTemplate(device_dialog.device.id);
-            device_dialog.showInitLog(result);
-        }
-    },
-    
-    'showInitLog': function (result) {
-
-        $(".pre-init").hide(); $(".post-init").show();
-        
+    'loadInit': function() {
+        var result = device.prepareTemplate(device_dialog.device.id);
         if (typeof result.success !== 'undefined' && !result.success) {
             alert('Unable to initialize device:\n'+result.message);
             return false;
         }
-              
-        if (result.log!=undefined) {
-            $("#device-init-modal-log").html("<b>Device initialized</b><br><pre>"+result.log+"</pre>");
-        } 
+        device_dialog.deviceTemplate = result;
+        device_dialog.drawInit(result);
+        
+        // Initialize callbacks
+        $("#device-init-confirm").off('click').on('click', function() {
+            $('#device-init-modal').modal('hide');
+            
+            var template = device_dialog.parseTemplate();
+            var result = device.initTemplate(device_dialog.device.id, template);
+            if (typeof result.success !== 'undefined' && !result.success) {
+                alert('Unable to initialize device:\n'+result.message);
+                return false;
+            }
+        });
+    },
+
+    'drawInit': function (result) {
+        $('#device-init-modal').modal('show');
+        $('#device-init-modal-label').html('Initialize Device: <b>'+device_dialog.device.name+'</b>');  
+        
+        if (typeof result.feeds !== 'undefined' && result.feeds.length > 0) {
+            $('#device-init-feeds').show();
+            var table = "";
+            for (var i = 0; i < result.feeds.length; i++) {
+                var feed = result.feeds[i];
+                var row = "";
+                if (feed.action.toLowerCase() == "none") {
+                    row += "<td><input class='input-select' type='checkbox' checked disabled /></td>";
+                }
+                else {
+                    row += "<td><input class='input-select' type='checkbox' checked /></td>";
+                }
+                row += "<td>"+device_dialog.drawInitAction(feed.action)+"</td>"
+                row += "<td>"+feed.tag+"</td><td>"+feed.name+"</td>";
+                row += "<td>"+device_dialog.drawInitProcessList(feed.processList)+"</td>";
+                
+                table += "<tr>"+row+"</tr>";
+            }
+            $('#device-init-feeds-table').html(table);
+        }
+        else {
+            $('#device-init-feeds').hide();
+        }
+        
+        if (typeof result.inputs !== 'undefined' && result.inputs.length > 0) {
+            $('#device-init-inputs').show();
+            var table = "";
+            for (var i = 0; i < result.inputs.length; i++) {
+                var input = result.inputs[i];
+                var row = "";
+                if (input.action.toLowerCase() == "none") {
+                    row += "<td><input class='input-select' type='checkbox' checked disabled /></td>";
+                }
+                else {
+                    row += "<td><input class='input-select' type='checkbox' checked /></td>";
+                }
+                row += "<td>"+device_dialog.drawInitAction(input.action)+"</td>"
+                row += "<td>"+input.node+"</td><td>"+input.name+"</td><td>"+input.description+"</td>";
+                row += "<td>"+device_dialog.drawInitProcessList(input.processList)+"</td>";
+                
+                table += "<tr>"+row+"</tr>";
+            }
+            $('#device-init-inputs-table').html(table);
+        }
+        else {
+            $('#device-init-inputs').hide();
+            $('#device-init-inputs-table').html("");
+        }
         
         return true;
+    },
+
+    'drawInitAction': function (action) {
+        action = action.toLowerCase();
+        
+        var color;
+        if (action === 'create' || action === 'set') {
+            color = "rgb(0,110,205)";
+        }
+        else if (action === 'override') {
+            color = "rgb(255,125,20)";
+        }
+        else {
+            color = "rgb(50,200,50)";
+            action = "exists"
+        }
+        action = action.charAt(0).toUpperCase() + action.slice(1);
+        
+        return "<span style='color:"+color+";'>"+action+"</span>";
+    },
+
+    'drawInitProcessList': function (processList) {
+        if (!processList || processList.length < 1) return "";
+        var out = "";
+        for (var i = 0; i < processList.length; i++) {
+            var process = processList[i];
+            if (process['arguments'] != undefined && process['arguments']['value'] != undefined && process['arguments']['type'] != undefined) {
+                var name = "<small>"+process["name"]+"</small>";
+                var value = process['arguments']['value'];
+                
+                var title;
+                var color = "info";
+                switch(process['arguments']['type']) {
+                case 0: // VALUE
+                    title = "Value: " + value;
+                    break;
+                    
+                case 1: //INPUTID
+                    title = "Input: " + value;
+                    break;
+                    
+                case 2: //FEEDID
+                    title = "Feed: " + value;
+                    break;
+                    
+                case 4: // TEXT
+                    title = "Text: " + value;
+                    break;
+
+                case 5: // SCHEDULEID
+                    title = "Schedule: " + value;
+                    break;
+
+                default:
+                    title = value;
+                    break;
+                }
+                out += "<span class='label label-"+color+"' title='"+title+"' style='cursor:default'>"+name+"</span> ";
+            }
+        }
+        return out;
+    },
+
+    'parseTemplate': function() {
+        var template = {};
+
+        template['feeds'] = [];
+        if (typeof device_dialog.deviceTemplate.feeds !== 'undefined' && 
+                device_dialog.deviceTemplate.feeds.length > 0) {
+            
+            var feeds = device_dialog.deviceTemplate.feeds;
+            $("#device-init-feeds-table tr").find('input[type="checkbox"]:checked')
+                    .each(function (i, row) {
+                
+                template['feeds'].push(feeds[i]); 
+            });
+        }
+        
+        template['inputs'] = [];
+        if (typeof device_dialog.deviceTemplate.inputs !== 'undefined' && 
+                device_dialog.deviceTemplate.inputs.length > 0) {
+            
+            var inputs = device_dialog.deviceTemplate.inputs;
+            $("#device-init-inputs-table tr").find('input[type="checkbox"]:checked')
+                    .each(function (i, row) {
+                
+                template['inputs'].push(inputs[i]); 
+            });
+        }
+        
+        return template;
     },
 
     'loadDelete': function(device, tablerow) {
@@ -375,7 +509,7 @@ var device_dialog =
                 table.remove(row);
                 update();
             }
-            else if (typeof device_dialog.device.inputs != undefined) {
+            else if (typeof device_dialog.device.inputs !== 'undefined') {
                 // If the table row is undefined and an input list exists, the config dialog
                 // was opened in the input view and all corresponding inputs will be deleted
                 var inputIds = [];

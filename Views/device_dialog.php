@@ -39,6 +39,7 @@
         margin-top: -15px;
         margin-left: 250px;
     }
+
     #content-wrapper .divider {
         *width: 100%;
         height: 1px;
@@ -52,6 +53,26 @@
     #template-info .tooltip-inner {
         max-width: 500px;
     }
+    
+    input[type="checkbox"] { margin:0px; }
+    
+    #device-init-modal {
+        width: 50%; left:25%; /* (100%-width)/2 */
+        margin-left: auto; margin-right: auto;
+    }
+    
+    #device-init-modal table td { text-align: left; }
+    
+    #device-init-feeds table td:nth-of-type(1) { width:14px; text-align: center; }
+    #device-init-feeds table td:nth-of-type(2) { width:5%; }
+    #device-init-feeds table td:nth-of-type(3) { width:15%; }
+    #device-init-feeds table td:nth-of-type(4) { width:25%; }
+    
+    #device-init-inputs table td:nth-of-type(1) { width:14px; text-align: center; }
+    #device-init-inputs table td:nth-of-type(2) { width:5%; }
+    #device-init-inputs table td:nth-of-type(3) { width:5%; }
+    #device-init-inputs table td:nth-of-type(4) { width:10%; }
+    #device-init-inputs table td:nth-of-type(5) { width:25%; }
 </style>
 
 <div id="device-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-config-modal-label" aria-hidden="true" data-backdrop="static">
@@ -89,17 +110,17 @@
             
             <label><b><?php echo _('Node'); ?></b></label>
             <input id="device-config-node" class="input-medium" type="text">
-                    
+            
             <label><b><?php echo _('Name'); ?></b></label>
             <input id="device-config-name" class="input-large" type="text">
-                    
+             
             <label><b><?php echo _('Location'); ?></b></label>
             <input id="device-config-description" class="input-large" type="text">
             
             <label><b><?php echo _('Device Key'); ?></b></label>
             <div class="input-append">
-            <input id="device-config-devicekey" class="input-large" type="text" style="width:260px">
-            <button id="device-new-devicekey" class="btn">New</button>
+                <input id="device-config-devicekey" class="input-large" type="text" style="width:260px">
+                <button id="device-config-devicekey-new" class="btn">New</button>
             </div>
         </div>
     </div>
@@ -117,22 +138,42 @@
         <h3 id="device-init-modal-label"><?php echo _('Initialize device'); ?></h3>
     </div>
     <div class="modal-body">
-        <div id="device-init-modal-content" class="pre-init">
-        <p><?php echo _('Defaults, like inputs and associated feeds will be automaticaly configured.'); ?>
-           <br>
-           <?php echo _('Only missing inputs and feeds will be recreated. Feed configurations will be considered unique in combination with their tag.'); ?>
-           <br><br>
-           <b><?php echo _('Warning: '); ?></b>
-           <?php echo _('All configured input and feed processes will be reset to their original state.'); ?>
-           <br><br>
+        <p><?php echo _('Initializing a device will automaticaly configure inputs and associated feeds as described.'); ?><br>
+            <b><?php echo _('Warning: '); ?></b><?php echo _('Process lists with dependencies to deselected feeds or inputs will be skipped as a whole'); ?>
         </p>
+        
+        <div id="device-init-feeds" style="display:none">
+            <label><b><?php echo _('Feeds'); ?></b></label>
+            <table class="table table-hover">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th><?php echo _('Tag'); ?></th>
+                    <th><?php echo _('Name'); ?></th>
+                    <th><?php echo _('Process list'); ?></th>
+                </tr>
+                <tbody id="device-init-feeds-table"></tbody>
+            </table>
         </div>
-        <div id="device-init-modal-log" class="hide post-init"></div>
+        
+        <div id="device-init-inputs" style="display:none">
+            <label><b><?php echo _('Inputs'); ?></b></label>
+            <table class="table table-hover">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th><?php echo _('Node'); ?></th>
+                    <th><?php echo _('Key'); ?></th>
+                    <th><?php echo _('Name'); ?></th>
+                    <th><?php echo _('Process list'); ?></th>
+                </tr>
+                <tbody id="device-init-inputs-table"></tbody>
+            </table>
+        </div>
     </div>
     <div class="modal-footer">
-        <button id="device-init-ok" class="btn post-init hide" data-dismiss="modal" aria-hidden="true"><?php echo _('Ok'); ?></button>
-        <button id="device-init-cancel" class="btn pre-init" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="device-init-confirm" class="btn btn-primary pre-init"><?php echo _('Initialize'); ?></button>
+        <button id="device-init-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="device-init-confirm" class="btn btn-primary"><?php echo _('Initialize'); ?></button>
     </div>
 </div>
 

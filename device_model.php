@@ -440,11 +440,20 @@ class Device
         } else {
             return false;
         }
-    } 
+    }
 
     public function get_template_list()
     {
-        return $this->load_modules();
+        // This is called when the device view gets reloaded.
+        // Always cache and reload all templates here.
+        $this->load_template_list();
+        
+        return $this->get_template_list_meta();
+    }
+    
+    public function get_template_list_full()
+    {
+        return $this->load_template_list();
     }
 
     public function get_template_list_meta()
@@ -452,7 +461,7 @@ class Device
         $templates = array();
         
         if ($this->redis) {
-            if (!$this->redis->exists("device:template:keys")) $this->load_modules();
+            if (!$this->redis->exists("device:template:keys")) $this->load_template_list();
             
             $keys = $this->redis->sMembers("device:template:keys");
             foreach ($keys as $key)    {
@@ -463,7 +472,7 @@ class Device
         }
         else {
             if (empty($this->templates)) { // Cache it now
-                $this->load_modules();
+                $this->load_template_list();
             }
             $templates = $this->templates;
         }
@@ -492,7 +501,7 @@ class Device
         
         if ($this->redis) {
             if (!$this->redis->exists("device:template:$key")) {
-                $this->load_modules();
+                $this->load_template_list();
             }
             if ($this->redis->exists("device:template:$key")) {
                 $template = $this->redis->hGetAll("device:template:$key");
@@ -500,7 +509,7 @@ class Device
         }
         else {
             if (empty($this->templates)) { // Cache it now
-                $this->load_modules();
+                $this->load_template_list();
             }
             if (isset($this->templates[$key])) {
                 $template = $this->templates[$key];
@@ -508,8 +517,8 @@ class Device
         }
         return $template;
     }
-
-    public function init_template($id)
+    
+    public function prepare_template($id)
     {
         $id = (int) $id;
         
@@ -520,7 +529,31 @@ class Device
                 $module = $template['module'];
                 $class = $this->get_module_class($module);
                 if ($class != null) {
-                    return $class->init_template($device['userid'], $device['nodeid'], $device['name'], $device['type']);
+                    return $class->prepare_template($device);
+                }
+            }
+            return array('success'=>false, 'message'=>'Device template does not exist');
+        }
+        else {
+            return array('success'=>false, 'message'=>'Device type not specified');
+        }
+        return array('success'=>false, 'message'=>'Unknown error while preparing device initialization');
+    }
+
+    public function init_template($id, $template)
+    {
+        $id = intval($id);
+        
+        if (isset($template)) $template = json_decode($template);
+        
+        $device = $this->get($id);
+        if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+            $meta = $this->get_template_meta($device['type']);
+            if (isset($meta)) {
+                $module = $meta['module'];
+                $class = $this->get_module_class($module);
+                if ($class != null) {
+                    return $class->init_template($device['userid'], $template);
                 }
             }
             else {
@@ -534,7 +567,7 @@ class Device
         return array('success'=>false, 'message'=>'Unknown error while initializing device');
     }
 
-    private function load_modules()
+    private function load_template_list()
     {
         if ($this->redis) {
             $this->redis->delete("device:template:keys");

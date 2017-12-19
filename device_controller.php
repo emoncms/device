@@ -15,12 +15,8 @@ function device_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "view" && $session['write']) {
-        
-            // Clear template cache, force reload
-            if ($redis) $redis->delete("device:template:keys");
-            
-            $device_templates = $device->get_template_list_meta();
-            $result = view("Modules/device/Views/device_view.php",array('devices'=>$device_templates));
+            $templates = $device->get_template_list();
+            $result = view("Modules/device/Views/device_view.php",array('devices'=>$templates));
         }
         if ($route->action == 'api') $result = view("Modules/device/Views/device_api.php", array());
     }
@@ -89,9 +85,9 @@ function device_controller()
         else if ($route->action == "autocreate") {
             if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
         }
-        else if ($route->action == "template" && $route->subaction != "init") {
+        else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
             if ($route->subaction == "list") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list();
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_full();
             }
             else if ($route->subaction == "listshort") {
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta();
@@ -107,15 +103,15 @@ function device_controller()
                 $deviceget = $device->get($deviceid);
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
                     if ($route->action == "get") $result = $deviceget;
-                    else if ($route->action == "setnewdevicekey") $result = $device->set_new_devicekey($deviceid);
                     else if ($route->action == "delete") $result = $device->delete($deviceid);
                     else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
-                    else if ($route->action == 'template' && 
-                            $route->subaction == 'init') {
+                    else if ($route->action == "setnewdevicekey") $result = $device->set_new_devicekey($deviceid);
+                    else if ($route->action == 'template') {
                         if (isset($_GET['type'])) {
                             $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
                         }
-                        $result = $device->init_template($deviceid);
+                        if ($route->subaction == 'prepare') $result = $device->prepare_template($deviceid);
+                        else if ($route->subaction == 'init') $result = $device->init_template($deviceid, get('template'));
                     }
                 }
             }
