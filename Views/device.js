@@ -60,82 +60,56 @@ var device = {
     },
 
     'setItemOn':function(id, itemid, callback) {
-    	var async = false;
-    	if (typeof callback == 'function') {
-    		async = true;
-    	}
-    	
-    	var result = false;
-    	var promise = $.ajax({
-    		url: path+"device/item/on.json",
-    		dataType: 'json',
-    		async: async,
-    		data: "id="+id+"&itemid="+itemid,
-    		success(data) {
-    			if (async) {
-    				callback(data);
-    			}
-    			else {
-    				result = data;
-    			}
-    		}
-    	});
-    	
-    	if (async) {
-    		return promise;
-    	}
-    	return result;
+        return device.setItemAsync('on', id, itemid, callback);
     },
 
     'setItemOff':function(id, itemid, callback) {
-    	var async = false;
-    	if (typeof callback == 'function') {
-    		async = true;
-    	}
-    	
-    	var result = false;
-    	var promise = $.ajax({
-    		url: path+"device/item/off.json",
-    		dataType: 'json',
-    		async: async,
-    		data: "id="+id+"&itemid="+itemid,
-    		success(data) {
-    			if (async) {
-    				callback(data);
-    			}
-    			else {
-    				result = data;
-    			}
-    		}
-    	});
-    	
-    	if (async) {
-    		return promise;
-    	}
-    	return result;
+        return device.setItemAsync('off', id, itemid, callback);
     },
 
-    'toggleItemValue':function(id, itemid) {
-        var result = {};
-        $.ajax({ url: path+"device/item/toggle.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
+    'toggleItemValue':function(id, itemid, callback) {
+        return device.setItemAsync('toggle', id, itemid, callback);
     },
 
-    'increaseItemValue':function(id, itemid) {
-        var result = {};
-        $.ajax({ url: path+"device/item/increase.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
+    'increaseItemValue':function(id, itemid, callback) {
+        return device.setItemAsync('increase', id, itemid, callback);
     },
 
-    'decreaseItemValue':function(id, itemid) {
-        var result = {};
-        $.ajax({ url: path+"device/item/decrease.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
+    'decreaseItemValue':function(id, itemid, callback) {
+        return device.setItemAsync('decrease', id, itemid, callback);
     },
 
     'setItemPercent':function(id, itemid) {
         var result = {};
         $.ajax({ url: path+"device/item/percent.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'setItemAsync':function(action, id, itemid, callback) {
+        var async = false;
+        if (typeof callback == 'function') {
+            async = true;
+        }
+        
+        var result = false;
+        var promise = $.ajax({
+            url: path+"device/item/"+action+".json",
+            dataType: 'json',
+            async: async,
+            data: "id="+id+"&itemid="+itemid,
+            success(data) {
+                if (async) {
+                    callback(data);
+                }
+                else {
+                    result = data;
+                }
+            }
+        });
+        
+        if (async) {
+            return promise;
+        }
         return result;
     }
 }
