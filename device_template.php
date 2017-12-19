@@ -482,7 +482,7 @@ class DeviceTemplate
             }
         }
         else if ($process->arguments->type === ProcessArg::NONE) {
-            $value = 0;
+            $value = "";
         }
         else if ($process->arguments->type === ProcessArg::TEXT) {
         }
