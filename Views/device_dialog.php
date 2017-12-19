@@ -57,7 +57,7 @@
     input[type="checkbox"] { margin:0px; }
     
     #device-init-modal {
-        width: 50%; left:25%; /* (100%-width)/2 */
+        width: 60%; left:20%; /* (100%-width)/2 */
         margin-left: auto; margin-right: auto;
     }
     

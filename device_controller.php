@@ -108,7 +108,7 @@ function device_controller()
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
                     if ($route->action == "get") $result = $deviceget;
                     else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
-                    else if ($route->action == 'init') $result = $device->init($deviceid, get('options'));
+                    else if ($route->action == 'init') $result = $device->init($deviceid, get('template'), get('options'));
                     else if ($route->action == "delete") $result = $device->delete($deviceid);
                     else if ($route->action == "setnewdevicekey") $result = $device->set_new_devicekey($deviceid);
                     else if ($route->action == 'template') {
@@ -116,7 +116,7 @@ function device_controller()
                             $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
                         }
                         if ($route->subaction == 'prepare') $result = $device->prepare_template($deviceid);
-                        else if ($route->subaction == 'init') $result = $device->init_template($deviceid, get('template'));
+                        else if ($route->subaction == 'init') $result = $device->init_template($deviceget, get('template'));
                     }
                     else if ($route->action == "thing") {
                         if ($route->subaction == "get")  $result = $device->get_thing($deviceid);
@@ -124,7 +124,7 @@ function device_controller()
                             if (isset($_GET['type'])) {
                                 $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
                             }
-                            $result = $device->init_thing($deviceid, get('options'));
+                            $result = $device->init_thing($deviceget);
                         }
                     }
                     else if ($route->action == "item") {

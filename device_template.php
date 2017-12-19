@@ -76,17 +76,17 @@ class DeviceTemplate
         }
         
         if (!empty($feeds)) {
-            $this->prepare_input_processes($userid, $feeds, $inputs);
+            $this->prepare_input_processes($userid, $prefix, $feeds, $inputs);
         }
         if (!empty($inputs)) {
-            $this->prepare_feed_processes($userid, $feeds, $inputs);
+            $this->prepare_feed_processes($userid, $prefix, $feeds, $inputs);
         }
         
         return array('success'=>true, 'feeds'=>$feeds, 'inputs'=>$inputs);
     }
 
-    public function init_template($userid, $template) {
-        $userid = intval($userid);
+    public function init_template($device, $template) {
+        $userid = intval($device['userid']);
         
         if (!is_object($template)) {
             return array('success'=>false, 'message'=>'Invalid device template');
@@ -117,7 +117,7 @@ class DeviceTemplate
         
         return array('success'=>true, 'message'=>'Device initialized');
     }
-    
+
     protected function prepare_feeds($userid, $nodeid, $prefix, &$feeds) {
         global $feed_settings;
         
@@ -125,7 +125,7 @@ class DeviceTemplate
         $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
         
         foreach($feeds as $f) {
-            $f->tag = $prefix.$f->name;
+            $f->name = $prefix.$f->name;
             if (!isset($f->tag)) {
                 $f->tag = $nodeid;
             }
@@ -163,9 +163,9 @@ class DeviceTemplate
             }
         }
     }
-    
+
     // Prepare the input process lists
-    protected function prepare_input_processes($userid, $feeds, &$inputs) {
+    protected function prepare_input_processes($userid, $prefix, $feeds, &$inputs) {
         global $user, $feed_settings;
         
         require_once "Modules/feed/feed_model.php";
@@ -183,7 +183,7 @@ class DeviceTemplate
             if (isset($i->id) && (isset($i->processList) || isset($i->processlist))) {
                 $processes = isset($i->processList) ? $i->processList : $i->processlist;
                 if (!empty($processes)) {
-                    $processes = $this->prepare_processes($feeds, $inputs, $processes, $process_list);
+                    $processes = $this->prepare_processes($prefix, $feeds, $inputs, $processes, $process_list);
                     if (isset($i->action) && $i->action != 'create') {
                         $processes_input = $input->get_processlist($i->id);
                         if (!isset($processes['success'])) {
@@ -207,9 +207,9 @@ class DeviceTemplate
             }
         }
     }
-    
+
     // Prepare the feed process lists
-    protected function prepare_feed_processes($userid, &$feeds, $inputs) {
+    protected function prepare_feed_processes($userid, $prefix, &$feeds, $inputs) {
         global $user, $feed_settings;
         
         require_once "Modules/feed/feed_model.php";
@@ -227,7 +227,7 @@ class DeviceTemplate
             if ($f->engine == Engine::VIRTUALFEED && isset($f->id) && (isset($f->processList) || isset($f->processlist))) {
                 $processes = isset($f->processList) ? $f->processList : $f->processlist;
                 if (!empty($processes)) {
-                    $processes = $this->prepare_processes($feeds, $inputs, $processes, $process_list);
+                    $processes = $this->prepare_processes($prefix, $feeds, $inputs, $processes, $process_list);
                     if (isset($f->action) && $f->action != 'create') {
                         $processes_input = $feed->get_processlist($f->id);
                         if (!isset($processes['success'])) {
@@ -251,9 +251,9 @@ class DeviceTemplate
             }
         }
     }
-    
+
     // Prepare template processes
-    protected function prepare_processes($feeds, $inputs, &$processes, $process_list) {
+    protected function prepare_processes($prefix, $feeds, $inputs, &$processes, $process_list) {
         $process_list_by_name = array();
         foreach ($process_list as $process_id => $process_item) {
             $name = $process_item[2];
@@ -283,6 +283,9 @@ class DeviceTemplate
                     if ($process_type != $process->arguments->type) {
                         $this->log->error("prepare_processes() Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process_id'");
                         return array('success'=>false, 'message'=>"Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process_id'");
+                    }
+                    else if ($process->arguments->type === ProcessArg::INPUTID || $process->arguments->type === ProcessArg::FEEDID) {
+                        $process->arguments->value = $prefix.$process->arguments->value;
                     }
                     
                     $result = $this->convert_process($feeds, $inputs, $process);
@@ -447,7 +450,6 @@ class DeviceTemplate
 
     // Converts template process
     protected function convert_process($feeds, $inputs, $process) {
-                
         if (isset($process->arguments->value)) {
             $value = $process->arguments->value;
         }
@@ -482,7 +484,7 @@ class DeviceTemplate
             }
         }
         else if ($process->arguments->type === ProcessArg::NONE) {
-            $value = 0;
+            $value = "";
         }
         else if ($process->arguments->type === ProcessArg::TEXT) {
         }

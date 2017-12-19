@@ -48,14 +48,12 @@
     <tr><td><?php echo _('List templates short'); ?></td><td><a href="<?php echo $path; ?>device/template/listshort.json"><?php echo $path; ?>device/template/listshort.json</a></td></tr>
     <tr><td><?php echo _('get template details'); ?></td><td><a href="<?php echo $path; ?>device/template/get.json?device=example"><?php echo $path; ?>device/template/get.json?device=example</a></td></tr>
     <tr><td><?php echo _('Prepare device initialization'); ?></td><td><a href="<?php echo $path; ?>device/template/prepare.json?id=1"><?php echo $path; ?>device/template/prepare.json?id=1</a></td></tr>
-    <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/template/init.json?id=1"><?php echo $path; ?>device/template/init.json?id=1</a></td></tr>
 </table>
 
 <p><b><?php echo _('Thing actions'); ?></b></p>
 <table class="table">
     <tr><td><?php echo _('List things'); ?></td><td><a href="<?php echo $path; ?>device/thing/list.json"><?php echo $path; ?>device/thing/list.json</a></td></tr>
     <tr><td><?php echo _('Get thing'); ?></td><td><a href="<?php echo $path; ?>device/thing/get.json?id=1"><?php echo $path; ?>device/thing/get.json?id=1</a></td></tr>
-    <tr><td><?php echo _('Initialize thing'); ?></td><td><a href="<?php echo $path; ?>device/thing/init.json?id=1"><?php echo $path; ?>device/thing/init.json?id=1</a></td></tr>
     <tr><td><?php echo _('Get item'); ?></td><td><a href="<?php echo $path; ?>device/item/get.json?id=1&itemid=1"><?php echo $path; ?>device/item/get.json?id=1&itemid=1</a></td></tr>
     <tr><td><?php echo _('Set item on'); ?></td><td><a href="<?php echo $path; ?>device/item/on.json?id=1&itemid=1"><?php echo $path; ?>device/item/on.json?id=1&itemid=1</a></td></tr>
     <tr><td><?php echo _('Set item off'); ?></td><td><a href="<?php echo $path; ?>device/item/off.json?id=1&itemid=1"><?php echo $path; ?>device/item/off.json?id=1&itemid=1</a></td></tr>

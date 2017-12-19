@@ -292,7 +292,7 @@ class Device
         }
         
         if (isset($type)) {
-            $type= preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $type);
+            $type= preg_replace('/[^\/\|\,\w\s-:]/','', $type);
         } else {
             $type = '';
         }
@@ -532,19 +532,31 @@ class Device
         return array('success'=>false, 'message'=>'Unknown error while preparing device initialization');
     }
 
-    public function init_template($id, $template) {
+    public function init($id, $template, $options) {
         $id = intval($id);
         
-        if (isset($template)) $template = json_decode($template);
+        if (isset($options)) $options = json_decode($options);
         
         $device = $this->get($id);
+        $device['options'] = $options;
+        
+        $result = $this->init_template($device, $template);
+        if (isset($result) && !$result['success']) {
+            return $result;
+        }
+        return array('success'=>true, 'message'=>'Device initialized');
+    }
+
+    public function init_template($device, $template) {
+        if (isset($template)) $template = json_decode($template);
+        
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $meta = $this->get_template_meta($device['type']);
             if (isset($meta)) {
                 $module = $meta['module'];
                 $class = $this->get_module_class($module, self::TEMPLATE);
                 if ($class != null) {
-                    return $class->init_template($device['userid'], $template);
+                    return $class->init_template($device, $template);
                 }
                 return array('success'=>false, 'message'=>'Device template class is not defined');
             }

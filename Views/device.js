@@ -20,101 +20,81 @@ var device = {
         return result;
     },
 
-    'setNewDeviceKey':function(id)
-    {
+    'setNewDeviceKey':function(id) {
         var result = {};
         $.ajax({ url: path+"device/setnewdevicekey.json", data: "id="+id, async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'remove':function(id)
-    {
+    'remove':function(id) {
         var result = {};
         $.ajax({ url: path+"device/delete.json", data: "id="+id, async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'create':function(nodeid, name, description, type)
-    {
+    'create':function(nodeid, name, description, type) {
         var result = {};
         $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type, async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'listTemplates':function()
-    {
+    'init':function(id, template, options) {
         var result = {};
-        $.ajax({ url: path+"device/template/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/init.json", data: "id="+id+"&template="+JSON.stringify(template)+"&options="+JSON.stringify(options), dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'prepareTemplate':function(id)
-    {
+    'prepareTemplate':function(id) {
         var result = {};
         $.ajax({ url: path+"device/template/prepare.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'initTemplate':function(id, template)
-    {
+    'listThings':function() {
         var result = {};
-        $.ajax({ url: path+"device/template/init.json", data: "id="+id+"&template="+JSON.stringify(template), dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/thing/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'listControls':function()
-    {
+    'getThing':function(id) {
         var result = {};
-        $.ajax({ url: path+"device/control/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/thing/get.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'getControl':function(id)
-    {
+    'setItemOn':function(id, itemid) {
         var result = {};
-        $.ajax({ url: path+"device/control/get.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/item/on.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'setControlOn':function(id, itemid)
-    {
+    'setItemOff':function(id, itemid) {
         var result = {};
-        $.ajax({ url: path+"device/control/on.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/item/off.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'setControlOff':function(id, itemid)
-    {
+    'toggleItemValue':function(id, itemid) {
         var result = {};
-        $.ajax({ url: path+"device/control/off.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/item/toggle.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'toggleControlValue':function(id, itemid)
-    {
+    'increaseItemValue':function(id, itemid) {
         var result = {};
-        $.ajax({ url: path+"device/control/toggle.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/item/increase.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'increaseControlValue':function(id, itemid)
-    {
+    'decreaseItemValue':function(id, itemid) {
         var result = {};
-        $.ajax({ url: path+"device/control/increase.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/item/decrease.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'decreaseControlValue':function(id, itemid)
-    {
+    'setItemPercent':function(id, itemid) {
         var result = {};
-        $.ajax({ url: path+"device/control/decrease.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
-    },
-
-    'setControlPercent':function(id, itemid)
-    {
-        var result = {};
-        $.ajax({ url: path+"device/control/percent.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/item/percent.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     }
 }

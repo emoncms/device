@@ -115,7 +115,7 @@ var device_dialog =
     },
 
     'drawTemplate':function() {
-        if (this.deviceType !== null) {
+        if (this.deviceType !== null && this.deviceType in this.templates) {
             var template = this.templates[this.deviceType];
             $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
             $('#template-info').show();
@@ -338,12 +338,7 @@ var device_dialog =
                     update();
                 }
                 $('#device-config-modal').modal('hide');
-                if (init) {
-                    var options = {};
-                    options['ctrlid'] = $('#template-options-ctrl-select option:selected').val();
-                    
-                    device_dialog.loadInit();
-                }
+                if (init) device_dialog.loadInit();
             }
             else {
                 alert('Device needs to be configured first.');
@@ -381,8 +376,11 @@ var device_dialog =
         $("#device-init-confirm").off('click').on('click', function() {
             $('#device-init-modal').modal('hide');
             
+            var options = {};
+            options['ctrlid'] = $('#template-options-ctrl-select option:selected').val();
+            
             var template = device_dialog.parseTemplate();
-            var result = device.initTemplate(device_dialog.device.id, template);
+            var result = device.init(device_dialog.device.id, template, options);
             if (typeof result.success !== 'undefined' && !result.success) {
                 alert('Unable to initialize device:\n'+result.message);
                 return false;
@@ -509,7 +507,7 @@ var device_dialog =
 
     'parseTemplate': function() {
         var template = {};
-
+        
         template['feeds'] = [];
         if (typeof device_dialog.deviceTemplate.feeds !== 'undefined' && 
                 device_dialog.deviceTemplate.feeds.length > 0) {
