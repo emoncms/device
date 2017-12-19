@@ -355,10 +355,10 @@ var device_dialog =
                 var feed = result.feeds[i];
                 var row = "";
                 if (feed.action.toLowerCase() == "none") {
-                    row += "<td><input class='input-select' type='checkbox' checked disabled /></td>";
+                    row += "<td><input row='"+i+"' class='input-select' type='checkbox' checked disabled /></td>";
                 }
                 else {
-                    row += "<td><input class='input-select' type='checkbox' checked /></td>";
+                    row += "<td><input row='"+i+"' class='input-select' type='checkbox' checked /></td>";
                 }
                 row += "<td>"+device_dialog.drawInitAction(feed.action)+"</td>"
                 row += "<td>"+feed.tag+"</td><td>"+feed.name+"</td>";
@@ -379,10 +379,10 @@ var device_dialog =
                 var input = result.inputs[i];
                 var row = "";
                 if (input.action.toLowerCase() == "none") {
-                    row += "<td><input class='input-select' type='checkbox' checked disabled /></td>";
+                    row += "<td><input row='"+i+"' class='input-select' type='checkbox' checked disabled /></td>";
                 }
                 else {
-                    row += "<td><input class='input-select' type='checkbox' checked /></td>";
+                    row += "<td><input row='"+i+"' class='input-select' type='checkbox' checked /></td>";
                 }
                 row += "<td>"+device_dialog.drawInitAction(input.action)+"</td>"
                 row += "<td>"+input.node+"</td><td>"+input.name+"</td><td>"+input.description+"</td>";
@@ -469,10 +469,8 @@ var device_dialog =
                 device_dialog.deviceTemplate.feeds.length > 0) {
             
             var feeds = device_dialog.deviceTemplate.feeds;
-            $("#device-init-feeds-table tr").find('input[type="checkbox"]:checked')
-                    .each(function (i, row) {
-                
-                template['feeds'].push(feeds[i]); 
+            $("#device-init-feeds-table tr").find('input[type="checkbox"]:checked').each(function() {
+                template['feeds'].push(feeds[$(this).attr("row")]); 
             });
         }
         
@@ -481,10 +479,8 @@ var device_dialog =
                 device_dialog.deviceTemplate.inputs.length > 0) {
             
             var inputs = device_dialog.deviceTemplate.inputs;
-            $("#device-init-inputs-table tr").find('input[type="checkbox"]:checked')
-                    .each(function (i, row) {
-                
-                template['inputs'].push(inputs[i]); 
+            $("#device-init-inputs-table tr").find('input[type="checkbox"]:checked').each(function() {
+                template['inputs'].push(inputs[$(this).attr("row")]); 
             });
         }
         
