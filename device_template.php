@@ -29,143 +29,143 @@ class DeviceTemplate
     }
 
     protected function load_template_list() {
-        $list = array();
-        foreach (glob("Modules/device/data/*.json") as $file) {
-            $content = json_decode(file_get_contents($file));
-            $list[basename($file, ".json")] = $content;
+        $list = array();        
+        
+        $iti = new RecursiveDirectoryIterator("Modules/device/data");
+        foreach(new RecursiveIteratorIterator($iti) as $file){
+            if(strpos($file ,".json") !== false){
+                $content = json_decode(file_get_contents($file));
+                $list[basename($file, ".json")] = $content;
+            }
         }
         return $list;
     }
 
     public function get_template($type) {
         $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
-        
-        if (file_exists("Modules/device/data/$type.json")) {
-            return json_decode(file_get_contents("Modules/device/data/$type.json"));
+        $list = $this->load_template_list();
+        if (!isset($list[$type])) {
+            return array('success'=>false, 'message'=>'Device template "'.$type.'" not found');
         }
+        return $list[$type];
     }
 
-    public function init_template($device) {
-    	$file = "Modules/device/data/".$device['type'].".json";
-        if (file_exists($file)) {
-            $template = json_decode(file_get_contents($file));
-        } else {
-            return array('success'=>false, 'message'=>"Template file not found '".$file."'");
+    public function prepare_template($device) {
+        $userid = intval($device['userid']);
+        
+        $result = $this->get_template($device['type']);
+        if (!is_object($result)) {
+            return $result;
         }
-        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $template->prefix);
+        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $result->prefix);
         
-        $feeds = $template->feeds;
-        $inputs = $template->inputs;
-        
-        // Create feeds
-        $result = $this->create_feeds($device['userid'], $device['nodeid'], $prefix, $feeds);
-        if ($result["success"] !== true) {
-            return array('success'=>false, 'message'=>'Error while creating the feeds. ' . $result['message']);
+        if (isset($result->feeds)) {
+            $feeds = $result->feeds;
+            $this->prepare_feeds($userid, $device['nodeid'], $prefix, $feeds);
         }
-        
-        // Create inputs
-        $result = $this->create_inputs($device['userid'], $device['nodeid'], $prefix, $inputs);
-        if ($result !== true) {
-            return array('success'=>false, 'message'=>'Error while creating the inputs.');
+        else {
+            $feeds = [];
         }
         
-        // Create inputs processes
-        $result = $this->create_input_processes($device['userid'], $feeds, $inputs);
-        if ($result["success"] !== true) {
-            return array('success'=>false, 'message'=>'Error while creating the inputs process list. ' . $result['message']);
+        if (isset($result->inputs)) {
+            $inputs = $result->inputs;
+            $this->prepare_inputs($userid, $device['nodeid'], $prefix, $inputs);
+        }
+        else {
+            $inputs = [];
         }
         
-        // Create feeds processes
-        $result = $this->create_feed_processes($device['userid'], $feeds, $inputs);
-        if ($result["success"] !== true) {
-            return array('success'=>false, 'message'=>'Error while creating the feeds process list. ' . $result['message']);
+        if (!empty($feeds)) {
+            $this->prepare_input_processes($userid, $feeds, $inputs);
+        }
+        if (!empty($inputs)) {
+            $this->prepare_feed_processes($userid, $feeds, $inputs);
+        }
+        
+        return array('success'=>true, 'feeds'=>$feeds, 'inputs'=>$inputs);
+    }
+
+    public function init_template($userid, $template) {
+        $userid = intval($userid);
+        
+        if (!is_object($template)) {
+            return array('success'=>false, 'message'=>'Invalid device template');
+        }
+        
+        if (isset($template->feeds)) {
+            $feeds = $template->feeds;
+            $this->create_feeds($userid, $feeds);
+        }
+        else {
+            $feeds = [];
+        }
+        
+        if (isset($template->inputs)) {
+            $inputs = $template->inputs;
+            $this->create_inputs($userid, $inputs);
+        }
+        else {
+            $inputs = [];
+        }
+        
+        if (!empty($inputs)) {
+            $this->create_input_processes($userid, $feeds, $inputs);
+        }
+        if (!empty($feeds)) {
+            $this->create_feed_processes($userid, $feeds, $inputs);
         }
         
         return array('success'=>true, 'message'=>'Device initialized');
     }
-
-    protected function parse_prefix($nodeid, $name, $prefix) {
-        if ($prefix === "node") {
-            return $nodeid."_";
-        }
-        else if ($prefix === "name") {
-            return $name."_";
-        }
-        else return "";
-    }
-
-    // Create the feeds
-    protected function create_feeds($userid, $nodeid, $prefix, &$feeds) {
+    
+    protected function prepare_feeds($userid, $nodeid, $prefix, &$feeds) {
         global $feed_settings;
         
         require_once "Modules/feed/feed_model.php";
         $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
         
-        $result = array("success"=>true);
-        
         foreach($feeds as $f) {
-            // Create each feed
-            $name = $prefix.$f->name;
-            if (property_exists($f, "tag")) {
-                $tag = $f->tag;
-            } else {
-                $tag = $nodeid;
-            }
-            $datatype = constant($f->type); // DataType::
-            $engine = constant($f->engine); // Engine::
-            $options = new stdClass();
-            if (property_exists($f, "interval")) {
-                $options->interval = $f->interval;
+            $f->tag = $prefix.$f->name;
+            if (!isset($f->tag)) {
+                $f->tag = $nodeid;
             }
             
-            $feedid = $feed->get_id($userid, $name);
-            
+            $feedid = $feed->exists_tag_name($userid, $f->tag, $f->name);
             if ($feedid == false) {
-                $this->log->info("create_feeds() userid=$userid tag=$tag name=$name datatype=$datatype engine=$engine");
-                $result = $feed->create($userid, $tag, $name, $datatype, $engine, $options);
-                if($result["success"] !== true) {
-                    return $result;
-                }
-                $feedid = $result["feedid"]; // Assign the created feed id to the feeds array
+                $f->action = 'create';
+                $f->id = -1;
             }
-            
-            $f->feedid = $feedid;
+            else {
+                $f->action = 'none';
+                $f->id = $feedid;
+            }
         }
-        return $result;
     }
 
-    // Create the inputs
-    protected function create_inputs($userid, $nodeid, $prefix, &$inputs) {
+    protected function prepare_inputs($userid, $nodeid, $prefix, &$inputs) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
-
+        
         foreach($inputs as $i) {
-            // Create each input
-            $name = $prefix.$i->name;
-            $description = $i->description;
-            if(property_exists($i, "node")) {
-                $node = $i->node;
-            } else {
-                $node = $nodeid;
+            $i->name = $prefix.$i->name;
+            if(!isset($i->node)) {
+                $i->node = $nodeid;
             }
             
-            $inputid = $input->exists_nodeid_name($userid, $node, $name);
-            
+            $inputid = $input->exists_nodeid_name($userid, $i->node, $i->name);
             if ($inputid == false) {
-                $this->log->info("create_inputs() userid=$userid nodeid=$node name=$name description=$description");
-                $inputid = $input->create_input($userid, $node, $name);
-                if(!$input->exists($inputid)) {
-                    return false;
-                }
-                $input->set_fields($inputid, '{"description":"'.$description.'"}');
+                $i->action = 'create';
+                $i->id = -1;
             }
-            $i->inputid = $inputid; // Assign the created input id to the inputs array
+            else {
+                $i->action = 'none';
+                $i->id = $inputid;
+            }
         }
-        return true;
     }
-
-    // Create the inputs process lists
-    protected function create_input_processes($userid, $feeds, $inputs) {
+    
+    // Prepare the input process lists
+    protected function prepare_input_processes($userid, $feeds, &$inputs) {
         global $user, $feed_settings;
         
         require_once "Modules/feed/feed_model.php";
@@ -180,26 +180,36 @@ class DeviceTemplate
         
         foreach($inputs as $i) {
             // for each input
-            if (isset($i->processList) || isset($i->processlist)) {
+            if (isset($i->id) && (isset($i->processList) || isset($i->processlist))) {
                 $processes = isset($i->processList) ? $i->processList : $i->processlist;
-                $inputid = $i->inputid;
-                $result = $this->convert_processes($feeds, $inputs, $processes, $process_list);
-                if (isset($result["success"])) {
-                    return $result; // success is only filled if it was an error
-                }
-                
-                $processes = implode(",", $result);
-                if ($processes != "") {
-                    $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
-                    $input->set_processlist($userid, $inputid, $processes, $process_list);
+                if (!empty($processes)) {
+                    $processes = $this->prepare_processes($feeds, $inputs, $processes, $process_list);
+                    if (isset($i->action) && $i->action != 'create') {
+                        $processes_input = $input->get_processlist($i->id);
+                        if (!isset($processes['success'])) {
+                            if ($processes_input == '' && $processes != '') {
+                                $i->action = 'set';
+                            }
+                            else if ($processes_input != $processes) {
+                                $i->action = 'override';
+                            }
+                        }
+                        else {
+                            if ($processes_input == '') {
+                                $i->action = 'set';
+                            }
+                            else {
+                                $i->action = 'override';
+                            }
+                        }
+                    }
                 }
             }
         }
-        
-        return array('success'=>true);
     }
-
-    protected function create_feed_processes($userid, $feeds, $inputs) {
+    
+    // Prepare the feed process lists
+    protected function prepare_feed_processes($userid, &$feeds, $inputs) {
         global $user, $feed_settings;
         
         require_once "Modules/feed/feed_model.php";
@@ -214,109 +224,288 @@ class DeviceTemplate
         
         foreach($feeds as $f) {
             // for each feed
-            if (($f->engine == Engine::VIRTUALFEED) && (isset($f->processList) || isset($f->processlist))) {
+            if ($f->engine == Engine::VIRTUALFEED && isset($f->id) && (isset($f->processList) || isset($f->processlist))) {
                 $processes = isset($f->processList) ? $f->processList : $f->processlist;
-                $feedid = $f->feedid;
-                $result = $this->convert_processes($feeds, $inputs, $processes, $process_list);
-                if (isset($result["success"])) {
-                    return $result; // success is only filled if it was an error
-                }
-                
-                $processes = implode(",", $result);
-                if ($processes != "") {
-                    $this->log->info("create_feeds_processes() calling feed->set_processlist feedId=$feedid processes=$processes");
-                    $feed->set_processlist($userid, $feedid, $processes, $process_list);
+                if (!empty($processes)) {
+                    $processes = $this->prepare_processes($feeds, $inputs, $processes, $process_list);
+                    if (isset($f->action) && $f->action != 'create') {
+                        $processes_input = $feed->get_processlist($f->id);
+                        if (!isset($processes['success'])) {
+                            if ($processes_input == '' && $processes != '') {
+                                $f->action = 'set';
+                            }
+                            else if ($processes_input != $processes) {
+                                $f->action = 'override';
+                            }
+                        }
+                        else {
+                            if ($processes_input == '') {
+                                $f->action = 'set';
+                            }
+                            else {
+                                $f->action = 'override';
+                            }
+                        }
+                    }
                 }
             }
         }
-        
-        return array('success'=>true);
     }
-
-    // Converts template processList
-    protected function convert_processes($feeds, $inputs, $processes, $process_list){
-        $result = array();
+    
+    // Prepare template processes
+    protected function prepare_processes($feeds, $inputs, &$processes, $process_list) {
+        $process_list_by_name = array();
+        foreach ($process_list as $process_id => $process_item) {
+            $name = $process_item[2];
+            $process_list_by_name[$name] = $process_id;
+        }
+        $processes_converted = array();
         
-        if (is_array($processes)) {
-            $process_list_by_name = array();
-            foreach ($process_list as $process_id => $process_item) {
-                $name = $process_item[2];
-                $process_list_by_name[$name] = $process_id;
+        $failed = false;
+        foreach($processes as &$process) {
+            // If process names are used map to process id
+            if (isset($process_list_by_name[$process->process])) $process->process = $process_list_by_name[$process->process];
+            
+            $process_id = $process->process;
+            if (!isset($process_list[$process_id])) {
+                $this->log->error("prepare_processes() Process '$process_id' not supported. Module missing?");
+                return array('success'=>false, 'message'=>"Process '$process_id' not supported. Module missing?");
             }
             
-            // create each processList
-            foreach($processes as $p) {
-                $proc_name = $p->process;
-                
-                // If process names are used map to process id
-                if (isset($process_list_by_name[$proc_name])) $proc_name = $process_list_by_name[$proc_name];
-                
-                if (!isset($process_list[$proc_name])) {
-                    $this->log->error("convertProcess() Process '$proc_name' not supported. Module missing?");
-                    return array('success'=>false, 'message'=>"Process '$proc_name' not supported. Module missing?");
-                }
-                
-                // Arguments
-                if(isset($p->arguments)) {
-                    if(isset($p->arguments->type)) {
-                        $type = @constant($p->arguments->type); // ProcessArg::
-                        $process_type = $process_list[$proc_name][1]; // get emoncms process ProcessArg
-                        
-                        if ($process_type != $type) {
-                            $this->log->error("convertProcess() Bad device template. Missmatch ProcessArg type. Got '$type' expected '$process_type'. process='$proc_name' type='".$p->arguments->type."'");
-                            return array('success'=>false, 'message'=>"Bad device template. Missmatch ProcessArg type. Got '$type' expected '$process_type'. process='$proc_name' type='".$p->arguments->type."'");
-                        }
-                        
-                        if (isset($p->arguments->value)) {
-                            $value = $p->arguments->value;
-                        } else if ($type === ProcessArg::NONE) {
-                            $value = 0;
-                        } else {
-                            $this->log->error("convertProcess() Bad device template. Undefined argument value. process='$proc_name' type='".$p->arguments->type."'");
-                            return array('success'=>false, 'message'=>"Bad device template. Undefined argument value. process='$proc_name' type='".$p->arguments->type."'");
-                        }
-                        
-                        if ($type === ProcessArg::VALUE) {
-                        } else if ($type === ProcessArg::INPUTID) {
-                            $temp = $this->search_array($inputs, 'name', $value); // return input array that matches $inputArray[]['name']=$value
-                            if ($temp->inputid > 0) {
-                                $value = $temp->inputid;
-                            } else {
-                                $this->log->error("convertProcess() Bad device template. Input name '$value' was not found. process='$proc_name' type='".$p->arguments->type."'");
-                                return array('success'=>false, 'message'=>"Bad device template. Input name '$value' was not found. process='$proc_name' type='".$p->arguments->type."'");
-                            }
-                        } else if ($type === ProcessArg::FEEDID) {
-                            $temp = $this->search_array($feeds, 'name', $value); // return feed array that matches $feedArray[]['name']=$value
-                            if ($temp->feedid > 0) {
-                                $value = $temp->feedid;
-                            } else {
-                                $this->log->error("convertProcess() Bad device template. Feed name '$value' was not found. process='$proc_name' type='".$p->arguments->type."'");
-                                return array('success'=>false, 'message'=>"Bad device template. Feed name '$value' was not found. process='$proc_name' type='".$p->arguments->type."'");
-                            }
-                        } else if ($type === ProcessArg::NONE) {
-                            $value = 0;
-                        } else if ($type === ProcessArg::TEXT) {
-                            //                      } else if ($type === ProcessArg::SCHEDULEID) { //not supporte for now
-                        } else {
-                            $this->log->error("convertProcess() Bad device template. Unsuported argument type. process='$proc_name' type='".$p->arguments->type."'");
-                            return array('success'=>false, 'message'=>"Bad device template. Unsuported argument type. process='$proc_name' type='".$p->arguments->type."'");
-                        }
-                        
-                    } else {
-                        $this->log->error("convertProcess() Bad device template. Argument type is missing, set to NONE if not required. process='$proc_name' type='".$p->arguments->type."'");
-                        return array('success'=>false, 'message'=>"Bad device template. Argument type is missing, set to NONE if not required. process='$proc_name' type='".$p->arguments->type."'");
+            $process->name = $process_list[$process->process][0];
+            
+            // Arguments
+            if(isset($process->arguments)) {
+                if(isset($process->arguments->type)) {
+                    $process->arguments->type = @constant($process->arguments->type); // ProcessArg::
+                    $process_type = $process_list[$process_id][1]; // get emoncms process ProcessArg
+                    
+                    if ($process_type != $process->arguments->type) {
+                        $this->log->error("prepare_processes() Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process_id'");
+                        return array('success'=>false, 'message'=>"Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process_id'");
                     }
                     
-                    $this->log->info("convertProcess() process process='$proc_name' type='".$p->arguments->type."' value='" . $value . "'");
-                    $result[] = $proc_name.":".$value;
-                    
-                } else {
-                    $this->log->error("convertProcess() Bad device template. Missing processList arguments. process='$proc_name'");
-                    return array('success'=>false, 'message'=>"Bad device template. Missing processList arguments. process='$proc_name'");
+                    $result = $this->convert_process($feeds, $inputs, $process);
+                    if (isset($result["success"])) {
+                        $failed = true;
+                    }
+                    else {
+                        $processes_converted[] = $result;
+                    }
+                }
+                else {
+                    $this->log->error("prepare_processes() Bad device template. Argument type is missing, set to NONE if not required. process='$process->process' type='".$process->arguments->type."'");
+                    return array('success'=>false, 'message'=>"Bad device template. Argument type is missing, set to NONE if not required. process='$process->process' type='".$process->arguments->type."'");
+                }
+            }
+            else {
+                $this->log->error("prepare_processes() Bad device template. Missing processList arguments. process='$process->process'");
+                return array('success'=>false, 'message'=>"Bad device template. Missing processList arguments. process='$process->process'");
+            }
+        }
+        if (!$failed) {
+            return implode(",", $processes_converted);
+        }
+        return array('success'=>false, 'message'=>"Unable to convert all prepared processes");
+    }
+
+    // Create the feeds
+    protected function create_feeds($userid, &$feeds) {
+        global $feed_settings;
+        
+        require_once "Modules/feed/feed_model.php";
+        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
+        
+        foreach($feeds as $f) {
+            $datatype = constant($f->type); // DataType::
+            $engine = constant($f->engine); // Engine::
+            $options = new stdClass();
+            if (property_exists($f, "interval")) {
+                $options->interval = $f->interval;
+            }
+            
+            if ($f->action === 'create') {
+                $this->log->info("create_feeds() userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine");
+                
+                $result = $feed->create($userid, $f->tag, $f->name, $datatype, $engine, $options);
+                if($result["success"] !== true) {
+                    $this->log->error("create_feeds() failed for userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine");
+                }
+                else {
+                    $f->id = $result["feedid"]; // Assign the created feed id to the feeds array
                 }
             }
         }
-        return $result;
+    }
+
+    // Create the inputs
+    protected function create_inputs($userid, &$inputs) {
+        require_once "Modules/input/input_model.php";
+        $input = new Input($this->mysqli, $this->redis, null);
+        
+        foreach($inputs as $i) {
+            if ($i->action === 'create') {
+                $this->log->info("create_inputs() userid=$userid nodeid=$i->node name=$i->name description=$i->description");
+                
+                $inputid = $input->create_input($userid, $i->node, $i->name);
+                if(!$input->exists($inputid)) {
+                    $this->log->error("create_inputs() failed for userid=$userid nodeid=$i->node name=$i->name description=$i->description");
+                }
+                else {
+                    $input->set_fields($inputid, '{"description":"'.$i->description.'"}');
+                    $i->id = $inputid; // Assign the created input id to the inputs array
+                }
+            }
+        }
+    }
+
+    // Create the input process lists
+    protected function create_input_processes($userid, $feeds, $inputs) {
+        global $user, $feed_settings;
+        
+        require_once "Modules/feed/feed_model.php";
+        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
+        
+        require_once "Modules/input/input_model.php";
+        $input = new Input($this->mysqli, $this->redis, $feed);
+        
+        require_once "Modules/process/process_model.php";
+        $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
+        $process_list = $process->get_process_list(); // emoncms supported processes
+        
+        foreach($inputs as $i) {
+            if ($i->action !== 'none') {
+                if (isset($i->id) && (isset($i->processList) || isset($i->processlist))) {
+                    $processes = isset($i->processList) ? $i->processList : $i->processlist;
+                    $inputid = $i->id;
+                    
+                    if (is_array($processes)) {
+                        $processes_converted = array();
+                        
+                        $failed = false;
+                        foreach($processes as $process) {
+                            $result = $this->convert_process($feeds, $inputs, $process);
+                            if (isset($result["success"])) {
+                                $failed = true;
+                                break;
+                            }
+                            $processes_converted[] = $result;
+                        }
+                        $processes = implode(",", $processes_converted);
+                        if (!$failed && $processes != "") {
+                            $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
+                            $input->set_processlist($userid, $inputid, $processes, $process_list);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Create the feed process lists
+    protected function create_feed_processes($userid, $feeds, $inputs) {
+        global $user, $feed_settings;
+        
+        require_once "Modules/feed/feed_model.php";
+        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
+        
+        require_once "Modules/input/input_model.php";
+        $input = new Input($this->mysqli, $this->redis, $feed);
+        
+        require_once "Modules/process/process_model.php";
+        $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
+        $process_list = $process->get_process_list(); // emoncms supported processes
+        
+        foreach($feeds as $f) {
+            if ($f->action !== 'none') {
+                if ($f->engine == Engine::VIRTUALFEED && isset($f->id) && (isset($f->processList) || isset($f->processlist))) {
+                    $processes = isset($f->processList) ? $f->processList : $f->processlist;
+                    $feedid = $f->id;
+                    
+                    if (is_array($processes)) {
+                        $processes_converted = array();
+                        
+                        $failed = false;
+                        foreach($processes as $process) {
+                            $result = $this->convert_process($feeds, $inputs, $process);
+                            if (isset($result["success"])) {
+                                $failed = true;
+                                break;
+                            }
+                            $processes_converted[] = $result;
+                        }
+                        $processes = implode(",", $processes_converted);
+                        if (!$failed && $processes != "") {
+                            $this->log->info("create_feeds_processes() calling feed->set_processlist feedId=$feedid processes=$processes");
+                            $feed->set_processlist($userid, $feedid, $processes, $process_list);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Converts template process
+    protected function convert_process($feeds, $inputs, $process) {
+                
+        if (isset($process->arguments->value)) {
+            $value = $process->arguments->value;
+        }
+        else if ($process->arguments->type === ProcessArg::NONE) {
+            $value = 0;
+        }
+        else {
+            $this->log->error("convertProcess() Bad device template. Undefined argument value. process='$process->process' type='".$process->arguments->type."'");
+            return array('success'=>false, 'message'=>"Bad device template. Undefined argument value. process='$process->process' type='".$process->arguments->type."'");
+        }
+        
+        if ($process->arguments->type === ProcessArg::VALUE) {
+        }
+        else if ($process->arguments->type === ProcessArg::INPUTID) {
+            $temp = $this->search_array($inputs, 'name', $value); // return input array that matches $inputArray[]['name']=$value
+            if (isset($temp->id) && $temp->id > 0) {
+                $value = $temp->id;
+            }
+            else {
+                $this->log->info("convertProcess() Input name '$value' was not found. process='$process->process' type='".$process->arguments->type."'");
+                return array('success'=>false, 'message'=>"Input name '$value' was not found. process='$process->process' type='".$process->arguments->type."'");
+            }
+        }
+        else if ($process->arguments->type === ProcessArg::FEEDID) {
+            $temp = $this->search_array($feeds, 'name', $value); // return feed array that matches $feedArray[]['name']=$value
+            if (isset($temp->id) && $temp->id > 0) {
+                $value = $temp->id;
+            }
+            else {
+                $this->log->info("convertProcess() Feed name '$value' was not found. process='$process->process' type='".$process->arguments->type."'");
+                return array('success'=>false, 'message'=>"Feed name '$value' was not found. process='$process->process' type='".$process->arguments->type."'");
+            }
+        }
+        else if ($process->arguments->type === ProcessArg::NONE) {
+            $value = 0;
+        }
+        else if ($process->arguments->type === ProcessArg::TEXT) {
+        }
+        else if ($process->arguments->type === ProcessArg::SCHEDULEID) {
+            //not supporte for now
+        }
+        else {
+            $this->log->error("convertProcess() Bad device template. Unsuported argument type. process='$process->process' type='".$process->arguments->type."'");
+            return array('success'=>false, 'message'=>"Bad device template. Unsuported argument type. process='$process->process' type='".$process->arguments->type."'");
+        }
+        
+        $this->log->info("convertProcess() process process='$process->process' type='".$process->arguments->type."' value='" . $value . "'");
+        return $process->process.":".$value;
+    }
+
+    protected function parse_prefix($nodeid, $name, $prefix) {
+        if ($prefix === "node") {
+            return strtolower($nodeid)."_";
+        }
+        else if ($prefix === "name") {
+            return strtolower($name)."_";
+        }
+        else return "";
     }
 
     protected function search_array($array, $key, $val) {

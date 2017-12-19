@@ -20,6 +20,13 @@ var device = {
         return result;
     },
 
+    'setNewDeviceKey':function(id)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/setnewdevicekey.json", data: "id="+id, async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
     'remove':function(id)
     {
         var result = {};
@@ -41,10 +48,17 @@ var device = {
         return result;
     },
 
-    'initTemplate':function(id, options)
+    'prepareTemplate':function(id)
     {
         var result = {};
-        $.ajax({ url: path+"device/template/init.json", data: "id="+id+"&options="+JSON.stringify(options), dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/template/prepare.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'initTemplate':function(id, template)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/template/init.json", data: "id="+id+"&template="+JSON.stringify(template), dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 

@@ -15,8 +15,8 @@ function device_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "view" && $session['write']) {
-            $device_templates = $device->get_template_list_meta();
-            $result = view("Modules/device/Views/device_view.php",array('devices'=>$device_templates));
+            $templates = $device->get_template_list();
+            $result = view("Modules/device/Views/device_view.php",array('devices'=>$templates));
         }
         if ($route->action == 'api') $result = view("Modules/device/Views/device_api.php", array());
     }
@@ -36,6 +36,10 @@ function device_controller()
             // 1. Register request for authentication details, or provide if allowed
             if ($route->subaction=="request") {
                 $ip = $_SERVER['REMOTE_ADDR'];
+                
+                $ip_parts = explode(".",$ip);
+                for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
+                $ip = implode(".",$ip_parts);
                 
                 $allow_ip = $redis->get("device_auth_allow");
                 // Only show authentication details to allowed ip address
@@ -60,6 +64,11 @@ function device_controller()
             // 3. User allows device to receive authentication details
             else if ($route->subaction=="allow" && $session['write']) {
                  $ip = get("ip");
+
+                 $ip_parts = explode(".",$ip);
+                 for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
+                 $ip = implode(".",$ip_parts);
+                 
                  $redis->set("device_auth_allow",$ip);    // Temporary availability of auth for device ip address
                  $redis->expire("device_auth_allow",60);  // Expire after 60 seconds
                  $redis->del("device_auth");
@@ -76,9 +85,9 @@ function device_controller()
         else if ($route->action == "autocreate") {
             if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
         }
-        else if ($route->action == "template" && $route->subaction != "init") {
+        else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
             if ($route->subaction == "list") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list();
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_full();
             }
             else if ($route->subaction == "listshort") {
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta();
@@ -101,12 +110,13 @@ function device_controller()
                     else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
                     else if ($route->action == 'init') $result = $device->init($deviceid, get('options'));
                     else if ($route->action == "delete") $result = $device->delete($deviceid);
-                    else if ($route->action == 'template' && 
-                            $route->subaction == 'init') {
+                    else if ($route->action == "setnewdevicekey") $result = $device->set_new_devicekey($deviceid);
+                    else if ($route->action == 'template') {
                         if (isset($_GET['type'])) {
                             $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
                         }
-                        $result = $device->init_template($deviceid, get('options'));
+                        if ($route->subaction == 'prepare') $result = $device->prepare_template($deviceid);
+                        else if ($route->subaction == 'init') $result = $device->init_template($deviceid, get('template'));
                     }
                     else if ($route->action == "thing") {
                         if ($route->subaction == "get")  $result = $device->get_thing($deviceid);
