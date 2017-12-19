@@ -1,10 +1,13 @@
 <?php
     global $path;
+    
+    $version = 1;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
+
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $version; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js?v=<?php echo $version; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js?v=<?php echo $version; ?>"></script>
 
 <style>
 #table input[type="text"] {
@@ -60,25 +63,21 @@
     'dummy-5':{'title':'', 'type':"blank"},
     'time':{'title':'<?php echo _('Updated'); ?>', 'type':"group-updated"},
     'dummy-7':{'title':'', 'type':"blank"},
-    'dummy-8':{'title':'', 'type':"blank"},
-    'dummy-9':{'title':'', 'type':"blank"},
-    'dummy-10':{'title':'', 'type':"blank"}
+    'dummy-8':{'title':'', 'type':"blank"}
   }
   
   table.deletedata = false;
   table.fields = {
     //'id':{'type':"fixed"},
-    'nodeid':{'title':'<?php echo _("Node"); ?>','type':"text"},
-    'name':{'title':'<?php echo _("Name"); ?>','type':"text"},
-    'description':{'title':'<?php echo _('Location'); ?>','type':"text"},
+    'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
+    'name':{'title':'<?php echo _("Name"); ?>','type':"fixed"},
+    'description':{'title':'<?php echo _('Location'); ?>','type':"fixed"},
     'typename':{'title':'<?php echo _("Type"); ?>','type':"fixed"},
-    'devicekey':{'title':'<?php echo _('Device access key'); ?>','type':"text"},
+    'devicekey':{'title':'<?php echo _('Device access key'); ?>','type':"fixed"},
     'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
-    //'public':{'title':"<?php echo _('tbd'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
+    // 'public':{'title':"<?php echo _('tbd'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
     // Actions
-    'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
-    'init-action':{'title':'', 'type':"iconbasic", 'icon':'icon-refresh'},
     'config-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'}
   }
 
@@ -141,22 +140,13 @@
     device_dialog.loadDelete(localDevice, row);
   });
 
-  $("#table").on('click', '.icon-refresh', function() {
-
-    // Get device of clicked row
-    var localDevice = table.data[$(this).attr('row')];
-    device_dialog.loadInit(localDevice);
-  });
-
   $("#table").on('click', '.icon-wrench', function() {
-
     // Get device of clicked row
     var localDevice = table.data[$(this).attr('row')];
     device_dialog.loadConfig(devices, localDevice);
   });
 
   $("#device-new").on('click', function () {
-
     device_dialog.loadConfig(devices, null);
   });
 

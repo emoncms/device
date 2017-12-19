@@ -3,32 +3,18 @@
     "category": "OpenEnergyMonitor",
     "group": "Switches",
     "description": "Smartplug prototype",
-    
+
     "prefix": "name",
-    "control": [
+    "items": [
         {
             "id": "status",
             "type": "Switch",
             "label": "Status",
             "mapping": {
-                "ON": { "channel": "status", "value": 1 },
-                "OFF": { "channel": "status", "value": 0 }
+                "ON": { "input": "status", "value": 1 },
+                "OFF": { "input": "status", "value": 0 }
             },
             "input": "status"
-        },
-        {
-            "id": "frequency",
-            "type": "Text",
-            "label": "Grid frequency",
-            "format": "%.1f Hz",
-            "input": "frequency"
-        },
-        {
-            "id": "voltage",
-            "type": "Text",
-            "label": "Grid voltage",
-            "format": "%.1f V",
-            "input": "voltage"
         },
         {
             "id": "power",
@@ -46,21 +32,57 @@
             "processList": []
         },
         {
-            "name": "frequency",
-            "description": "Grid frequency",
-            "processList": []
-        },
-        {
-            "name": "voltage",
-            "description": "Grid voltage",
-            "processList": []
-        },
-        {
             "name": "power",
             "description": "Grid power",
+            "processList": []
+        },
+        {
+            "name": "period",
+            "description": "Control period",
+            "processList": []
+        },
+        {
+            "name": "end",
+            "description": "Control end",
+            "processList": []
+        },
+        {
+            "name": "interruptible",
+            "description": "Control interruptible",
             "processList": []
         }
     ],
 
-    "feeds": []
+    "feeds": [],
+
+    "control": {
+        "period": {
+            "name": "Run period",
+            "type": "time",
+            "default": 0,
+            "resolution": 0.5
+        },
+        "end": {
+            "name": "Complete by",
+            "type": "time",
+            "default": 0,
+            "resolution": 0.5
+        },
+        "repeat": {
+            "type": "weekly-scheduler",
+            "default": [1,1,1,1,1,0,0]
+        },
+        "interruptible": {
+            "type": "checkbox",
+            "default": 0
+        },
+        "runonce": {
+            "type": "",
+            "default": true
+        },
+        "basic": {
+            "type": "",
+            "default": 0
+        }
+    }
 }
