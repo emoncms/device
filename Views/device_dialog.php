@@ -35,22 +35,28 @@
 
     .modal-adjust .modal-body {
         max-height: none;
-        overflow-y: auto;
+        overflow-y: hidden;
     }
 
     #sidebar-wrapper {
         position: absolute;
-        margin: -15px;
-        width: 250px;
+        margin-top: -15px;
+        margin-left: -15px;
+        max-height: none;
         height: 100%;
-        background: #eee;
+        width: 250px;
         overflow-y: auto;
+        background-color: #eee;
         z-index: 1000;
     }
 
     #content-wrapper {
+        position: absolute;
         margin-top: -15px;
         margin-left: 250px;
+        height: 100%;
+        max-height: none;
+        overflow-y: auto;
     }
 
     #content-wrapper .divider {
@@ -66,6 +72,19 @@
     #template-info .tooltip-inner {
         max-width: 500px;
     }
+
+    #template-options .input-large {
+        margin-bottom: 0px;
+    }
+
+    #template-options .template-option-selected {
+        background-color: #f5f5f5;
+    }
+
+    #template-options table tr:nth-of-type(2n) td  { border-top-width: 0px; }
+    #template-options table td:nth-of-type(2) { width:25%; }
+    #template-options table td:nth-of-type(3) { text-align: right; }
+    #template-options table td:nth-of-type(4) { width:14px; text-align: center; }
 
     #device-init-modal {
         width: 60%; left:20%; /* (100%-width)/2 */
@@ -131,47 +150,36 @@
             <label><b><?php echo _('Device Key'); ?></b></label>
             <div class="input-append">
                 <input id="device-config-devicekey" class="input-large" type="text" style="width:260px">
-                <button id="device-config-devicekey-new" class="btn">New</button>
+                <button id="device-config-devicekey-new" class="btn"><?php echo _('New'); ?></button>
             </div>
             
             <div id="template-options" style="display:none">
-                <div id="template-options-divider" class="divider"></div>
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <th id="template-options-header" colspan="4">
+                                <i id="template-options-header-icon" class="toggle-header icon-plus-sign" style="cursor:pointer"></i>
+                                <a class="toggle-header" style="cursor:pointer"><?php echo _('Options'); ?></a>
+                            </th>
+                        </tr>
+                        <tr id="template-options-table-header">
+                            <th><?php echo _('Option'); ?></th>
+                            <th><?php echo _('Value'); ?></th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </tbody>
+                    
+                    <tbody id="template-options-table"></tbody>
+                </table>
+                <div id="template-options-none" class="alert" style="display:none"><?php echo _('You have no options configured'); ?></div>
                 
-                <div id="template-options-ctrl" style="display:none">
-                    <label><b><?php echo _('Controller'); ?></b>
-                        <span id="template-options-ctrl-tooltip" data-toggle="tooltip" data-placement="right">
-                            <i class="icon-info-sign" style="cursor:pointer; padding-left:6px;"></i>
-                        </span>
-                    </label>
-                    <select id="template-options-ctrl-select" class="input-large"></select>
-                </div>
-                
-                <div id="template-options-table" style="display:none">
-                	<table class="table table-hover table-config">
-                		<tbody>
-                			<tr>
-            					<th id="options-header" colspan="5">
-                					<i class="toggle-header icon-minus-sign" style="cursor:pointer"></i>
-                					<a class="toggle-header" style="cursor:pointer">Options</a>
-                				</th>
-                			</tr>
-                			<tr id="option-header" style="display: table-row;" colspan="5">
-                				<th>Option</th>
-                				<th>Value</th>
-                				<th colspan="3"></th>
-                			</tr>
-                		</tbody>
-                		<tbody id="options-table" style="display: table-row-group;">
-                		</tbody>
-                		<tbody>
-                			<tr colspan="5"><th>Add option:</th></tr>
-                			<tr>
-                				<td><select id="template-add-options" class="input-large"></select></td>
-                				<td><button id="add-option-button" class="btn btn-info" style="border-radius: 4px;">Add</button></td>
-            				</tr>
-                		</tbody>
-                	</table>
-                </div>
+            	<div id="template-options-footer" style="margin-bottom: 8px; display:none">
+            		<h5><?php echo _('Add option:'); ?></h5>
+            		<span>
+                		<select id="template-options-select" class="input-large" disabled></select>
+                		<button id="template-options-add" class="btn btn-info" style="border-radius: 4px" disabled><?php echo _('Add'); ?></button>
+            		</span>
+            	</div>
             </div>
         </div>
     </div>

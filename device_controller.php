@@ -15,7 +15,7 @@ function device_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "view" && $session['write']) {
-            $templates = $device->get_template_list();
+            $templates = $device->get_template_list($session['userid']);
             $result = view("Modules/device/Views/device_view.php",array('devices'=>$templates));
         }
         if ($route->action == 'api') $result = view("Modules/device/Views/device_api.php", array());
@@ -83,7 +83,7 @@ function device_controller()
             if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
         }
         else if ($route->action == "create") {
-            if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"));
+            if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"),get("options"));
         }
         // Used in conjunction with input name describe to auto create device
         else if ($route->action == "autocreate") {
@@ -91,13 +91,16 @@ function device_controller()
         }
         else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
             if ($route->subaction == "list") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_full();
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_full($session['userid']);
             }
             else if ($route->subaction == "listshort") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta();
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta($session['userid']);
             }
             else if ($route->subaction == "get") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('device'));
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template($session['userid'], get('type'));
+            }
+            else if ($route->subaction == "options") {
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_options($session['userid'], get('type'));
             }
         }
         else if ($route->action == "thing" && 
@@ -112,7 +115,7 @@ function device_controller()
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
                     if ($route->action == "get") $result = $deviceget;
                     else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
-                    else if ($route->action == 'init') $result = $device->init($deviceid, get('template'), get('options'));
+                    else if ($route->action == 'init') $result = $device->init($deviceid, get('template'));
                     else if ($route->action == "delete") $result = $device->delete($deviceid);
                     else if ($route->action == "setnewdevicekey") $result = $device->set_new_devicekey($deviceid);
                     else if ($route->action == 'template') {

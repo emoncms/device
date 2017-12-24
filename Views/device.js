@@ -29,21 +29,49 @@ var device = {
         return result;
     },
 
-    'create':function(nodeid, name, description, type) {
+    'create':function(nodeid, name, description, type, options) {
         var result = {};
-        $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type, async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type+"&options="+JSON.stringify(options), async: false, success: function(data) {result = data;} });
         return result;
     },
 
-    'init':function(id, template, options) {
+    'init':function(id, template) {
         var result = {};
-        $.ajax({ url: path+"device/init.json", data: "id="+id+"&template="+JSON.stringify(template)+"&options="+JSON.stringify(options), dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/init.json", data: "id="+id+"&template="+JSON.stringify(template), dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
     'prepareTemplate':function(id) {
         var result = {};
         $.ajax({ url: path+"device/template/prepare.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
+    'getTemplateOptions':function(type, callback) {
+        var async = false;
+        if (typeof callback == 'function') {
+            async = true;
+        }
+        
+        var result = false;
+        var promise = $.ajax({
+            url: path+"device/template/options.json",
+            dataType: 'json',
+            async: async,
+            data: "type="+type,
+            success(data) {
+                if (async) {
+                    callback(data);
+                }
+                else {
+                    result = data;
+                }
+            }
+        });
+        
+        if (async) {
+            return promise;
+        }
         return result;
     },
 

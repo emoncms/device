@@ -24,11 +24,11 @@ class DeviceTemplate
         $this->log = new EmonLogger(__FILE__);
     }
 
-    public function get_template_list() {
-        return $this->load_template_list();
+    public function get_template_list($userid) {
+        return $this->load_template_list($userid);
     }
 
-    protected function load_template_list() {
+    protected function load_template_list($userid) {
         $list = array();        
         
         $iti = new RecursiveDirectoryIterator("Modules/device/data");
@@ -41,7 +41,7 @@ class DeviceTemplate
         return $list;
     }
 
-    public function get_template($type) {
+    public function get_template($userid, $type) {
         $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
         $list = $this->load_template_list();
         if (!isset($list[$type])) {
@@ -50,10 +50,22 @@ class DeviceTemplate
         return $list[$type];
     }
 
+    public function get_template_options($userid, $type) {
+        $result = $this->get_template($userid, $type);
+        if (!is_object($result)) {
+            return $result;
+        }
+        
+        if (isset($result->options)) {
+            return (array) $result->options;
+        }
+        return array();
+    }
+
     public function prepare_template($device) {
         $userid = intval($device['userid']);
         
-        $result = $this->get_template($device['type']);
+        $result = $this->get_template($userid, $device['type']);
         if (!is_object($result)) {
             return $result;
         }
