@@ -2,8 +2,8 @@
     global $path;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=3"></script>
-<link href="<?php echo $path; ?>Modules/app/css/titatoggle-dist-min.css?v=<?php echo $v; ?>" rel="stylesheet">
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js"></script>
+<link href="<?php echo $path; ?>Modules/device/Lib/titatoggle-dist-min.css" rel="stylesheet">
 
 <style>
     input[type="checkbox"] { margin:0px; }
@@ -52,6 +52,8 @@
 
     #content-wrapper {
         position: absolute;
+        right: 15px;
+        left: 15px;
         margin-top: -15px;
         margin-left: 250px;
         height: 100%;

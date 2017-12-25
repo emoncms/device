@@ -43,7 +43,7 @@ class DeviceTemplate
 
     public function get_template($userid, $type) {
         $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
-        $list = $this->load_template_list();
+        $list = $this->load_template_list($userid);
         if (!isset($list[$type])) {
             return array('success'=>false, 'message'=>'Device template "'.$type.'" not found');
         }

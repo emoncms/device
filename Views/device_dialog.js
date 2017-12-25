@@ -104,7 +104,7 @@ var device_dialog =
             if (this.templates[this.deviceType]!=undefined) {
                 var template = this.templates[this.deviceType]
                 
-                $(".category-body[category='"+template.category+"']").show();
+                $(".group-header[category='"+template.category+"']").show();
                 $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
                 $(".group-row[type='"+this.deviceType+"']").addClass("device-selected");
                 
@@ -801,13 +801,13 @@ var device_dialog =
             var value = null;
             
             var type = option.type;
-            if (type === 'text' && $('#template-option-'+key+'-text').val() != undefined) {
+            if (type === 'text' && $('#template-option-'+option.id+'-text').val() != undefined) {
                 value = $('#template-option-'+option.id+'-text').val();
             }
             else if (type === 'selection' && $('#template-option-'+option.id+'-select').val() != undefined) {
                 value = $('#template-option-'+option.id+'-select option:selected').val();
             }
-            else if (type === 'switch' && $('#template-option-'+option.id+'-select').val() != undefined) {
+            else if (type === 'switch' && $('#template-option-'+option.id+'-switch').val() != undefined) {
                 value = $('#template-option-'+option.id+'-switch').is(':checked');
             }
             if (value != null && value != "") {
