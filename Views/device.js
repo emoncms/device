@@ -75,9 +75,30 @@ var device = {
         return result;
     },
 
-    'listThings':function() {
-        var result = {};
-        $.ajax({ url: path+"device/thing/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+    'listThings':function(callback) {
+        var async = false;
+        if (typeof callback == 'function') {
+            async = true;
+        }
+        
+        var result = false;
+        var promise = $.ajax({
+            url: path+"device/thing/list.json",
+            dataType: 'json',
+            async: async,
+            success(data) {
+                if (async) {
+                    callback(data);
+                }
+                else {
+                    result = data;
+                }
+            }
+        });
+        
+        if (async) {
+            return promise;
+        }
         return result;
     },
 

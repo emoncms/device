@@ -14,8 +14,8 @@
     
     $menu_dropdown[] = array(
             'name'=> dgettext($domain, "Devices"),
-            'icon'=>'icon-tasks',//wrench, adjust
-            'path'=>"device/control" ,
+            'icon'=>'icon-tasks',
+            'path'=>"device/thing/view" ,
             'session'=>"write",
-            'order' => 42
+            'order' => 10
     );
