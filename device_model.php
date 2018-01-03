@@ -678,6 +678,7 @@ class Device
             'type' => $item['type'],
             'label' => $item['label']
         );
+        if (isset($item['select'])) $itemval['select'] = $item['select'];
         if (isset($item['format'])) $itemval['format'] = $item['format'];
         if (isset($item['max'])) $itemval['max'] = $item['max'];
         if (isset($item['min'])) $itemval['min'] = $item['min'];

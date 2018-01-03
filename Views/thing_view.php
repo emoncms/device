@@ -28,13 +28,13 @@
     }
 
     .thing-info {
-        background-color:#ddd;
-        cursor:pointer;
+        background-color: #ddd;
+        cursor: pointer;
     }
 
     .thing-list {
         padding: 0px 5px 5px 5px;
-        background-color:#ddd;
+        background-color: #ddd;
     }
 
     .thing-list-item {
@@ -42,45 +42,50 @@
     }
 
     .item-list {
-        background-color:#f0f0f0;
-        border-bottom:1px solid #fff;
-        border-item-left:2px solid #f0f0f0;
-        height:41px;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #fff;
+        border-item-left: 2px solid #f0f0f0;
+        height: 41px;
     }
 
     .item {
         color: grey;
-        font-weight: bold;
         padding-top: 5px;
     }
 
     .item-name {
         text-align: right;
-        width: 75%;
-    }
-
-    .item-left {
-        text-align: right;
-        width: 15%;
-        padding-right: 0.7%;
+        font-weight: bold;
+        width: 80%;
     }
 
     .item-input {
         text-align: right;
-        width: 5%;
+        font-weight: bold;
+        width: 1%;
+    }
+
+    .item-input .text {
+        color: dimgrey;
+        margin-right: 8px;
+    }
+
+    .item-left {
+        text-align: right;
     }
 
     .item-right {
-        text-align: item-left;
-        width: 10%;
+        text-align: left;
+        width: 5%;
     }
 
     input.number {
-        width: 45px;
+        margin-bottom: 2px;
+        margin-right: 8px;
+        text-align: right;
+        width: 35px;
         color: grey;
         background-color: white;
-        margin-bottom: 5px;
-        margin-right: 5px;
     }
 
     input.number[disabled] {
@@ -88,10 +93,12 @@
     }
 
     .checkbox-slider--b {
+        margin-left: 8px;
+        margin-right: 8px;
+        height: 20px;
         width: 20px;
         border-radius: 25px;
         background-color: gainsboro;
-        height: 20px;
     }
 
     *::before, *::after {
@@ -203,43 +210,94 @@ function draw_items(thing) {
             if (items.hasOwnProperty(id)) {
                 var item = items[id];
                 var type = item.type.toLowerCase();
-                
-                var left = "";
-                var right = "";
-                var input = "";
+                var value = parse_input_value(item);
+
+                var row = "";
                 if (type === "switch") {
-                    var checked = item.value ? "checked" : "";
-                    
-                    left = "<span>Off</span>";
-                    right = "<span>On</span>";
-                    input = 
-                        "<div class='checkbox checkbox-slider--b checkbox-slider-info'>" +
-                            "<label>" +
-                                "<input id='thing-"+thing+"-"+id+"' type='checkbox' "+checked+"><span></span>" +
-                            "</label>" +
-                        "</div>";
-                }
-                else if (type === "text") {
-                    var value = (item.value ? item.value : 0).toFixed(item.format[2]);
-                    var disabled = "disabled";
-                    
-                    right = "<span>" + item.format.split(" ")[1] + "</span>";
-                    input = "<input id='thing-"+thing+"-"+id+"' class='number' type='text' value="+value+" "+disabled+" />";
-                }
-                
-                list += 
-                    "<tr>" +
-                        "<td class='item item-name'>" +
-                            "<span>"+item.label+"</span>" +
+                    row = 
+                        "<td class='item item-left'><span>Off</span></td>" +
+                        "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
+                            "<div class='checkbox checkbox-slider--b checkbox-slider-info'>" +
+                                "<label>" +
+                                    "<input id='thing-"+thing+"-"+id+"' type='checkbox' checked='"+value+"'><span></span>" +
+                                "</label>" +
+                            "</div>" +
                         "</td>" +
-                        "<td class='item item-left'>"+left+"</td>" +
-                        "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>"+input+"</td>" +
-                        "<td class='item item-right'>"+right+"</td>" +
-                    "</tr>";
+                        "<td class='item item-right'><span>On</span></td>";
+                }
+                else if (type === "text" || type === "number") {
+                    var right = "";
+                    if (typeof item.format !== 'undefined') {
+                        var format = item.format;
+                        if (format.startsWith('%s')) {
+                            right = format.substr(2);
+                        }
+                        else if (format.startsWith('%i')) {
+                            right = format.substr(2);
+                        }
+                        else if (format.startsWith('%.') && format.charAt(3) == 'f') {
+                            right = format.substr(4);
+                        }
+                    }
+                    
+                    row = "<td class='item item-left'></td>";
+                    if (type === "text") {
+                        row += 
+                            "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
+                                "<span id='thing-"+thing+"-"+id+"' class='text'>"+value+"</span>" +
+                            "</td>" +
+                            "<td class='item item-right'><span>"+right+"</span></td>";
+                    }
+                    else if (type === "number") {
+                        row += 
+                            "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
+                                "<input id='thing-"+thing+"-"+id+"' class='number' type='text' value="+value+" />" +
+                            "</td>" +
+                            "<td class='item item-right'><span>"+right+"</span></td>";
+                    }
+                }
+                list += 
+                    "<table class='item-list' style='width:100%'>" +
+                        "<tr>" +
+                            "<td class='item item-name'>" +
+                                "<span>"+item.label+"</span>" +
+                            "</td>" +
+                            row +
+                        "</tr>" +
+                    "</table>";
             }
         }
     }
-    return "<table class='item-list' style='width:100%'>"+list+"</table>";
+    return list;
+}
+
+function parse_input_value(item) {
+    var value = item.value;
+
+    var type = item.type.toLowerCase();
+    if (type === "switch") {
+        value = (value != null && Number(value) == 1) ? true : false
+    }
+    else if (type === "text" || type === "number") {
+        if (type === "text") {
+            if (value == null) value = "";
+            
+            if (typeof item.select !== 'undefined' && item.select.hasOwnProperty(value)) {
+                value = item.select[value];
+            }
+        }
+        if (typeof item.format !== 'undefined') {
+            var format = item.format;
+            if (format.startsWith('%i')) {
+                value = (value != null ? value : 0).toFixed(0);
+            }
+            else if (format.startsWith('%.') && format.charAt(3) == 'f') {
+                var fixed = format.charAt(2);
+                value = (value != null ? value : 0).toFixed(fixed);
+            }
+        }
+    }
+    return value;
 }
 
 function update_inputs() {
@@ -249,15 +307,18 @@ function update_inputs() {
             for (var id in items) {
                 if (items.hasOwnProperty(id)) {
                     var item = items[id];
-                	var input = $("#thing-"+thing+"-"+id);
+                    var input = $("#thing-"+thing+"-"+id);
+                    var value = parse_input_value(item);
                     
                     var type = item.type.toLowerCase();
                     if (type == "switch") {
-                        var checked = false;
-                        if (item.value != null && Number(item.value) == 1) {
-                            checked = true;
-                        }
-                    	input.prop("checked", checked);
+                        input.prop("checked", value);
+                    }
+                    else if (type == "text") {
+                        input.text(value);
+                    }
+                    else if (type == "number") {
+                        input.val(value);
                     }
                 }
             }
@@ -267,7 +328,7 @@ function update_inputs() {
 
 function item_click(thing, id) {
     var item = things[thing].items[id];
-	var input = $("#thing-"+thing+"-"+id);
+    var input = $("#thing-"+thing+"-"+id);
     
     var type = item.type.toLowerCase();
     if (type == "switch") {
