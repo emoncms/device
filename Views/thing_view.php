@@ -173,6 +173,10 @@ function updaterStart() {
     updater = null;
     if (INTERVAL > 0) updater = setInterval(update, INTERVAL);
 }
+function updaterStop() {
+    clearInterval(updater);
+    updater = null;
+}
 updaterStart();
 
 function update() {
@@ -449,9 +453,6 @@ $('#thing-list').on('input', '.item-input', function () {
     
     var type = item.type.toLowerCase();
     if (type == "slider") {
-        // Restart updater to avoid the reset of the slider
-    	updaterStart();
-    	
     	var scale = 1;
         if (typeof item.scale !== 'undefined') {
             scale = item.scale;
@@ -477,9 +478,19 @@ $('#thing-list').on('change', '.item-input', function () {
         $("#thing-"+thing+"-"+id).val(format_input_value(item, value));
         
         device.setItemValue(thing, id, value/scale);
+        $(this).children('input').trigger('focusout');
     }
     else if (type == "slider") {
         device.setItemValue(thing, id, value);
+        $(this).children('input').trigger('focusout');
     }
+});
+
+$('#thing-list').on('focus', '.item-input input', function () {
+	updaterStop();
+});
+
+$('#thing-list').on('focusout', '.item-input input', function () {
+	updaterStart();
 });
 </script>
