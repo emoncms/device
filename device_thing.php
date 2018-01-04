@@ -83,7 +83,7 @@ class DeviceThing
             
             return array('success'=>true, 'message'=>"Item value set");
         }
-        return array('success'=>false, 'message'=>"Error while seting item value");
+        return array('success'=>false, 'message'=>"Error while setting item value");
     }
 
     protected function parse_prefix($nodeid, $name, $prefix) {

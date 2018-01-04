@@ -142,7 +142,7 @@ function device_controller()
                         else if ($route->subaction == "increase") $result = $device->increase_item_value($deviceid, get('itemid'));
                         else if ($route->subaction == "decrease") $result = $device->decrease_item_value($deviceid, get('itemid'));
                         else if ($route->subaction == "percent")  $result = $device->set_item_percent($deviceid, get('itemid'), get('value'));
-                        else if ($route->subaction == "set")  $result = $device->set_item_value($deviceid, get('itemid'), get('value'), get('mappings'));
+                        else if ($route->subaction == "set")  $result = $device->set_item_value($deviceid, get('itemid'), get('value'));
                     }
                 }
             }

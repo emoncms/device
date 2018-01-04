@@ -128,9 +128,39 @@ var device = {
         return device.setItemAsync('decrease', id, itemid, callback);
     },
 
-    'setItemPercent':function(id, itemid) {
-        var result = {};
-        $.ajax({ url: path+"device/item/percent.json", data: "id="+id+"&itemid="+itemid, dataType: 'json', async: false, success: function(data) {result = data;} });
+    'setItemPercent':function(id, itemid, value, callback) {
+        return device.setItemValueAsync('percent', id, itemid, value, callback);
+    },
+
+    'setItemValue':function(id, itemid, value, callback) {
+        return device.setItemValueAsync('set', id, itemid, value, callback);
+    },
+
+    'setItemValueAsync':function(action, id, itemid, value, callback) {
+        var async = false;
+        if (typeof callback == 'function') {
+            async = true;
+        }
+        
+        var result = false;
+        var promise = $.ajax({
+            url: path+"device/item/"+action+".json",
+            dataType: 'json',
+            async: async,
+            data: "id="+id+"&itemid="+itemid+"&value="+value,
+            success(data) {
+                if (async) {
+                    callback(data);
+                }
+                else {
+                    result = data;
+                }
+            }
+        });
+        
+        if (async) {
+            return promise;
+        }
         return result;
     },
 

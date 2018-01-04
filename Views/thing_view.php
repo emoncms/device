@@ -104,6 +104,44 @@
     *::before, *::after {
         box-sizing: border-box;
     }
+
+    .slider {
+        -webkit-appearance: none;
+        margin-left: 8px;
+        margin-right: 8px;
+        width: 150px;
+        height: 15px;
+        border-radius: 5px;
+        outline: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-width: 0px;
+        border-radius: 50%;
+        background: #44b3e2;
+        cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+        background: #209ed3;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-width: 0px;
+        border-radius: 50%;
+        background: #44b3e2;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb:hover {
+        background: #209ed3;
+    }
 </style>
 
 <div>
@@ -210,8 +248,8 @@ function draw_items(thing) {
             if (items.hasOwnProperty(id)) {
                 var item = items[id];
                 var type = item.type.toLowerCase();
-                var value = parse_input_value(item);
-
+                var value = parse_input_value(item, item.value, type);
+                
                 var row = "";
                 if (type === "switch") {
                     row = 
@@ -225,18 +263,15 @@ function draw_items(thing) {
                         "</td>" +
                         "<td class='item item-right'><span>On</span></td>";
                 }
-                else if (type === "text" || type === "number") {
-                    var right = "";
+                else {
+                    var postfix = "";
                     if (typeof item.format !== 'undefined') {
                         var format = item.format;
-                        if (format.startsWith('%s')) {
-                            right = format.substr(2);
-                        }
-                        else if (format.startsWith('%i')) {
-                            right = format.substr(2);
+                        if (format.startsWith('%s') || format.startsWith('%i')) {
+                            postfix = format.substr(2).trim();
                         }
                         else if (format.startsWith('%.') && format.charAt(3) == 'f') {
-                            right = format.substr(4);
+                            postfix = format.substr(4).trim();
                         }
                     }
                     
@@ -246,14 +281,24 @@ function draw_items(thing) {
                             "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
                                 "<span id='thing-"+thing+"-"+id+"' class='text'>"+value+"</span>" +
                             "</td>" +
-                            "<td class='item item-right'><span>"+right+"</span></td>";
+                            "<td class='item item-right'><span>"+postfix+"</span></td>";
                     }
                     else if (type === "number") {
                         row += 
                             "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
-                                "<input id='thing-"+thing+"-"+id+"' class='number' type='text' value="+value+" />" +
+                                "<input id='thing-"+thing+"-"+id+"' class='number' type='text' value='"+value+"' />" +
                             "</td>" +
-                            "<td class='item item-right'><span>"+right+"</span></td>";
+                            "<td class='item item-right'><span>"+postfix+"</span></td>";
+                    }
+                    else if (type == "slider" && typeof item.max !== 'undefined' && typeof item.min !== 'undefined' && typeof item.step !== 'undefined') {
+                        row = 
+                            "<td class='item item-left'></td>" +
+                            "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
+                            	"<input id='thing-"+thing+"-"+id+"' class='slider' type='range' min='"+item.min+"' max='"+item.max+"'  step='"+item.step+"' value='"+value+"' />" +
+                            "</td>" +
+                            "<td class='item item-right'>" +
+                                "<span id='thing-"+thing+"-"+id+"-value'>"+value+"</span><span> "+postfix+"</span>" +
+                            "</td>";
                     }
                 }
                 list += 
@@ -271,35 +316,6 @@ function draw_items(thing) {
     return list;
 }
 
-function parse_input_value(item) {
-    var value = item.value;
-
-    var type = item.type.toLowerCase();
-    if (type === "switch") {
-        value = (value != null && Number(value) == 1) ? true : false
-    }
-    else if (type === "text" || type === "number") {
-        if (type === "text") {
-            if (value == null) value = "";
-            
-            if (typeof item.select !== 'undefined' && item.select.hasOwnProperty(value)) {
-                value = item.select[value];
-            }
-        }
-        if (typeof item.format !== 'undefined') {
-            var format = item.format;
-            if (format.startsWith('%i')) {
-                value = (value != null ? value : 0).toFixed(0);
-            }
-            else if (format.startsWith('%.') && format.charAt(3) == 'f') {
-                var fixed = format.charAt(2);
-                value = (value != null ? value : 0).toFixed(fixed);
-            }
-        }
-    }
-    return value;
-}
-
 function update_inputs() {
     for (var thing in things) {
         if (things.hasOwnProperty(thing)) {
@@ -308,9 +324,9 @@ function update_inputs() {
                 if (items.hasOwnProperty(id)) {
                     var item = items[id];
                     var input = $("#thing-"+thing+"-"+id);
-                    var value = parse_input_value(item);
                     
                     var type = item.type.toLowerCase();
+                    var value = parse_input_value(item, item.value, type);
                     if (type == "switch") {
                         input.prop("checked", value);
                     }
@@ -320,10 +336,44 @@ function update_inputs() {
                     else if (type == "number") {
                         input.val(value);
                     }
+                    else if (type == "slider") {
+                        input.val(value);
+                        $("#thing-"+thing+"-"+id+"-value").text(value);
+                    }
                 }
             }
         }
     }
+}
+
+function parse_input_value(item, value, type) {
+    if (typeof type === 'undefined') {
+        type = item.type.toLowerCase();
+    }
+	
+    if (type === "switch") {
+        value = (value && Number(value) == 1) ? true : false
+    }
+    else {
+        if (type === "text") {
+            if (value) value = "";
+            
+            if (typeof item.select !== 'undefined' && item.select.hasOwnProperty(value)) {
+                value = item.select[value];
+            }
+        }
+        if (typeof item.format !== 'undefined') {
+            var format = item.format;
+            if (format.startsWith('%i')) {
+                value = Number(value ? value : 0).toFixed(0);
+            }
+            else if (format.startsWith('%.') && format.charAt(3) == 'f') {
+                var fixed = format.charAt(2);
+                value = Number(value ? value : 0).toFixed(fixed);
+            }
+        }
+    }
+    return value;
 }
 
 function item_click(thing, id) {
@@ -373,6 +423,33 @@ $("#thing-list").on('click', '.item-input', function(e) {
             
         }, 250); // dblclick tolerance
         $me.data('alreadyclickedTimeout', alreadyclickedTimeout); // store this id to clear if necessary
+    }
+});
+
+$('#thing-list').on('input', '.item-input', function () {
+    var id = $(this).attr('item');
+    var thing = $(this).attr('thing');
+    var item = things[thing].items[id];
+    
+    var type = item.type.toLowerCase();
+    if (type == "slider") {
+        // Restart updater to avoid the reset of the slider
+    	updaterStart(update, 5000);
+    	
+        var value = parse_input_value(item, $(this).children('.slider').val(), type);
+        $("#thing-"+thing+"-"+id+"-value").text(value);
+    }
+});
+
+$('#thing-list').on('change', '.item-input', function () {
+    var id = $(this).attr('item');
+    var thing = $(this).attr('thing');
+    var item = things[thing].items[id];
+    
+    var type = item.type.toLowerCase();
+    if (type == "slider") {
+        var value = parse_input_value(item, $(this).children('.slider').val(), type);
+        device.setItemValue(thing, id, value);
     }
 });
 </script>

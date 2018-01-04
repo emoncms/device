@@ -680,8 +680,10 @@ class Device
         );
         if (isset($item['select'])) $itemval['select'] = $item['select'];
         if (isset($item['format'])) $itemval['format'] = $item['format'];
+        if (isset($item['scale'])) $itemval['scale'] = $item['scale'];
         if (isset($item['max'])) $itemval['max'] = $item['max'];
         if (isset($item['min'])) $itemval['min'] = $item['min'];
+        if (isset($item['step'])) $itemval['step'] = $item['step'];
         
         $value = null;
         if (isset($item['inputid'])) {
@@ -830,14 +832,18 @@ class Device
         
         return array('success'=>false, 'message'=>'Item "percent" not implemented yet');
     }
-    
-    public function set_item_value($id, $itemid, $value, $mapping) {
-        if (empty($mapping)) {
-            $mapping = array();
+
+    public function set_item_value($id, $itemid, $value) {
+        $id = intval($id);
+        $item = $this->get_item($id, $itemid);
+        if (isset($item) && isset($item['mapping'])) {
+            $mapping = (array) $item['mapping'];
+            if (isset($mapping['SET'])) {
+                $mapping['SET']['value'] = $value;
+                
+                return $this->set_item($id, $itemid, (array) $mapping['SET']);
+            }
         }
-        $mapping['value'] = $value;
-        
-        return $this->set_item($id, $itemid, $mapping);
     }
 
     public function set_item($id, $itemid, $mapping) {
