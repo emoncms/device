@@ -83,7 +83,7 @@
         margin-bottom: 2px;
         margin-right: 8px;
         text-align: right;
-        width: 35px;
+        width: 55px;
         color: grey;
         background-color: white;
     }
@@ -162,17 +162,18 @@
 </div>
 <script>
 
+const INTERVAL = 5000;
 var path = "<?php echo $path; ?>";
 
 var things = {};
 
 var updater;
-function updaterStart(func, interval) {
+function updaterStart() {
     clearInterval(updater);
     updater = null;
-    if (interval > 0) updater = setInterval(func, interval);
+    if (INTERVAL > 0) updater = setInterval(update, INTERVAL);
 }
-updaterStart(update, 5000);
+updaterStart();
 
 function update() {
     device.listThings(function(result) {
@@ -248,7 +249,7 @@ function draw_items(thing) {
             if (items.hasOwnProperty(id)) {
                 var item = items[id];
                 var type = item.type.toLowerCase();
-                var value = parse_input_value(item, item.value, type);
+                var value = parse_input_value(item, type, item.value);
                 
                 var row = "";
                 if (type === "switch") {
@@ -264,6 +265,11 @@ function draw_items(thing) {
                         "<td class='item item-right'><span>On</span></td>";
                 }
                 else {
+                	var scale = 1;
+                    if (typeof item.scale !== 'undefined') {
+                        scale = item.scale;
+                    }
+                    
                     var postfix = "";
                     if (typeof item.format !== 'undefined') {
                         var format = item.format;
@@ -279,14 +285,14 @@ function draw_items(thing) {
                     if (type === "text") {
                         row += 
                             "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
-                                "<span id='thing-"+thing+"-"+id+"' class='text'>"+value+"</span>" +
+                                "<span id='thing-"+thing+"-"+id+"' class='text'>"+format_input_value(item, value*scale)+"</span>" +
                             "</td>" +
                             "<td class='item item-right'><span>"+postfix+"</span></td>";
                     }
                     else if (type === "number") {
                         row += 
                             "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
-                                "<input id='thing-"+thing+"-"+id+"' class='number' type='text' value='"+value+"' />" +
+                                "<input id='thing-"+thing+"-"+id+"' class='number' type='text' value='"+format_input_value(item, value*scale)+"' />" +
                             "</td>" +
                             "<td class='item item-right'><span>"+postfix+"</span></td>";
                     }
@@ -294,10 +300,10 @@ function draw_items(thing) {
                         row = 
                             "<td class='item item-left'></td>" +
                             "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
-                            	"<input id='thing-"+thing+"-"+id+"' class='slider' type='range' min='"+item.min+"' max='"+item.max+"'  step='"+item.step+"' value='"+value+"' />" +
+                            	"<input id='thing-"+thing+"-"+id+"' class='slider' type='range' min='"+item.min+"' max='"+item.max+"'  step='"+item.step+"' value='"+format_input_value(item, value)+"' />" +
                             "</td>" +
                             "<td class='item item-right'>" +
-                                "<span id='thing-"+thing+"-"+id+"-value'>"+value+"</span><span> "+postfix+"</span>" +
+                                "<span id='thing-"+thing+"-"+id+"-value'>"+format_input_value(item, value*scale)+"</span><span> "+postfix+"</span>" +
                             "</td>";
                     }
                 }
@@ -326,19 +332,26 @@ function update_inputs() {
                     var input = $("#thing-"+thing+"-"+id);
                     
                     var type = item.type.toLowerCase();
-                    var value = parse_input_value(item, item.value, type);
+                    var value = parse_input_value(item, type, item.value);
                     if (type == "switch") {
                         input.prop("checked", value);
                     }
-                    else if (type == "text") {
-                        input.text(value);
-                    }
-                    else if (type == "number") {
-                        input.val(value);
-                    }
-                    else if (type == "slider") {
-                        input.val(value);
-                        $("#thing-"+thing+"-"+id+"-value").text(value);
+                    else {
+                    	var scale = 1;
+                        if (typeof item.scale !== 'undefined') {
+                            scale = item.scale;
+                        }
+                        
+                    	if (type == "text") {
+                            input.text(format_input_value(item, value*scale));
+                        }
+                        else if (type == "number") {
+                            input.val(format_input_value(item, value*scale));
+                        }
+                        else if (type == "slider") {
+                            input.val(format_input_value(item, value));
+                            $("#thing-"+thing+"-"+id+"-value").text(format_input_value(item, value*scale));
+                        }
                     }
                 }
             }
@@ -346,30 +359,33 @@ function update_inputs() {
     }
 }
 
-function parse_input_value(item, value, type) {
-    if (typeof type === 'undefined') {
-        type = item.type.toLowerCase();
-    }
-	
+function parse_input_value(item, type, value) {
     if (type === "switch") {
         value = (value && Number(value) == 1) ? true : false
     }
-    else {
-        if (type === "text") {
-            if (value) value = "";
-            
-            if (typeof item.select !== 'undefined' && item.select.hasOwnProperty(value)) {
-                value = item.select[value];
-            }
+    else if (type === "text") {
+        if (!value) value = "";
+        
+        if (typeof item.select !== 'undefined' && item.select.hasOwnProperty(value)) {
+            value = item.select[value];
         }
+    }
+    if (!isNaN(value)) {
+    	value = Number(value ? value : 0);
+    }
+    return value;
+}
+
+function format_input_value(item, value) {
+    if (!isNaN(value)) {
         if (typeof item.format !== 'undefined') {
             var format = item.format;
             if (format.startsWith('%i')) {
-                value = Number(value ? value : 0).toFixed(0);
+                value = value.toFixed(0);
             }
             else if (format.startsWith('%.') && format.charAt(3) == 'f') {
                 var fixed = format.charAt(2);
-                value = Number(value ? value : 0).toFixed(fixed);
+                value = value.toFixed(fixed);
             }
         }
     }
@@ -434,9 +450,14 @@ $('#thing-list').on('input', '.item-input', function () {
     var type = item.type.toLowerCase();
     if (type == "slider") {
         // Restart updater to avoid the reset of the slider
-    	updaterStart(update, 5000);
+    	updaterStart();
     	
-        var value = parse_input_value(item, $(this).children('.slider').val(), type);
+    	var scale = 1;
+        if (typeof item.scale !== 'undefined') {
+            scale = item.scale;
+        }
+        var value = format_input_value(item, $(this).children('.slider').val()*scale);
+    	
         $("#thing-"+thing+"-"+id+"-value").text(value);
     }
 });
@@ -447,8 +468,17 @@ $('#thing-list').on('change', '.item-input', function () {
     var item = things[thing].items[id];
     
     var type = item.type.toLowerCase();
-    if (type == "slider") {
-        var value = parse_input_value(item, $(this).children('.slider').val(), type);
+    var value = parse_input_value(item, type, $(this).children('input').val());
+    if (type == "number") {
+    	var scale = 1;
+        if (typeof item.scale !== 'undefined' && item.scale != 0) {
+            scale = item.scale;
+        }
+        $("#thing-"+thing+"-"+id).val(format_input_value(item, value));
+        
+        device.setItemValue(thing, id, value/scale);
+    }
+    else if (type == "slider") {
         device.setItemValue(thing, id, value);
     }
 });
