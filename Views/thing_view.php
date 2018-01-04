@@ -18,6 +18,7 @@
 
     .block-title {
         padding: 10px;
+        float:left;
         color: grey;
         font-weight: bold;
     }
@@ -30,6 +31,19 @@
     .thing-info {
         background-color: #ddd;
         cursor: pointer;
+    }
+
+    .thing-configure {
+        float:right;
+        padding:10px;
+        width:30px;
+        text-align:center;
+        color:#666;
+        border-left: 1px solid #eee;
+    }
+
+    .thing-configure:hover {
+        background-color:#eaeaea;
     }
 
     .thing-list {
@@ -160,10 +174,14 @@
        </div>
     <div id="thing-loader" class="ajax-loader"></div>
 </div>
+
+<?php require "Modules/device/Views/device_dialog.php"; ?>
+
 <script>
 
 const INTERVAL = 5000;
 var path = "<?php echo $path; ?>";
+var templates = <?php echo json_encode($templates); ?>;
 
 var things = {};
 
@@ -233,6 +251,9 @@ function draw() {
                                     "<td>" +
                                         "<div class='block-title'>"+name+"</div>" +
                                     "</td>" +
+                                    "<td>" +
+                                        "<div class='thing-configure' thing='"+id+"'><i class='icon-wrench icon-white'></i></div>" +
+                                    "</td>" +
                                 "</tr>" +
                             "</table>" +
                             items +
@@ -269,7 +290,7 @@ function draw_items(thing) {
                         "<td class='item item-right'><span>On</span></td>";
                 }
                 else {
-                	var scale = 1;
+                    var scale = 1;
                     if (typeof item.scale !== 'undefined') {
                         scale = item.scale;
                     }
@@ -304,7 +325,7 @@ function draw_items(thing) {
                         row = 
                             "<td class='item item-left'></td>" +
                             "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
-                            	"<input id='thing-"+thing+"-"+id+"' class='slider' type='range' min='"+item.min+"' max='"+item.max+"'  step='"+item.step+"' value='"+format_input_value(item, value)+"' />" +
+                                "<input id='thing-"+thing+"-"+id+"' class='slider' type='range' min='"+item.min+"' max='"+item.max+"'  step='"+item.step+"' value='"+format_input_value(item, value)+"' />" +
                             "</td>" +
                             "<td class='item item-right'>" +
                                 "<span id='thing-"+thing+"-"+id+"-value'>"+format_input_value(item, value*scale)+"</span><span> "+postfix+"</span>" +
@@ -341,12 +362,12 @@ function update_inputs() {
                         input.prop("checked", value);
                     }
                     else {
-                    	var scale = 1;
+                        var scale = 1;
                         if (typeof item.scale !== 'undefined') {
                             scale = item.scale;
                         }
                         
-                    	if (type == "text") {
+                        if (type == "text") {
                             input.text(format_input_value(item, value*scale));
                         }
                         else if (type == "number") {
@@ -375,7 +396,7 @@ function parse_input_value(item, type, value) {
         }
     }
     if (!isNaN(value)) {
-    	value = Number(value ? value : 0);
+        value = Number(value ? value : 0);
     }
     return value;
 }
@@ -453,12 +474,12 @@ $('#thing-list').on('input', '.item-input', function () {
     
     var type = item.type.toLowerCase();
     if (type == "slider") {
-    	var scale = 1;
+        var scale = 1;
         if (typeof item.scale !== 'undefined') {
             scale = item.scale;
         }
         var value = format_input_value(item, $(this).children('.slider').val()*scale);
-    	
+        
         $("#thing-"+thing+"-"+id+"-value").text(value);
     }
 });
@@ -471,7 +492,7 @@ $('#thing-list').on('change', '.item-input', function () {
     var type = item.type.toLowerCase();
     var value = parse_input_value(item, type, $(this).children('input').val());
     if (type == "number") {
-    	var scale = 1;
+        var scale = 1;
         if (typeof item.scale !== 'undefined' && item.scale != 0) {
             scale = item.scale;
         }
@@ -486,11 +507,17 @@ $('#thing-list').on('change', '.item-input', function () {
     }
 });
 
+$("#thing-list").on("click", ".thing-configure", function() {
+    // Get device of clicked thing
+    var thing = $(this).attr('thing');
+    device_dialog.loadConfig(templates, device.get(thing));
+});
+
 $('#thing-list').on('focus', '.item-input input', function () {
-	updaterStop();
+    updaterStop();
 });
 
 $('#thing-list').on('focusout', '.item-input input', function () {
-	updaterStart();
+    updaterStart();
 });
 </script>

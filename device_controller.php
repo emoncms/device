@@ -16,11 +16,14 @@ function device_controller()
     {
         if ($route->action == "view" && $session['write']) {
             $templates = $device->get_template_list($session['userid']);
-            $result = view("Modules/device/Views/device_view.php", array('devices'=>$templates));
+            $result = view("Modules/device/Views/device_view.php", array('templates'=>$templates));
         }
         else if ($route->action == 'api') $result = view("Modules/device/Views/device_api.php", array());
         else if ($route->action == "thing" && $session['write']) {
-            if ($route->subaction == "view") $result = view("Modules/device/Views/thing_view.php", array());
+            if ($route->subaction == "view") {
+                $templates = $device->get_template_list($session['userid']);
+                $result = view("Modules/device/Views/thing_view.php", array('templates'=>$templates));
+            }
             else if ($route->subaction == 'api') $result = view("Modules/device/Views/thing_api.php", array());
         }
     }
