@@ -658,7 +658,7 @@ class Device
                 'type' => $device['type']
         );
         
-        $result = $this->get_item_list($device['id'], $device['userid'], $device['nodeid'], $device['name'], $device['type']);
+        $result = $this->get_item_list($device);
         if (isset($result)) {
             // The existence of the success key indicates a failure already
             if (isset($result['success'])) {
@@ -704,15 +704,15 @@ class Device
         return $itemval;
     }
 
-    private function get_item_list($id, $userid, $nodeid, $name, $type) {
+    private function get_item_list($device) {
         $items = null;
         if ($this->redis) {
-            if ($this->redis->exists("device:thing:$id")) {
+            if ($this->redis->exists("device:thing:".$device['id'])) {
                 $items = array();
                 
-                $itemids = $this->redis->sMembers("device:thing:$id");
+                $itemids = $this->redis->sMembers("device:thing:".$device['id']);
                 foreach ($itemids as $i) {
-                    $item = (array) $this->redis->hGetAll("device:".$id.":item:".$i);
+                    $item = (array) $this->redis->hGetAll("device:".$device['id'].":item:".$i);
                     if (isset($item['mapping'])) {
                         $item['mapping'] = json_decode($item['mapping']);
                     }
@@ -720,21 +720,21 @@ class Device
                 }
             }
         }
-        else if (isset(self::$cache['items'][$id])) {
+        else if (isset(self::$cache['items'][$device['id']])) {
             $items = array();
-            foreach (self::$cache['items'][$id] as $item) {
+            foreach (self::$cache['items'][$device['id']] as $item) {
                 $items[] = (array) $item;
             }
         }
         
         if ($items == null) {
-            $template = $this->get_template_meta($userid, $type);
+            $template = $this->get_template_meta($device['userid'], $device['type']);
             if (isset($template) && $template['thing']) {
                 $module = $template['module'];
                 $class = $this->get_module_class($module, self::THING);
                 if ($class != null) {
-                    $items = $class->get_item($userid, $nodeid, $name, $type, null);
-                    $this->cache_item($id, $items);
+                    $items = $class->get_item($device);
+                    $this->cache_item($device['id'], $items);
                 }
                 else {
                     return array('success'=>false, 'message'=>'Device thing class does not exist');
@@ -770,7 +770,7 @@ class Device
                 $module = $template['module'];
                 $class = $this->get_module_class($module, self::THING);
                 if ($class != null) {
-                    $items = $class->get_item($device['userid'], $device['nodeid'], $device['name'], $device['type'], null);
+                    $items = $class->get_item($device);
                     foreach ($items as $item) {
                         if ($item['id'] == $itemid) {
                             return $item;

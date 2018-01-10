@@ -24,17 +24,14 @@ class DeviceThing
         $this->log = new EmonLogger(__FILE__);
     }
 
-    public function get_item($userid, $nodeid, $name, $type, $options) {
-    	$file = "Modules/device/data/".$type.".json";
+    public function get_item($device) {
+        $file = "Modules/device/data/".$device['type'].".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
         } else {
             return array('success'=>false, 'message'=>"Template file not found '".$file."'");
         }
-        if (isset($template->prefix)) {
-            $prefix = $this->parse_prefix($nodeid, $name, $template->prefix);
-        }
-        else $prefix = "";
+        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $template);
         
         $items = array();
         for ($i=0; $i<count($template->items); $i++) {
@@ -43,7 +40,7 @@ class DeviceThing
             if (isset($item['mapping'])) {
                 foreach($item['mapping'] as &$mapping) {
                     if (isset($mapping->input)) {
-                        $inputid = $this->get_input_id($userid, $nodeid, $prefix, $mapping->input, $template->inputs);
+                        $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $mapping->input, $template->inputs);
                         if ($inputid == false) {
                             continue;
                         }
@@ -86,14 +83,17 @@ class DeviceThing
         return array('success'=>false, 'message'=>"Error while setting item value");
     }
 
-    protected function parse_prefix($nodeid, $name, $prefix) {
-        if ($prefix === "node") {
-            return $nodeid."_";
+    protected function parse_prefix($nodeid, $name, $template) {
+        if (isset($template->prefix)) {
+            $prefix = $template->prefix;
+            if ($prefix === "node") {
+                return strtolower($nodeid)."_";
+            }
+            else if ($prefix === "name") {
+                return strtolower($name)."_";
+            }
         }
-        else if ($prefix === "name") {
-            return $name."_";
-        }
-        else return "";
+        return "";
     }
 
     protected function get_input_id($userid, $nodeid, $prefix, $name, $inputs) {

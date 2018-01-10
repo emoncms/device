@@ -69,7 +69,7 @@ class DeviceTemplate
         if (!is_object($result)) {
             return $result;
         }
-        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $result->prefix);
+        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $result);
         
         if (isset($result->feeds)) {
             $feeds = $result->feeds;
@@ -512,14 +512,17 @@ class DeviceTemplate
         return $process->process.":".$value;
     }
 
-    protected function parse_prefix($nodeid, $name, $prefix) {
-        if ($prefix === "node") {
-            return strtolower($nodeid)."_";
+    protected function parse_prefix($nodeid, $name, $template) {
+        if (isset($template->prefix)) {
+            $prefix = $template->prefix;
+            if ($prefix === "node") {
+                return strtolower($nodeid)."_";
+            }
+            else if ($prefix === "name") {
+                return strtolower($name)."_";
+            }
         }
-        else if ($prefix === "name") {
-            return strtolower($name)."_";
-        }
-        else return "";
+        return "";
     }
 
     protected function search_array($array, $key, $val) {
