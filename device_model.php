@@ -472,14 +472,14 @@ class Device
         // Always cache and reload all templates here.
         $this->load_template_list($userid);
         
-        return $this->get_template_list_meta();
+        return $this->get_template_list_meta($userid);
     }
 
     public function get_template_list_full($userid) {
         return $this->load_template_list($userid);
     }
 
-    public function get_template_list_meta() {
+    public function get_template_list_meta($userid) {
         $templates = array();
         
         if ($this->redis) {
@@ -497,7 +497,7 @@ class Device
         }
         else {
             if (empty(self::$cache['templates'])) { // Cache it now
-                $this->load_template_list();
+                $this->load_template_list($userid);
             }
             $templates = self::$cache['templates'];
         }
