@@ -24,7 +24,7 @@ class DeviceThing
         $this->log = new EmonLogger(__FILE__);
     }
 
-    public function get_item($device) {
+    public function get_item_list($device) {
         $file = "Modules/device/data/".$device['type'].".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));

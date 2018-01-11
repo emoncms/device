@@ -713,18 +713,14 @@ class Device
                 $itemids = $this->redis->sMembers("device:thing:".$device['id']);
                 foreach ($itemids as $i) {
                     $item = (array) $this->redis->hGetAll("device:".$device['id'].":item:".$i);
-                    if (isset($item['mapping'])) {
-                        $item['mapping'] = json_decode($item['mapping']);
-                    }
+                    if (isset($item['select'])) $item['select'] = json_decode($item['select']);
+                    if (isset($item['mapping'])) $item['mapping'] = json_decode($item['mapping']);
                     $items[] = $item;
                 }
             }
         }
         else if (isset(self::$cache['items'][$device['id']])) {
-            $items = array();
-            foreach (self::$cache['items'][$device['id']] as $item) {
-                $items[] = (array) $item;
-            }
+            $items = self::$cache['items'][$device['id']];
         }
         
         if ($items == null) {
@@ -733,8 +729,8 @@ class Device
                 $module = $template['module'];
                 $class = $this->get_module_class($module, self::THING);
                 if ($class != null) {
-                    $items = $class->get_item($device);
-                    $this->cache_item($device['id'], $items);
+                    $items = $class->get_item_list($device);
+                    $this->cache_items($device['id'], $items);
                 }
                 else {
                     return array('success'=>false, 'message'=>'Device thing class does not exist');
@@ -752,15 +748,25 @@ class Device
         
         if ($this->redis) {
             if ($this->redis->exists("device:thing:$id")) {
-                $item = (array) $this->redis->hGetAll("device:".$id.":item:".$itemid);
-                if (isset($item['mapping'])) {
-                    $item['mapping'] = json_decode($item['mapping']);
+                $itemids = $this->redis->sMembers("device:thing:".$id);
+                foreach ($itemids as $i) {
+                    $item = (array) $this->redis->hGetAll("device:".$id.":item:".$i);
+                    if ($item['id'] == $itemid) {
+                        if (isset($item['select'])) $item['select'] = json_decode($item['select']);
+                        if (isset($item['mapping'])) $item['mapping'] = json_decode($item['mapping']);
+                        return $item;
+                    }
                 }
-                return $item;
             }
         }
         else if (isset(self::$cache['items'][$id])) {
-            return self::$cache['items'][$id][$itemid];
+            $items = self::$cache['items'][$id];
+            foreach ($items as $item) {
+                if ($item['id'] == $itemid) {
+                    return $item;
+                }
+            }
+            return array('success'=>false, 'message'=>'Item does not exist');
         }
         
         $device = $this->get($id);
@@ -770,7 +776,7 @@ class Device
                 $module = $template['module'];
                 $class = $this->get_module_class($module, self::THING);
                 if ($class != null) {
-                    $items = $class->get_item($device);
+                    $items = $class->get_item_list($device);
                     foreach ($items as $item) {
                         if ($item['id'] == $itemid) {
                             return $item;
@@ -839,11 +845,12 @@ class Device
         if (isset($item) && isset($item['mapping'])) {
             $mapping = (array) $item['mapping'];
             if (isset($mapping['SET'])) {
-                $mapping['SET']['value'] = $value;
+                $mapping['SET']->value = $value;
                 
                 return $this->set_item($id, $itemid, (array) $mapping['SET']);
             }
         }
+        return array('success'=>false, 'message'=>'Unknown item or incomplete device template mappings "SET"');
     }
 
     public function set_item($id, $itemid, $mapping) {
@@ -934,15 +941,15 @@ class Device
         }
     }
 
-    private function cache_item($id, $item) {
+    private function cache_items($id, $item) {
         if ($this->redis) {
             $this->redis->delete("device:thing:$id");
             
-            foreach ($item as $value) {
+            foreach ($item as $key => $value) {
+                if (isset($value['select'])) $value['select'] = json_encode($value['select']);
                 if (isset($value['mapping'])) $value['mapping'] = json_encode($value['mapping']);
-                $itemid = $value['id'];
-                $this->redis->sAdd("device:thing:$id", $itemid);
-                $this->redis->hMSet("device:$id:item:$itemid", $value);
+                $this->redis->sAdd("device:thing:$id", $key);
+                $this->redis->hMSet("device:$id:item:$key", $value);
             }
         }
         else {
@@ -952,8 +959,7 @@ class Device
             
             $items = array();
             foreach ($item as $value) {
-                $itemid = $value['id'];
-                $items[$itemid] = $value;
+                $items[] = $value;
             }
             
             self::$cache['items'][$id] = $items;
