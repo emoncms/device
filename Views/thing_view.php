@@ -179,7 +179,7 @@
 
 <script>
 
-const INTERVAL = 5000;
+const INTERVAL = 10000;
 var path = "<?php echo $path; ?>";
 var templates = <?php echo json_encode($templates); ?>;
 
@@ -217,7 +217,7 @@ function update() {
                 thing['items'] = items;
                 things[thing.id] = thing;
             }
-            if (redraw) {
+            if (redraw && updater) {
                 draw();
             }
             update_inputs();
@@ -368,7 +368,10 @@ function update_inputs() {
                         }
                         
                         if (type == "text") {
-                            input.text(format_input_value(item, value*scale));
+                            if (!isNaN(value)) {
+                                value *= scale;
+                            }
+                            input.text(format_input_value(item, value));
                         }
                         else if (type == "number") {
                             input.val(format_input_value(item, value*scale));
