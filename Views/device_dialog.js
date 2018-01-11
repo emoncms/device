@@ -441,6 +441,9 @@ var device_dialog =
         if (device_dialog.device != null && typeof device_dialog.device.options[option.id] !== 'undefined') {
         	value = device_dialog.device.options[option.id];
         }
+        if (value == null && typeof option['default'] !== 'undefined') {
+        	value = option['default'];
+        }
         
         var type = option.type;
         if (type === 'text') {
