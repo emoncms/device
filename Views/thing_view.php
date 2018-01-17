@@ -394,12 +394,17 @@ function parse_input_value(item, type, value) {
     else if (type === "text") {
         if (!value) value = "";
         
-        if (typeof item.select !== 'undefined' && item.select.hasOwnProperty(value)) {
+        if (typeof item['select'] !== 'undefined' && item.select.hasOwnProperty(value)) {
             value = item.select[value];
         }
     }
     if (!isNaN(value)) {
-        value = Number(value ? value : 0);
+        if (value) {
+            value = Number(value);
+        }
+        else {
+            value = Number(typeof item['default'] !== 'undefined' ? item['default'] : 0);
+        }
     }
     return value;
 }

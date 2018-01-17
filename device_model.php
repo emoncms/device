@@ -684,6 +684,7 @@ class Device
         if (isset($item['max'])) $itemval['max'] = $item['max'];
         if (isset($item['min'])) $itemval['min'] = $item['min'];
         if (isset($item['step'])) $itemval['step'] = $item['step'];
+        if (isset($item['default'])) $itemval['default'] = $item['default'];
         
         $value = null;
         if (isset($item['inputid'])) {
