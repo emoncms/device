@@ -89,13 +89,14 @@ class DeviceTemplate
         
         $userid = intval($userid);
         
-        if (!is_object($template)) {
+        if (empty($template)) {
             $result = $this->prepare_template($device);
             if (isset($result["success"]) && !$result["success"]) {
                 return $result;
             }
             $template = $result;
         }
+        if (!is_object($template)) $template = (object) $template;
         
         if (isset($template->feeds)) {
             $feeds = $template->feeds;
