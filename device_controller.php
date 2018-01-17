@@ -126,7 +126,7 @@ function device_controller()
                             $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
                         }
                         if ($route->subaction == 'prepare') $result = $device->prepare_template($deviceid);
-                        else if ($route->subaction == 'init') $result = $device->init_template($deviceget, get('template'));
+                        else if ($route->subaction == 'init') $result = $device->init_template($deviceget, $_POST['template']);
                     }
                     else if ($route->action == "thing") {
                         if ($route->subaction == "get")  $result = $device->get_thing($deviceid);

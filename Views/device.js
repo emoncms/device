@@ -37,7 +37,7 @@ var device = {
 
     'init':function(id, template) {
         var result = {};
-        $.ajax({ url: path+"device/init.json", data: "id="+id+"&template="+JSON.stringify(template), dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/init.json?id="+id, type: 'POST', data: "template="+JSON.stringify(template), dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 

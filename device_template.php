@@ -101,7 +101,11 @@ class DeviceTemplate
         $userid = intval($device['userid']);
         
         if (!is_object($template)) {
-            return array('success'=>false, 'message'=>'Invalid device template');
+            $result = $this->prepare_template($device);
+            if (isset($result["success"]) && !$result["success"]) {
+                return $result;
+            }
+            $template = $result;
         }
         
         if (isset($template->feeds)) {
