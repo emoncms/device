@@ -185,18 +185,6 @@ var templates = <?php echo json_encode($templates); ?>;
 
 var things = {};
 
-var updater;
-function updaterStart() {
-    clearInterval(updater);
-    updater = null;
-    if (INTERVAL > 0) updater = setInterval(update, INTERVAL);
-}
-function updaterStop() {
-    clearInterval(updater);
-    updater = null;
-}
-updaterStart();
-
 function update() {
     device.listThings(function(result) {
         if (result.length != 0) {
@@ -229,6 +217,20 @@ function update() {
         $('#thing-loader').hide();
     });
 }
+
+update();
+
+var updater;
+function updaterStart() {
+    clearInterval(updater);
+    updater = null;
+    if (INTERVAL > 0) updater = setInterval(update, INTERVAL);
+}
+function updaterStop() {
+    clearInterval(updater);
+    updater = null;
+}
+updaterStart();
 
 //---------------------------------------------------------------------------------------------
 // Draw things
