@@ -42,6 +42,7 @@ class DeviceThing
                     if (isset($mapping->input)) {
                         $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $mapping->input, $template->inputs);
                         if ($inputid == false) {
+                            $this->log->error("get_item_list() failed to find input of item '".$item['id']."' in template: ".$device['type']);
                             continue;
                         }
                         unset($mapping->input);
@@ -50,16 +51,18 @@ class DeviceThing
                 }
             }
             if (isset($item['input'])) {
-                $inputid = $this->get_input_id($userid, $nodeid, $prefix, $item['input'], $template->inputs);
+                $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $item['input'], $template->inputs);
                 if ($inputid == false) {
+                    $this->log->error("get_item_list() failed to find input of item '".$item['id']."' in template: ".$device['type']);
                     continue;
                 }
                 unset($item['input']);
                 $item = array_merge($item, array('inputid'=>$inputid));
             }
             if (isset($item['feed'])) {
-                $feedid = $this->get_feed_id($userid, $prefix, $item['feed']);
+                $feedid = $this->get_feed_id($device['userid'], $prefix, $item['feed']);
                 if ($feedid == false) {
+                    $this->log->error("get_item_list() failed to find feed of item '".$item['id']."' in template: ".$device['type']);
                     continue;
                 }
                 unset($item['feed']);
@@ -107,9 +110,8 @@ class DeviceThing
                 } else {
                     $node = $nodeid;
                 }
-                $fullname = $prefix.$name;
                 
-                return $input->exists_nodeid_name($userid, $nodeid, $fullname);
+                return $input->exists_nodeid_name($userid, $node, $prefix.$name);
             }
         }
         return false;

@@ -20,6 +20,7 @@ class Device
     public $redis;
     private $log;
 
+    // TODO: verify if cache is working as intended for non-redis systems
     private static $cache = array();
 
     public function __construct($mysqli, $redis) {
@@ -353,8 +354,8 @@ class Device
         
         if ($this->redis) {
             if (isset($row['userid']) && $row['userid']) {
-                $this->redis->delete("device:".$id);
-                $this->redis->delete("device:items:".$id);
+                $this->redis->delete("device:$id");
+                $this->redis->delete("device:thing:$id");
                 $this->log->info("Load devices to redis in delete");
                 $this->load_list_to_redis($row['userid']);
             }
@@ -471,6 +472,7 @@ class Device
         // This is called when the device view gets reloaded.
         // Always cache and reload all templates here.
         $this->load_template_list($userid);
+        $this->load_thing_list($userid);
         
         return $this->get_template_list_meta($userid);
     }
@@ -903,24 +905,6 @@ class Device
         return $templates;
     }
 
-    private function get_module_class($module, $type) {
-        /*
-         magic function __call (above) MUST BE USED with this.
-         Load additional template module files.
-         Looks in the folder Modules/modulename/ for a file modulename_template.php
-         (module_name all lowercase but class ModulenameTemplate in php file that is CamelCase)
-         */
-        $module_file = "Modules/".$module."/".$module."_".$type.".php";
-        $module_class = null;
-        if(file_exists($module_file)){
-            require_once($module_file);
-            
-            $module_class_name = ucfirst(strtolower($module)).ucfirst($type);
-            $module_class = new $module_class_name($this);
-        }
-        return $module_class;
-    }
-
     private function cache_template($module, $id, $template) {
         $meta = array(
             "module"=>$module
@@ -939,6 +923,32 @@ class Device
         }
         else {
             self::$cache['templates'][$id] = $meta;
+        }
+    }
+
+    private function load_thing_list($userid) {
+        $userid = intval($userid);
+        
+        if ($this->redis) {
+            $this->redis->delete("device:thing");
+        }
+        else {
+            self::$cache['items'] = array();
+        }
+        
+        $devices = $this->get_list($userid);
+        foreach ($devices as $device) {
+            if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+                $template = $this->get_template_meta($userid, $device['type']);
+                if (isset($template) && $template['thing']) {
+                    $module = $template['module'];
+                    $class = $this->get_module_class($module, self::THING);
+                    if ($class != null) {
+                        $items = $class->get_item_list($device);
+                        $this->cache_items($device['id'], $items);
+                    }
+                }
+            }
         }
     }
 
@@ -965,5 +975,23 @@ class Device
             
             self::$cache['items'][$id] = $items;
         }
+    }
+
+    private function get_module_class($module, $type) {
+        /*
+         magic function __call (above) MUST BE USED with this.
+         Load additional template module files.
+         Looks in the folder Modules/modulename/ for a file modulename_template.php
+         (module_name all lowercase but class ModulenameTemplate in php file that is CamelCase)
+         */
+        $module_file = "Modules/".$module."/".$module."_".$type.".php";
+        $module_class = null;
+        if(file_exists($module_file)){
+            require_once($module_file);
+            
+            $module_class_name = ucfirst(strtolower($module)).ucfirst($type);
+            $module_class = new $module_class_name($this);
+        }
+        return $module_class;
     }
 }
