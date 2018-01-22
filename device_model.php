@@ -503,6 +503,7 @@ class Device
             }
             $templates = self::$cache['templates'];
         }
+        ksort($templates);
         return $templates;
     }
 
