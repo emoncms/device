@@ -946,7 +946,9 @@ class Device
                     $class = $this->get_module_class($module, self::THING);
                     if ($class != null) {
                         $items = $class->get_item_list($device);
-                        $this->cache_items($device['id'], $items);
+                        if (!isset($items['success'])) {
+                            $this->cache_items($device['id'], $items);
+                        }
                     }
                 }
             }
