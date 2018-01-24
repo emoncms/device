@@ -235,23 +235,10 @@ class Device
     private function load_device_to_redis($id)
     {
         $id = (int) $id;
-        $result = $this->mysqli->query("SELECT `id`, `userid`, `nodeid`, `name`, `description`, `type`, `devicekey` FROM device WHERE id = '$id' ORDER BY nodeid, name asc");
+        $result = $this->mysqli->query("SELECT `userid` FROM device WHERE id = '$id'");
         if ($result->num_rows>0) {
             $row = $result->fetch_object();
-            $userid = $row->userid;
-            
-            $device = array(
-                'id'=>$row->id,
-                'userid'=>$row->userid,
-                'nodeid'=>$row->nodeid,
-                'name'=>$row->name,
-                'description'=>$row->description,
-                'type'=>$row->type,
-                'devicekey'=>$row->devicekey
-            );
-            $this->redis->sAdd("user:device:$userid", $row->id);
-            $this->redis->hMSet("device:".$row->id, $device);
-            return $device;
+            $this->load_list_to_redis($row->userid);
         }
         return false;
     }
