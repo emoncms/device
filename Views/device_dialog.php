@@ -8,12 +8,28 @@
 <style>
     input[type="checkbox"] { margin:0px; }
 
-    .checkbox-slider--b {
-        width: 20px;
-        border-radius: 25px;
-        background-color: gainsboro;
-        height: 20px;
+    /* Chrome */
+    @supports (-webkit-appearance:none ) {
+    	.checkbox-slider--b {
+    		height:20px;	
+    	}
     }
+    
+    /* IE */
+    @media screen and (-ms-high-contrast: active) , ( -ms-high-contrast : none) {
+    	.checkbox-slider--b {
+    		height: 20px;
+    	}
+    }
+    
+    /* Firefox */
+    _:-moz-tree-row(hover), .checkbox-slider--b {
+    	width: 20px;
+    	border-radius: 25px;
+    	background-color: gainsboro;
+    	height: 20px;
+    }
+    
     *::before, *::after {
         box-sizing: border-box;
     }

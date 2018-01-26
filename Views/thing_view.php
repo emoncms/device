@@ -105,8 +105,27 @@
     input.number[disabled] {
         background-color: #eee;
     }
-
-    .checkbox-slider--b {
+    
+    /* Chrome */
+    @supports (-webkit-appearance:none) {
+        .checkbox-slider--b {
+            margin-left: 8px;
+            margin-right: 8px;
+            height: 20px;
+        }
+    }
+    
+    /* IE */
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        .checkbox-slider--b {
+            margin-left: 8px;
+            margin-right: 8px;
+            height: 20px;
+        }
+    }
+    
+    /* Firefox */
+    _:-moz-tree-row(hover), .checkbox-slider--b {
         margin-left: 8px;
         margin-right: 8px;
         height: 20px;
