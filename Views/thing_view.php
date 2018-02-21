@@ -410,7 +410,7 @@ function update_inputs() {
 
 function parse_input_value(item, type, value) {
     if (type === "switch") {
-        value = (value && Number(value) == 1) ? true : false
+        return (value && Number(value) == 1) ? true : false;
     }
     else if (type === "text") {
         if (!value) value = "";
