@@ -91,8 +91,8 @@ var device_dialog =
                         name = name.substr(0, 25) + "...";
                     }
                     
-                    out += "<tr class='group-row' type='"+id+"' style='cursor:pointer'>";
-                    out += "<td>"+name+"</td>";
+                    out += "<tr class='group-row' type='"+id+"'>";
+                    out += "<td style='padding-left:24px; cursor:pointer'>"+name+"</td>";
                     out += "</tr>";
                 }
                 out += "</tbody>";    

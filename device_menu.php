@@ -5,7 +5,7 @@
     bind_textdomain_codeset($domain, 'UTF-8');
 
     $menu_dropdown_config[] = array(
-            'name'=> dgettext($domain, "Device Setup"),
+            'name'=> dgettext($domain, "Devices"),
             'icon'=>'icon-home',
             'path'=>"device/view" ,
             'session'=>"write",
@@ -13,7 +13,7 @@
     );
     
     $menu_dropdown[] = array(
-            'name'=> dgettext($domain, "Devices"),
+            'name'=> dgettext($domain, "Things"),
             'icon'=>'icon-tasks',
             'path'=>"device/thing/view" ,
             'session'=>"write",

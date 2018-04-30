@@ -183,7 +183,7 @@
 
     <div id="thing-list"></div>
 
-    <div id="thing-none" class="alert alert-block hide">
+    <div id="thing-none" class="alert alert-block hide" style="margin-top: 20px">
         <h4 class="alert-heading"><?php echo _('No Device Things configured'); ?></h4>
         <p>
             <?php echo _('Device things are configured in templates and enable the communication with different physical devices.'); ?>
@@ -198,19 +198,23 @@
 
 <script>
 
-const INTERVAL = 10000;
+const INTERVAL = 5000;
 var path = "<?php echo $path; ?>";
 var templates = <?php echo json_encode($templates); ?>;
 
 var things = {};
+
+var redraw = true;
 
 function update() {
     device.listThings(function(result) {
         if (result.length != 0) {
             $("#thing-none").hide();
             $("#local-header").show();
-            var redraw = Object.keys(things).length == 0 ? true : false;
-            
+            $("#api-help-header").show();
+            if (redraw) {
+                redraw = Object.keys(things).length == 0 ? true : false;
+            }
             things = {};
             for (var i=0; i<result.length; i++) {
                 var thing = result[i];
@@ -232,6 +236,7 @@ function update() {
         else {
             $("#thing-none").show();
             $("#local-header").hide();
+            $("#api-help-header").hide();
         }
         $('#thing-loader').hide();
     });
@@ -447,6 +452,14 @@ function format_input_value(item, value) {
 }
 
 function item_click(thing, id) {
+	// Disable redrawing while stopping the updater, to avoid toggle buttons to be
+	// switched back again, caused by badly timed asynchronous draw() calls
+	redraw = false;
+	setTimeout(() => {
+		redraw = true;
+	}, INTERVAL);
+    updaterStop();
+    
     var item = things[thing].items[id];
     var input = $("#thing-"+thing+"-"+id);
     
@@ -454,12 +467,15 @@ function item_click(thing, id) {
     if (type == "switch") {
         // The click event toggled the check already
         // Set the item value to the current state
+        updateResume = function() {
+    		updaterStart();
+    	};
         if (input.is(":checked")) {
-            device.setItemOff(thing, id);
+            device.setItemOff(thing, id, updateResume);
             input.prop("checked", false);
         }
         else {
-            device.setItemOn(thing, id);
+            device.setItemOn(thing, id, updateResume);
             input.prop("checked", true);
         }
     }
@@ -527,13 +543,13 @@ $('#thing-list').on('change', '.item-input', function () {
         }
         $("#thing-"+thing+"-"+id).val(format_input_value(item, value));
         
-        device.setItemValue(thing, id, value/scale);
-        $(this).children('input').trigger('focusout');
+        value = value/scale;
     }
-    else if (type == "slider") {
-        device.setItemValue(thing, id, value);
-        $(this).children('input').trigger('focusout');
-    }
+
+    var $me=$(this);
+    device.setItemValue(thing, id, value, function() {
+    	$me.children('input').trigger('focusout');
+    });
 });
 
 $("#thing-list").on("click", ".thing-configure", function() {
@@ -543,6 +559,12 @@ $("#thing-list").on("click", ".thing-configure", function() {
 });
 
 $('#thing-list').on('focus', '.item-input input', function () {
+	// Disable redrawing while stopping the updater, to avoid toggle buttons to be
+	// switched back again, caused by badly timed asynchronous draw() calls
+	redraw = false;
+	setTimeout(() => {
+		redraw = true;
+	}, INTERVAL);
     updaterStop();
 });
 
