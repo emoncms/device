@@ -25,22 +25,20 @@ class DeviceThing
     }
 
     public function get_item_list($device) {
-        $file = "Modules/device/data/".$device['type'].".json";
-        if (file_exists($file)) {
-            $template = json_decode(file_get_contents($file));
-        } else {
-            return array('success'=>false, 'message'=>"Template file not found '".$file."'");
+        $result = $this->get_template($device['userid'], $device['type']);
+        if (!is_object($result)) {
+            return $result;
         }
-        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $template);
+        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $result);
         
         $items = array();
-        for ($i=0; $i<count($template->items); $i++) {
-            $item = (array) $template->items[$i];
+        for ($i=0; $i<count($result->items); $i++) {
+            $item = (array) $result->items[$i];
             
             if (isset($item['mapping'])) {
                 foreach($item['mapping'] as &$mapping) {
                     if (isset($mapping->input)) {
-                        $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $mapping->input, $template->inputs);
+                        $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $mapping->input, $result->inputs);
                         if ($inputid == false) {
                             $this->log->error("get_item_list() failed to find input of item '".$item['id']."' in template: ".$device['type']);
                             continue;
@@ -51,7 +49,7 @@ class DeviceThing
                 }
             }
             if (isset($item['input'])) {
-                $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $item['input'], $template->inputs);
+                $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $item['input'], $result->inputs);
                 if ($inputid == false) {
                     $this->log->error("get_item_list() failed to find input of item '".$item['id']."' in template: ".$device['type']);
                     continue;
@@ -84,6 +82,28 @@ class DeviceThing
             return array('success'=>true, 'message'=>"Item value set");
         }
         return array('success'=>false, 'message'=>"Error while setting item value");
+    }
+
+    protected function get_template_list($userid) {
+        $list = array();
+        
+        $iti = new RecursiveDirectoryIterator("Modules/device/data");
+        foreach(new RecursiveIteratorIterator($iti) as $file){
+            if(strpos($file ,".json") !== false){
+                $content = json_decode(file_get_contents($file));
+                $list[basename($file, ".json")] = $content;
+            }
+        }
+        return $list;
+    }
+
+    protected function get_template($userid, $type) {
+        $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
+        $list = $this->get_template_list($userid);
+        if (!isset($list[$type])) {
+            return array('success'=>false, 'message'=>'Device template "'.$type.'" not found');
+        }
+        return $list[$type];
     }
 
     protected function parse_prefix($nodeid, $name, $template) {
