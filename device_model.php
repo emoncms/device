@@ -20,12 +20,14 @@ class Device
     public $redis;
     private $log;
 
-    // TODO: verify if cache is working as intended for non-redis systems
-    private static $cache = array();
+    private $templates;
+    private $things;
 
     public function __construct($mysqli, $redis) {
         $this->mysqli = $mysqli;
         $this->redis = $redis;
+        $this->templates = array();
+        $this->things = array();
         $this->log = new EmonLogger(__FILE__);
     }
 
@@ -346,6 +348,9 @@ class Device
                 $this->load_list_to_redis($row['userid']);
             }
         }
+        else if (isset($this->things[$id])) {
+            unset($this->things[$id]);
+        }
     }
 
     public function set_fields($id, $fields) {
@@ -484,10 +489,10 @@ class Device
             }
         }
         else {
-            if (empty(self::$cache['templates'])) { // Cache it now
+            if (empty($this->templates)) { // Cache it now
                 $this->load_template_list($userid);
             }
-            $templates = self::$cache['templates'];
+            $templates = $this->templates;
         }
         ksort($templates);
         return $templates;
@@ -522,11 +527,11 @@ class Device
             }
         }
         else {
-            if (empty(self::$cache['templates'])) { // Cache it now
+            if (empty($this->templates)) { // Cache it now
                 $this->load_template_list($userid);
             }
-            if (isset(self::$cache['templates'][$id])) {
-                $template = self::$cache['templates'][$id];
+            if (isset($this->templates[$id])) {
+                $template = $this->templates[$id];
             }
         }
         return $template;
@@ -709,8 +714,8 @@ class Device
                 }
             }
         }
-        else if (isset(self::$cache['items'][$device['id']])) {
-            $items = self::$cache['items'][$device['id']];
+        else if (isset($this->things[$device['id']])) {
+            $items = $this->things[$device['id']];
         }
         
         if ($items == null) {
@@ -749,8 +754,8 @@ class Device
                 }
             }
         }
-        else if (isset(self::$cache['items'][$id])) {
-            $items = self::$cache['items'][$id];
+        else if (isset($this->things[$id])) {
+            $items = $this->things[$id];
             foreach ($items as $item) {
                 if ($item['id'] == $itemid) {
                     return $item;
@@ -871,7 +876,7 @@ class Device
             $this->redis->delete("device:template:meta");
         }
         else {
-            self::$cache['templates'] = array();
+            $this->templates = array();
         }
         $templates = array();
         
@@ -909,7 +914,7 @@ class Device
             $this->redis->hMSet("device:template:$id", $meta);
         }
         else {
-            self::$cache['templates'][$id] = $meta;
+            $this->templates[$id] = $meta;
         }
     }
 
@@ -920,7 +925,7 @@ class Device
             $this->redis->delete("device:thing");
         }
         else {
-            self::$cache['items'] = array();
+            $this->things = array();
         }
         
         $devices = $this->get_list($userid);
@@ -953,8 +958,8 @@ class Device
             }
         }
         else {
-            if (empty(self::$cache['items'])) {
-                self::$cache['items'] = array();
+            if (empty($this->things[$id])) {
+                $this->things[$id] = array();
             }
             
             $items = array();
@@ -962,7 +967,7 @@ class Device
                 $items[] = $value;
             }
             
-            self::$cache['items'][$id] = $items;
+            $this->things[$id] = $items;
         }
     }
 

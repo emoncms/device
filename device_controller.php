@@ -5,12 +5,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function device_controller()
 {
-    global $session,$route,$mysqli,$user,$redis;
+    global $mysqli, $redis, $user, $session, $route, $device;
 
     $result = false;
 
-    require_once "Modules/device/device_model.php";
-    $device = new Device($mysqli,$redis);
+    if (!$device) {
+        require_once "Modules/device/device_model.php";
+        $device = new Device($mysqli,$redis);
+    }
 
     if ($route->format == 'html')
     {
