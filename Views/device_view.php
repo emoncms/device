@@ -51,7 +51,7 @@
 
 <script>
   var path = "<?php echo $path; ?>";
-  var devices = <?php echo json_encode($devices); ?>;
+  var devices = <?php echo json_encode($templates); ?>;
   
   // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];

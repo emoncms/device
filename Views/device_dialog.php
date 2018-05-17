@@ -2,7 +2,7 @@
     global $path;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=3"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js"></script>
 
 <style>
     .group-body tr:hover > td {
@@ -22,22 +22,30 @@
 
     .modal-adjust .modal-body {
         max-height: none;
-        overflow-y: auto;
+        overflow-y: hidden;
     }
 
     #sidebar-wrapper {
         position: absolute;
-        margin: -15px;
-        width: 250px;
+        margin-top: -15px;
+        margin-left: -15px;
+        max-height: none;
         height: 100%;
-        background: #eee;
+        width: 250px;
         overflow-y: auto;
+        background-color: #eee;
         z-index: 1000;
     }
 
     #content-wrapper {
+        position: absolute;
+        right: 15px;
+        left: 15px;
         margin-top: -15px;
         margin-left: 250px;
+        height: 100%;
+        max-height: none;
+        overflow-y: auto;
     }
 
     #content-wrapper .divider {
@@ -53,21 +61,19 @@
     #template-info .tooltip-inner {
         max-width: 500px;
     }
-    
-    input[type="checkbox"] { margin:0px; }
-    
+
     #device-init-modal {
-        width: 50%; left:25%; /* (100%-width)/2 */
+        width: 60%; left:20%; /* (100%-width)/2 */
         margin-left: auto; margin-right: auto;
     }
-    
+
     #device-init-modal table td { text-align: left; }
-    
+
     #device-init-feeds table td:nth-of-type(1) { width:14px; text-align: center; }
     #device-init-feeds table td:nth-of-type(2) { width:5%; }
     #device-init-feeds table td:nth-of-type(3) { width:15%; }
     #device-init-feeds table td:nth-of-type(4) { width:25%; }
-    
+
     #device-init-inputs table td:nth-of-type(1) { width:14px; text-align: center; }
     #device-init-inputs table td:nth-of-type(2) { width:5%; }
     #device-init-inputs table td:nth-of-type(3) { width:5%; }
@@ -93,19 +99,19 @@
         
         <div id="content-wrapper" style="max-width:1280px">
             
-            <h3>Configuration</h3>
+            <h3><?php echo _('Configuration'); ?></h3>
             
             <div id="navigation" style="padding-bottom:5px;">
                 <button class="btn" id="sidebar-open"><i class="icon-list"></i></button>
             </div>
-
+            
             <span id="template-info" style="display:none;">
                 <span id="template-description"></span>
                 <span id="template-tooltip" data-toggle="tooltip" data-placement="bottom">
                     <i class="icon-info-sign" style="cursor:pointer; padding-left:6px;"></i>
                 </span>
             </span>
-
+            
             <div class="divider"></div>
             
             <label><b><?php echo _('Node'); ?></b></label>
@@ -113,14 +119,14 @@
             
             <label><b><?php echo _('Name'); ?></b></label>
             <input id="device-config-name" class="input-large" type="text">
-             
+            
             <label><b><?php echo _('Location'); ?></b></label>
             <input id="device-config-description" class="input-large" type="text">
             
             <label><b><?php echo _('Device Key'); ?></b></label>
             <div class="input-append">
                 <input id="device-config-devicekey" class="input-large" type="text" style="width:260px">
-                <button id="device-config-devicekey-new" class="btn">New</button>
+                <button id="device-config-devicekey-new" class="btn"><?php echo _('New'); ?></button>
             </div>
         </div>
     </div>

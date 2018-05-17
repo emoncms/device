@@ -1,33 +1,33 @@
 {
-	"name": "smartplug",
+	"name": "Smartplug",
 	"category": "Control",
-	"group": "control",
-    "description": "smartplug",
+	"group": "MQTT",
+    "description": "Smartplug control",
     "inputs": [
         {
             "name": "period",
-            "description": "period",
+            "description": "Control period",
             "processList": []
         },
         {
             "name": "end",
-            "description": "end",
+            "description": "Control end",
             "processList": []
         },
         {
             "name": "interruptible",
-            "description": "interruptible",
+            "description": "Control interruptible",
             "processList": []
         },
         {
             "name": "status",
-            "description": "status",
+            "description": "Control status",
             "processList": []
         }
     ],
 
     "feeds": [],
-    
+
     "control": 
     {
         "active": {"name":"Active","type":"checkbox","default":1},
