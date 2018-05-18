@@ -1,27 +1,27 @@
 {
-	"name": "wifirelay",
+	"name": "Wi-Fi relay",
 	"category": "Control",
-	"group": "control",
-    "description": "wifirelay",
+	"group": "MQTT",
+    "description": "Wi-Fi relay control",
     "inputs": [
         {
             "name": "period",
-            "description": "period",
+            "description": "Control period",
             "processList": []
         },
         {
             "name": "end",
-            "description": "end",
+            "description": "Control end",
             "processList": []
         },
         {
             "name": "interruptible",
-            "description": "interruptible",
+            "description": "Control interruptible",
             "processList": []
         },
         {
             "name": "status",
-            "description": "status",
+            "description": "Control status",
             "processList": []
         }
     ],

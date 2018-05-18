@@ -133,7 +133,7 @@ var device_dialog =
             $('#device-config-description').val(this.device.description);
             $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
             $("#device-config-devicekey-new").prop("disabled", false);
-            $('#device-config-delete').show();
+            $('#device-delete').show();
             $("#device-init").show();
             $("#device-save").html("Save");
         }
@@ -143,7 +143,7 @@ var device_dialog =
             $('#device-config-description').val('');
             $('#device-config-devicekey').val('').prop("disabled", true);
             $("#device-config-devicekey-new").prop("disabled", true);
-            $('#device-config-delete').hide();
+            $('#device-delete').hide();
             $("#device-init").hide();
             $("#device-save").html("Save & Initialize");
         }
