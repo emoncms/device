@@ -140,6 +140,52 @@ class Device
         if ($result && $id>0) return $id; else return false;
     }
 
+    public function request_auth($ip) {
+        if (!$this->redis) {
+            return array("success"=>false, "message"=>"Unable to handle authentication requests without redis");
+        }
+        $ip_parts = explode(".", $ip);
+        for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
+        $ip = implode(".", $ip_parts);
+        
+        $allow_ip = $redis->get("device:auth:allow");
+        // Only show authentication details to allowed ip address
+        if ($allow_ip == $ip) {
+            $redis->del("device:auth:allow");
+            global $mqtt_server;
+            return $mqtt_server["user"].":".$mqtt_server["password"].":".$mqtt_server["basetopic"];
+        } else {
+            $redis->set("device:auth:request", json_encode(array("ip"=>$ip)));
+            return array("success"=>true, "message"=>"Authentication request registered for IP $ip");
+        }
+    }
+
+    public function get_auth_request() {
+        if (!$this->redis) {
+            return array("success"=>false, "message"=>"Unable to handle authentication requests without redis");
+        }
+        if ($device_auth = $redis->get("device:auth:request")) {
+            return array_merge(array("success"=>true, json_decode($device_auth)));
+        } else {
+            return array("success"=>true, "message"=>"No authentication request registered");
+        }
+    }
+
+    public function allow_auth_request($ip) {
+        if (!$this->redis) {
+            return array("success"=>false, "message"=>"Unable to handle authentication requests without redis");
+        }
+        $ip_parts = explode(".", $ip);
+        for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
+        $ip = implode(".", $ip_parts);
+        
+        $redis->set("device:auth:allow", $ip);    // Temporary availability of auth for device ip address
+        $redis->expire("device:auth:allow", 60);  // Expire after 60 seconds
+        $redis->del("device:auth:request");
+        
+        return array("success"=>true, "message"=>"Authentication request allowed for IP $ip");
+    }
+
     public function get($id) {
         $id = intval($id);
         if (!$this->exist($id)) {

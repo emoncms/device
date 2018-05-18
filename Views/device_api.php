@@ -42,6 +42,13 @@
     <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/init.json?id=1"><?php echo $path; ?>device/init.json?id=1</a></td></tr>
 </table>
 
+<p><b><?php echo _('Device MQTT authentication'); ?></b></p>
+<table class="table">
+    <tr><td><?php echo _('Request authentication'); ?></td><td><a href="<?php echo $path; ?>device/auth/request.json"><?php echo $path; ?>device/auth/request.json</a></td></tr>
+    <tr><td><?php echo _('Check authentication request'); ?></td><td><a href="<?php echo $path; ?>device/auth/check.json"><?php echo $path; ?>device/auth/check.json</a></td></tr>
+    <tr><td><?php echo _('Allow authentication request'); ?></td><td><a href="<?php echo $path; ?>device/auth/allow.json?ip=127.0.0.1"><?php echo $path; ?>device/auth/allow.json?ip=127.0.0.1</a></td></tr>
+</table>
+
 <p><b><?php echo _('Template actions'); ?></b></p>
 <table class="table">
     <tr><td><?php echo _('List templates'); ?></td><td><a href="<?php echo $path; ?>device/template/list.json"><?php echo $path; ?>device/template/list.json</a></td></tr>

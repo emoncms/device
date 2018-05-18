@@ -34,47 +34,22 @@ function device_controller()
         // 4. device makes follow up request for authentication
         //    - reply authentication details
         // ---------------------------------------------------------------
-        if ($redis && $route->action == "auth") {
-            // 1. Register request for authentication details, or provide if allowed
+        if ($route->action == "auth") {
             if ($route->subaction=="request") {
-                $ip = $_SERVER['REMOTE_ADDR'];
-                
-                $ip_parts = explode(".",$ip);
-                for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
-                $ip = implode(".",$ip_parts);
-                
-                $allow_ip = $redis->get("device_auth_allow");
-                // Only show authentication details to allowed ip address
-                if ($allow_ip==$ip) {
-                    $redis->del("device_auth_allow");
-                    global $mqtt_server;
-                    $result = $mqtt_server["user"].":".$mqtt_server["password"].":".$mqtt_server["basetopic"];
-                } else {
-                    $redis->set("device_auth",json_encode(array("ip"=>$ip)));
-                    $result = "request registered";
+                // 1. Register request for authentication details, or provide if allowed
+                $result = $device->request_auth($_SERVER['REMOTE_ADDR']);
+                if (isset($result["success"])) {
+                    $result = $result["message"];
                 }
                 $route->format = "text";
             }
-            // 2. User checks for device waiting for authentication
             else if ($route->subaction=="check" && $session['write']) {
-                if ($device_auth = $redis->get("device_auth")) {
-                    $result = json_decode($device_auth);
-                } else {
-                    $result = "no devices";
-                }
+                // 2. User checks for device waiting for authentication
+                $result = $device->get_auth_request();
             }
-            // 3. User allows device to receive authentication details
             else if ($route->subaction=="allow" && $session['write']) {
-                 $ip = get("ip");
-
-                 $ip_parts = explode(".",$ip);
-                 for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
-                 $ip = implode(".",$ip_parts);
-                 
-                 $redis->set("device_auth_allow",$ip);    // Temporary availability of auth for device ip address
-                 $redis->expire("device_auth_allow",60);  // Expire after 60 seconds
-                 $redis->del("device_auth");
-                 $result = true;
+                // 3. User allows device to receive authentication details
+                $result = $device->allow_auth_request(get("ip"));
             }
         }
         else if ($route->action == 'list') {
