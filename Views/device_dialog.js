@@ -4,7 +4,7 @@ var device_dialog =
     deviceTemplate: null,
     deviceType: null,
     device: null,
-    
+
     'loadConfig':function(templates, device) {
         this.templates = templates;
         
@@ -20,9 +20,6 @@ var device_dialog =
         }
         
         this.drawConfig();
-        
-        // Initialize callbacks
-        this.registerConfigEvents();
     },
 
     'drawConfig':function() {
@@ -91,8 +88,8 @@ var device_dialog =
                         name = name.substr(0, 25) + "...";
                     }
                     
-                    out += "<tr class='group-row' type='"+id+"' style='cursor:pointer'>";
-                    out += "<td>"+name+"</td>";
+                    out += "<tr class='group-row' type='"+id+"'>";
+                    out += "<td style='padding-left:24px; cursor:pointer'>"+name+"</td>";
                     out += "</tr>";
                 }
                 out += "</tbody>";    
@@ -104,7 +101,7 @@ var device_dialog =
             if (this.templates[this.deviceType]!=undefined) {
                 var template = this.templates[this.deviceType]
                 
-                $(".category-body[category='"+template.category+"']").show();
+                $(".group-header[category='"+template.category+"']").show();
                 $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
                 $(".group-row[type='"+this.deviceType+"']").addClass("device-selected");
                 
@@ -112,6 +109,9 @@ var device_dialog =
                 $('#template-info').show();
             }
         }
+        
+        // Initialize callbacks
+        this.registerConfigEvents();
     },
 
     'clearConfigModal':function() {
@@ -130,7 +130,7 @@ var device_dialog =
             $('#device-config-description').val(this.device.description);
             $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
             $("#device-config-devicekey-new").prop("disabled", false);
-            $('#device-config-delete').show();
+            $('#device-delete').show();
             $("#device-init").show();
             $("#device-save").html("Save");
         }
@@ -140,10 +140,11 @@ var device_dialog =
             $('#device-config-description').val('');
             $('#device-config-devicekey').val('').prop("disabled", true);
             $("#device-config-devicekey-new").prop("disabled", true);
-            $('#device-config-delete').hide();
+            $('#device-delete').hide();
             $("#device-init").hide();
             $("#device-save").html("Save & Initialize");
         }
+        device_dialog.drawTemplate();
     },
 
     'adjustConfigModal':function() {
@@ -233,10 +234,13 @@ var device_dialog =
             }
             else {
                 device_dialog.deviceType = null;
+                
                 $('#template-description').text('');
                 $('#template-info').hide();
                 $("#device-init").show()
             }
+            
+            device_dialog.drawTemplate();
         });
 
         $("#sidebar-open").off('click').on('click', function () {
@@ -304,7 +308,7 @@ var device_dialog =
                 return false;
             }
         });
-
+        
         $("#device-delete").off('click').on('click', function () {
             $('#device-config-modal').modal('hide');
             device_dialog.loadDelete(device_dialog.device, null);
@@ -318,8 +322,19 @@ var device_dialog =
         $("#device-config-devicekey-new").off('click').on('click', function () {
             device_dialog.device.devicekey = device.setNewDeviceKey(device_dialog.device.id);
             $('#device-config-devicekey').val(device_dialog.device.devicekey);
-        });        
-        
+        });
+    },
+
+    'drawTemplate':function() {
+        if (this.deviceType !== null && this.deviceType in this.templates) {
+            var template = this.templates[this.deviceType];
+            $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+            $('#template-info').show();
+        }
+        else {
+            $('#template-description').text('');
+            $('#template-info').hide();
+        }
     },
 
     'loadInit': function() {
@@ -336,7 +351,7 @@ var device_dialog =
             $('#device-init-modal').modal('hide');
             
             var template = device_dialog.parseTemplate();
-            var result = device.initTemplate(device_dialog.device.id, template);
+            var result = device.init(device_dialog.device.id, template);
             if (typeof result.success !== 'undefined' && !result.success) {
                 alert('Unable to initialize device:\n'+result.message);
                 return false;
@@ -463,7 +478,7 @@ var device_dialog =
 
     'parseTemplate': function() {
         var template = {};
-
+        
         template['feeds'] = [];
         if (typeof device_dialog.deviceTemplate.feeds !== 'undefined' && 
                 device_dialog.deviceTemplate.feeds.length > 0) {
@@ -489,7 +504,7 @@ var device_dialog =
 
     'loadDelete': function(device, tablerow) {
         this.device = device;
-
+        
         $('#device-delete-modal').modal('show');
         $('#device-delete-modal-label').html('Delete Device: <b>'+device.name+'</b>');
         
