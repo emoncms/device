@@ -24,7 +24,7 @@
     }
 
     .thing {
-        margin-bottom:10px;
+        margin-bottom: 12px;
         border: 1px solid #aaa;
     }
 
@@ -49,10 +49,6 @@
     .thing-list {
         padding: 0px 5px 5px 5px;
         background-color: #ddd;
-    }
-
-    .thing-list-item {
-        margin-bottom: 12px;
     }
 
     .item-list {
@@ -269,7 +265,7 @@ function draw() {
             var items = draw_items(thing.id);
             
             list += 
-                "<div class='block-bound thing-list-item thing'>" +
+                "<div class='block-bound thing'>" +
                     "<div class='thing-info'>" +
                         "<div class='thing-list'>" +
                             "<table id='thing-"+name+"' style='width:100%'>" +
