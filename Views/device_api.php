@@ -51,8 +51,9 @@
 
 <p><b><?php echo _('Template actions'); ?></b></p>
 <table class="table">
+    <tr><td><?php echo _('List template metadata'); ?></td><td><a href="<?php echo $path; ?>device/template/listshort.json"><?php echo $path; ?>device/template/listshort.json</a></td></tr>
     <tr><td><?php echo _('List templates'); ?></td><td><a href="<?php echo $path; ?>device/template/list.json"><?php echo $path; ?>device/template/list.json</a></td></tr>
-    <tr><td><?php echo _('List templates short'); ?></td><td><a href="<?php echo $path; ?>device/template/listshort.json"><?php echo $path; ?>device/template/listshort.json</a></td></tr>
+    <tr><td><?php echo _('Reload templates'); ?></td><td><a href="<?php echo $path; ?>device/template/reload.json"><?php echo $path; ?>device/template/reload.json</a></td></tr>
     <tr><td><?php echo _('get template details'); ?></td><td><a href="<?php echo $path; ?>device/template/get.json?type=example"><?php echo $path; ?>device/template/get.json?type=example</a></td></tr>
     <tr><td><?php echo _('get template options'); ?></td><td><a href="<?php echo $path; ?>device/template/options.json?type=example"><?php echo $path; ?>device/template/options.json?type=example</a></td></tr>
     <tr><td><?php echo _('Prepare device initialization'); ?></td><td><a href="<?php echo $path; ?>device/template/prepare.json?id=1"><?php echo $path; ?>device/template/prepare.json?id=1</a></td></tr>

@@ -134,8 +134,13 @@ var device_dialog =
             $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
             $("#device-config-devicekey-new").prop("disabled", false);
             $('#device-delete').show();
-            $("#device-init").show();
             $("#device-save").html("Save");
+            if (this.device.type != null && this.device.type != '') {
+            	$("#device-init").show();
+            }
+            else {
+            	$("#device-init").hide();
+            }
         }
         else {
             $('#device-config-node').val('');
@@ -310,18 +315,26 @@ var device_dialog =
                     update();
                 }
                 else {
-                    var result = device.create(node, name, desc, device_dialog.deviceType, options);
+                	var type = device_dialog.deviceType;
+                    if (type != null && type != '') {
+                        device_dialog.device = {
+                                id: result,
+                                nodeid: node,
+                                name: name,
+                                type: type,
+                                options: options
+                        };
+                        init = true;
+                    }
+                    else if (type != '') {
+                    	type = '';
+                    }
+                	
+                    var result = device.create(node, name, desc, type, options);
                     if (typeof result.success !== 'undefined' && !result.success) {
                         alert('Unable to create device:\n'+result.message);
                         return false;
                     }
-                    init = true;
-                    device_dialog.device = {
-                            id: result,
-                            nodeid: node,
-                            name: name,
-                            type: device_dialog.deviceType
-                    };
                     update();
                 }
                 $('#device-config-modal').modal('hide');

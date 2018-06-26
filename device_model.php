@@ -246,6 +246,11 @@ class Device
             $device['time'] = $this->redis->hget("device:lastvalue:".$id, 'time');
             $devices[] = $device;
         }
+        usort($devices, function($d1, $d2) {
+            if($d1['nodeid'] == $d2['nodeid'])
+                return strcmp($d1['name'], $d2['name']);
+            return strcmp($d1['nodeid'], $d2['nodeid']);
+        });
         return $devices;
     }
 
@@ -264,8 +269,7 @@ class Device
     private function load_list_to_redis($userid) {
         $userid = intval($userid);
         
-        $this->redis->delete("user:device:$userid");
-        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`options`,`devicekey` FROM device WHERE userid = '$userid' ORDER BY nodeid, name asc");
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`options`,`devicekey` FROM device WHERE userid = '$userid'");
         while ($row = $result->fetch_object()) {
             $this->redis->sAdd("user:device:$userid", $row->id);
             $this->redis->hMSet("device:".$row->id, array(
@@ -283,13 +287,24 @@ class Device
 
     private function load_device_to_redis($id) {
         $id = intval($id);
-
-        $result = $this->mysqli->query("SELECT `userid` FROM device WHERE id = '$id'");
-        if ($result->num_rows>0) {
-            $row = $result->fetch_object();
-            $this->load_list_to_redis($row->userid);
+        
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`options`,`devicekey` FROM device WHERE id = '$id'");
+        $row = $result->fetch_object();
+        if (!$row) {
+            $this->log->warn("Device model: Requested device does not exist for id=$id");
+            return false;
         }
-        return false;
+        $this->redis->hMSet("device:".$row->id, array(
+            'id'=>$row->id,
+            'userid'=>$row->userid,
+            'nodeid'=>$row->nodeid,
+            'name'=>$row->name,
+            'description'=>$row->description,
+            'type'=>$row->type,
+            'options'=>$row->options,
+            'devicekey'=>$row->devicekey
+        ));
+        return true;
     }
 
     public function autocreate($userid, $_nodeid, $_type) {
@@ -359,9 +374,19 @@ class Device
             $deviceid = $this->mysqli->insert_id;
             
             if ($deviceid > 0) {
+                // Add the device to redis
                 if ($this->redis) {
-                    $this->log->info("Load devices to redis in create");
-                    $this->load_list_to_redis($userid);
+                    $this->redis->sAdd("user:device:$userid", $deviceid);
+                    $this->redis->hMSet("device:".$deviceid, array(
+                        'id'=>$deviceid,
+                        'userid'=>$userid,
+                        'nodeid'=>$nodeid,
+                        'name'=>$name,
+                        'description'=>$description,
+                        'type'=>$type,
+                        'options'=>$options,
+                        'devicekey'=>$devicekey
+                    ));
                 }
                 return $deviceid;
             }
@@ -378,20 +403,15 @@ class Device
             }
         }
         
-        if ($this->redis) {
-            $result = $this->mysqli->query("SELECT userid FROM device WHERE `id` = '$id'");
-            $row = (array) $result->fetch_object();
-        }
-        
         $result = $this->mysqli->query("DELETE FROM device WHERE `id` = '$id'");
         if (isset($device_exists_cache[$id])) { unset($device_exists_cache[$id]); } // Clear static cache
         
         if ($this->redis) {
-            if (isset($row['userid']) && $row['userid']) {
-                $this->redis->delete("device:$id");
-                $this->redis->delete("device:thing:$id");
-                $this->log->info("Load devices to redis in delete");
-                $this->load_list_to_redis($row['userid']);
+            $userid = $this->redis->hget("device:$id",'userid');
+            if (isset($userid)) {
+                $this->redis->del("device:$id");
+                $this->redis->del("device:thing:$id");
+                $this->redis->srem("user:device:$userid", $id);
             }
         }
         else if (isset($this->things[$id])) {
@@ -505,26 +525,13 @@ class Device
         }
     }
 
-    public function get_template_list($userid) {
-        // This is called when the device view gets reloaded.
-        // Always cache and reload all templates here.
-        $this->load_template_list($userid);
-        $this->load_thing_list($userid);
-        
-        return $this->get_template_list_meta($userid);
-    }
-
-    public function get_template_list_full($userid) {
-        return $this->load_template_list($userid);
-    }
-
     public function get_template_list_meta($userid) {
         $templates = array();
         
         if ($this->redis) {
-            if (!$this->redis->exists("device:template:meta")) $this->load_template_list();
+            if (!$this->redis->exists("device:templates:meta")) $this->load_template_list($userid);
             
-            $ids = $this->redis->sMembers("device:template:meta");
+            $ids = $this->redis->sMembers("device:templates:meta");
             foreach ($ids as $id) {
                 $template = $this->redis->hGetAll("device:template:$id");
                 $template["options"] = (bool) $template["options"];
@@ -542,6 +549,10 @@ class Device
         }
         ksort($templates);
         return $templates;
+    }
+
+    public function get_template_list($userid) {
+        return $this->load_template_list($userid);
     }
 
     public function get_template($userid, $id) {
@@ -914,11 +925,24 @@ class Device
         return array('success'=>false, 'message'=>'Unknown error while setting device value');
     }
 
+    public function reload_template_list($userid) {
+        $userid = intval($userid);
+        
+        $templates = $this->load_template_list($userid);
+        if (isset($templates) && count($templates) > 0) {
+            return array('success'=>true, 'message'=>'Templates successfully reloaded');
+        }
+        return array('success'=>false, 'message'=>'Unknown error while reloading templates');
+    }
+
     private function load_template_list($userid) {
         $userid = intval($userid);
         
         if ($this->redis) {
-            $this->redis->delete("device:template:meta");
+            foreach ($this->redis->sMembers("device:templates:meta") as $id) {
+                $this->redis->del("device:template:$id");
+            }
+            $this->redis->del("device:templates:meta");
         }
         else {
             $this->templates = array();
@@ -955,7 +979,7 @@ class Device
         $meta["control"] = (!isset($template->control) ? false : true);
         
         if ($this->redis) {
-            $this->redis->sAdd("device:template:meta", $id);
+            $this->redis->sAdd("device:templates:meta", $id);
             $this->redis->hMSet("device:template:$id", $meta);
         }
         else {
