@@ -316,16 +316,12 @@ var device_dialog =
                 }
                 else {
                 	var type = device_dialog.deviceType;
-                    if (type == null) {
-                    	type = '';
-                    }
-                	
                     var result = device.create(node, name, desc, type, options);
                     if (typeof result.success !== 'undefined' && !result.success) {
                         alert('Unable to create device:\n'+result.message);
                         return false;
                     }
-                    if (type != null && type != '') {
+                    if (type != null) {
                         device_dialog.device = {
                                 id: result,
                                 nodeid: node,

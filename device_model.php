@@ -354,7 +354,7 @@ class Device
             $description = '';
         }
         
-        if (isset($type)) {
+        if (isset($type) && $type != 'null') {
             $type = preg_replace('/[^\/\|\,\w\s-:]/','', $type);
         } else {
             $type = '';
