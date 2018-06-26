@@ -356,7 +356,7 @@ class Device
                 // Add the device to redis
                 if ($this->redis) {
                     $this->redis->sAdd("user:device:$userid", $deviceid);
-                    $this->redis->hMSet("device:".$row->id, array(
+                    $this->redis->hMSet("device:".$deviceid, array(
                         'id'=>$deviceid,
                         'userid'=>$userid,
                         'nodeid'=>$nodeid,
