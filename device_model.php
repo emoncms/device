@@ -240,6 +240,11 @@ class Device
             $device['time'] = $this->redis->hget("device:lastvalue:".$id, 'time');
             $devices[] = $device;
         }
+        usort($devices, function($d1, $d2) {
+            if($d1['nodeid'] == $d2['nodeid'])
+                return strcmp($d1['name'], $d2['name']);
+            return strcmp($d1['nodeid'], $d2['nodeid']);
+        });
         return $devices;
     }
 
