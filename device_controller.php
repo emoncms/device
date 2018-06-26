@@ -17,7 +17,7 @@ function device_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "view" && $session['write']) {
-            $templates = $device->get_template_list($session['userid']);
+            $templates = $device->get_template_list_meta($session['userid']);
             $result = view("Modules/device/Views/device_view.php", array('templates'=>$templates));
         }
         else if ($route->action == 'api') $result = view("Modules/device/Views/device_api.php", array());
@@ -63,11 +63,14 @@ function device_controller()
             if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
         }
         else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
-            if ($route->subaction == "list") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_full($session['userid']);
-            }
-            else if ($route->subaction == "listshort") {
+            if ($route->subaction == "listshort") {
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta($session['userid']);
+            }
+            else if ($route->subaction == "list") {
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list($session['userid']);
+            }
+            else if ($route->subaction == "reload") {
+                if ($session['userid']>0 && $session['write']) $result = $device->reload_template_list($session['userid']);
             }
             else if ($route->subaction == "get") {
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template($session['userid'], get('type'));
