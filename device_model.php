@@ -527,40 +527,31 @@ class Device
     public function get_template($userid, $id) {
         $userid = intval($userid);
         
-        $template = $this->get_template_meta($userid, $id);
-        if (isset($template)) {
-            $module = $template['module'];
-            $class = $this->get_module_class($module, self::TEMPLATE);
-            if ($class != null) {
-                return $class->get_template($userid, $id);
-            }
+        $result = $this->get_template_meta($userid, $id);
+        if (isset($result['success']) && !$result['success']) {
+            return $result;
         }
-        else {
-            return array('success'=>false, 'message'=>'Device template does not exist');
+        $module = $result['module'];
+        $class = $this->get_module_class($module, self::TEMPLATE);
+        if ($class != null) {
+            return $class->get_template($userid, $id);
         }
         return array('success'=>false, 'message'=>'Unknown error while loading device template details');
     }
 
     private function get_template_meta($userid, $id) {
-        $template = null;
-        
         if ($this->redis) {
-            if (!$this->redis->exists("device:template:$id")) {
-                $this->load_template_list($userid);
-            }
             if ($this->redis->exists("device:template:$id")) {
                 $template = $this->redis->hGetAll("device:template:$id");
+                $template["control"] = (bool) $template["control"];
+                
+                return $template;
             }
         }
-        else {
-            if (empty($this->templates)) { // Cache it now
-                $this->load_template_list($userid);
-            }
-            if (isset($this->templates[$id])) {
-                $template = $this->templates[$id];
-            }
+        else if(!empty($this->templates) && isset($this->templates[$id])) {
+            return $this->templates[$id];
         }
-        return $template;
+        return array('success'=>false, 'message'=>'Device template does not exist');
     }
 
     public function prepare_template($id) {
@@ -568,21 +559,18 @@ class Device
         
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
-            $template = $this->get_template_meta($device['userid'], $device['type']);
-            if (isset($template)) {
-                $module = $template['module'];
-                $class = $this->get_module_class($module, self::TEMPLATE);
-                if ($class != null) {
-                    return $class->prepare_template($device);
-                }
-                return array('success'=>false, 'message'=>'Device template class is not defined');
+            $result = $this->get_template_meta($device['userid'], $device['type']);
+            if (isset($result['success']) && !$result['success']) {
+                return $result;
             }
-            return array('success'=>false, 'message'=>'Device template does not exist');
+            $module = $result['module'];
+            $class = $this->get_module_class($module, self::TEMPLATE);
+            if ($class != null) {
+                return $class->prepare_template($device);
+            }
+            return array('success'=>false, 'message'=>'Device template class is not defined');
         }
-        else {
-            return array('success'=>false, 'message'=>'Device type not specified');
-        }
-        return array('success'=>false, 'message'=>'Unknown error while preparing device initialization');
+        return array('success'=>false, 'message'=>'Device type not specified');
     }
 
     public function init($id, $template) {
@@ -600,21 +588,18 @@ class Device
         if (isset($template)) $template = json_decode($template);
         
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
-            $meta = $this->get_template_meta($device['userid'], $device['type']);
-            if (isset($meta)) {
-                $module = $meta['module'];
-                $class = $this->get_module_class($module, self::TEMPLATE);
-                if ($class != null) {
-                    return $class->init_template($device, $template);
-                }
-                return array('success'=>false, 'message'=>'Device template class is not defined');
+            $result = $this->get_template_meta($device['userid'], $device['type']);
+            if (isset($result['success']) && !$result['success']) {
+                return $result;
             }
-            return array('success'=>false, 'message'=>'Device template does not exist');
+            $module = $result['module'];
+            $class = $this->get_module_class($module, self::TEMPLATE);
+            if ($class != null) {
+                return $class->init_template($device, $template);
+            }
+            return array('success'=>false, 'message'=>'Device template class is not defined');
         }
-        else {
-            return array('success'=>false, 'message'=>'Device type not specified');
-        }
-        return array('success'=>false, 'message'=>'Unknown error while initializing device');
+        return array('success'=>false, 'message'=>'Device type not specified');
     }
 
     public function reload_template_list($userid) {
