@@ -133,10 +133,10 @@ var device_dialog =
             $('#device-delete').show();
             $("#device-save").html("Save");
             if (this.device.type != null && this.device.type != '') {
-            	$("#device-init").show();
+                $("#device-init").show();
             }
             else {
-            	$("#device-init").hide();
+                $("#device-init").hide();
             }
         }
         else {
@@ -291,7 +291,7 @@ var device_dialog =
                     update();
                 }
                 else {
-                	var type = device_dialog.deviceType;
+                    var type = device_dialog.deviceType;
                     var result = device.create(node, name, desc, type);
                     if (typeof result.success !== 'undefined' && !result.success) {
                         alert('Unable to create device:\n'+result.message);

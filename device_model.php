@@ -199,8 +199,9 @@ class Device
             $device = (array) $this->redis->hGetAll("device:$id");
             // Verify, if the cached device contains the userid, to avoid compatibility issues
             // with former versions where the userid was not cached.
-            if (empty($device['userid'])) {
-                $device = $this->load_device_to_redis($id);
+            if (!isset($device['userid'])) {
+                $this->load_device_to_redis($id);
+                $device = $this->get($id);
             }
             $device['time'] = $this->redis->hget("device:lastvalue:".$id, 'time');
         }
@@ -234,8 +235,9 @@ class Device
             $device = $this->redis->hGetAll("device:$id");
             // Verify, if the cached device contains the userid, to avoid compatibility issues
             // with former versions where the userid was not cached.
-            if (empty($device['userid'])) {
-                $device = $this->load_device_to_redis($id);
+            if (!isset($device['userid'])) {
+                $this->load_device_to_redis($id);
+                $device = $this->get($id);
             }
             $device['time'] = $this->redis->hget("device:lastvalue:".$id, 'time');
             $devices[] = $device;
