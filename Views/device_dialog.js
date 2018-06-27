@@ -136,10 +136,10 @@ var device_dialog =
             $('#device-delete').show();
             $("#device-save").html("Save");
             if (this.device.type != null && this.device.type != '') {
-            	$("#device-init").show();
+                $("#device-init").show();
             }
             else {
-            	$("#device-init").hide();
+                $("#device-init").hide();
             }
         }
         else {
@@ -300,7 +300,7 @@ var device_dialog =
                             updated = true;
                         }
                         else if (JSON.stringify(device_dialog.device.options) != JSON.stringify(options)) {
-                        	updated = true;
+                            updated = true;
                         }
                         if (updated) {
                             fields['options'] = options;
@@ -315,7 +315,7 @@ var device_dialog =
                     update();
                 }
                 else {
-                	var type = device_dialog.deviceType;
+                    var type = device_dialog.deviceType;
                     var result = device.create(node, name, desc, type, options);
                     if (typeof result.success !== 'undefined' && !result.success) {
                         alert('Unable to create device:\n'+result.message);
@@ -448,10 +448,10 @@ var device_dialog =
         
         var value = null;
         if (device_dialog.device != null && typeof device_dialog.device.options[option.id] !== 'undefined') {
-        	value = device_dialog.device.options[option.id];
+            value = device_dialog.device.options[option.id];
         }
         if (value == null && typeof option['default'] !== 'undefined') {
-        	value = option['default'];
+            value = option['default'];
         }
         
         var type = option.type;
@@ -473,7 +473,7 @@ var device_dialog =
                 select.val(value);
             }
             else {
-            	select.css('color', '#888').css('font-style', 'italic');
+                select.css('color', '#888').css('font-style', 'italic');
                 select.on('change', function() {
                     select.off('change');
                     select.css('color', 'black').css('font-style', 'normal');;
