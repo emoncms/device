@@ -34,6 +34,7 @@ function device_controller()
         // 4. device makes follow up request for authentication
         //    - reply authentication details
         // ---------------------------------------------------------------
+        /*
         if ($route->action == "auth") {
             if ($route->subaction=="request") {
                 // 1. Register request for authentication details, or provide if allowed
@@ -51,8 +52,8 @@ function device_controller()
                 // 3. User allows device to receive authentication details
                 $result = $device->allow_auth_request(get("ip"));
             }
-        }
-        else if ($route->action == 'list') {
+        }*/
+        if ($route->action == 'list') {
             if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
         }
         else if ($route->action == "create") {

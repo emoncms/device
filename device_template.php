@@ -79,7 +79,7 @@ class DeviceTemplate
             $this->prepare_feeds($userid, $device['nodeid'], $prefix, $feeds);
         }
         else {
-            $feeds = [];
+            $feeds = array();
         }
         
         if (isset($result->inputs)) {
@@ -87,7 +87,7 @@ class DeviceTemplate
             $this->prepare_inputs($userid, $device['nodeid'], $prefix, $inputs);
         }
         else {
-            $inputs = [];
+            $inputs = array();
         }
         
         if (!empty($feeds)) {
@@ -117,7 +117,7 @@ class DeviceTemplate
             $this->create_feeds($userid, $feeds);
         }
         else {
-            $feeds = [];
+            $feeds = array();
         }
         
         if (isset($template->inputs)) {
@@ -125,7 +125,7 @@ class DeviceTemplate
             $this->create_inputs($userid, $inputs);
         }
         else {
-            $inputs = [];
+            $inputs = array();
         }
         
         if (!empty($inputs)) {
@@ -370,7 +370,7 @@ class DeviceTemplate
                         $failed = false;
                         foreach($processes as $process) {
                             $result = $this->convert_process($feeds, $inputs, $process);
-                            if (isset($result["success"])) {
+                            if (isset($result["success"]) && !$result["success"]) {
                                 $failed = true;
                                 break;
                             }
