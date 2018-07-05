@@ -1,7 +1,7 @@
 {
-	"name": "OpenEVSE",
-	"category": "Control",
-	"group": "MQTT",
+    "name": "OpenEVSE",
+    "category": "Control",
+    "group": "MQTT",
     "description": "OpenEVSE control",
     "inputs": [
         {

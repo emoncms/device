@@ -388,7 +388,7 @@ class Device
             }
         }
         
-        $result = $this->mysqli->query("DELETE FROM device WHERE `id` = '$id'");
+        $this->mysqli->query("DELETE FROM device WHERE `id` = '$id'");
         if (isset($device_exists_cache[$id])) { unset($device_exists_cache[$id]); } // Clear static cache
         
         if ($this->redis) {
@@ -520,6 +520,26 @@ class Device
         return $templates;
     }
 
+    private function get_template_meta($userid, $id) {
+        if ($this->redis) {
+            if ($this->redis->exists("device:template:$id")) {
+                $template = $this->redis->hGetAll("device:template:$id");
+                $template["control"] = (bool) $template["control"];
+                
+                return $template;
+            }
+        }
+        else {
+            if (empty($this->templates)) { // Cache it now
+                $this->load_template_list($userid);
+            }
+            if(isset($this->templates[$id])) {
+                return $this->templates[$id];
+            }
+        }
+        return array('success'=>false, 'message'=>'Device template does not exist');
+    }
+
     public function get_template_list($userid) {
         return $this->load_template_list($userid);
     }
@@ -537,21 +557,6 @@ class Device
             return $class->get_template($userid, $id);
         }
         return array('success'=>false, 'message'=>'Unknown error while loading device template details');
-    }
-
-    private function get_template_meta($userid, $id) {
-        if ($this->redis) {
-            if ($this->redis->exists("device:template:$id")) {
-                $template = $this->redis->hGetAll("device:template:$id");
-                $template["control"] = (bool) $template["control"];
-                
-                return $template;
-            }
-        }
-        else if(!empty($this->templates) && isset($this->templates[$id])) {
-            return $this->templates[$id];
-        }
-        return array('success'=>false, 'message'=>'Device template does not exist');
     }
 
     public function prepare_template($id) {
