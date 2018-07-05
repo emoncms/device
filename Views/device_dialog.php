@@ -10,24 +10,24 @@
 
     /* Chrome */
     @supports (-webkit-appearance:none ) {
-    	.checkbox-slider--b {
-    		height:20px;	
-    	}
+        .checkbox-slider--b {
+            height:20px;    
+        }
     }
     
     /* IE */
     @media screen and (-ms-high-contrast: active) , ( -ms-high-contrast : none) {
-    	.checkbox-slider--b {
-    		height: 20px;
-    	}
+        .checkbox-slider--b {
+            height: 20px;
+        }
     }
     
     /* Firefox */
     _:-moz-tree-row(hover), .checkbox-slider--b {
-    	width: 20px;
-    	border-radius: 25px;
-    	background-color: gainsboro;
-    	height: 20px;
+        width: 20px;
+        border-radius: 25px;
+        background-color: gainsboro;
+        height: 20px;
     }
     
     *::before, *::after {
@@ -191,13 +191,13 @@
                 </table>
                 <div id="template-options-none" class="alert" style="display:none"><?php echo _('You have no options configured'); ?></div>
                 
-            	<div id="template-options-footer" style="margin-bottom: 8px; display:none">
-            		<h5><?php echo _('Add option:'); ?></h5>
-            		<span>
-                		<select id="template-options-select" class="input-large" disabled></select>
-                		<button id="template-options-add" class="btn btn-info" style="border-radius: 4px" disabled><?php echo _('Add'); ?></button>
-            		</span>
-            	</div>
+                <div id="template-options-footer" style="margin-bottom: 8px; display:none">
+                    <h5><?php echo _('Add option:'); ?></h5>
+                    <span>
+                        <select id="template-options-select" class="input-large" disabled></select>
+                        <button id="template-options-add" class="btn btn-info" style="border-radius: 4px" disabled><?php echo _('Add'); ?></button>
+                    </span>
+                </div>
             </div>
         </div>
     </div>

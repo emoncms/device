@@ -762,8 +762,13 @@ class Device
                 }
             }
         }
-        else if (isset($this->things[$device['id']])) {
-            $items = $this->things[$device['id']];
+        else {
+            if (empty($this->things)) { // Cache it now
+                $this->load_template_list($userid);
+            }
+            if (isset($this->things[$device['id']])) {
+                $items = $this->things[$device['id']];
+            }
         }
         
         if ($items == null) {
@@ -802,11 +807,16 @@ class Device
                 }
             }
         }
-        else if (isset($this->things[$id])) {
-            $items = $this->things[$id];
-            foreach ($items as $item) {
-                if ($item['id'] == $itemid) {
-                    return $item;
+        else {
+            if (empty($this->things)) { // Cache it now
+                $this->load_template_list($userid);
+            }
+            if (isset($this->things[$id])) {
+                $items = $this->things[$id];
+                foreach ($items as $item) {
+                    if ($item['id'] == $itemid) {
+                        return $item;
+                    }
                 }
             }
             return array('success'=>false, 'message'=>'Item does not exist');

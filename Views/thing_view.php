@@ -448,12 +448,12 @@ function format_input_value(item, value) {
 }
 
 function item_click(thing, id) {
-	// Disable redrawing while stopping the updater, to avoid toggle buttons to be
-	// switched back again, caused by badly timed asynchronous draw() calls
-	redraw = false;
-	setTimeout(() => {
-		redraw = true;
-	}, INTERVAL);
+    // Disable redrawing while stopping the updater, to avoid toggle buttons to be
+    // switched back again, caused by badly timed asynchronous draw() calls
+    redraw = false;
+    setTimeout(() => {
+        redraw = true;
+    }, INTERVAL);
     updaterStop();
     
     var item = things[thing].items[id];
@@ -464,8 +464,8 @@ function item_click(thing, id) {
         // The click event toggled the check already
         // Set the item value to the current state
         updateResume = function() {
-    		updaterStart();
-    	};
+            updaterStart();
+        };
         if (input.is(":checked")) {
             device.setItemOff(thing, id, updateResume);
             input.prop("checked", false);
@@ -544,7 +544,7 @@ $('#thing-list').on('change', '.item-input', function () {
 
     var $me=$(this);
     device.setItemValue(thing, id, value, function() {
-    	$me.children('input').trigger('focusout');
+        $me.children('input').trigger('focusout');
     });
 });
 
@@ -555,12 +555,12 @@ $("#thing-list").on("click", ".thing-configure", function() {
 });
 
 $('#thing-list').on('focus', '.item-input input', function () {
-	// Disable redrawing while stopping the updater, to avoid toggle buttons to be
-	// switched back again, caused by badly timed asynchronous draw() calls
-	redraw = false;
-	setTimeout(() => {
-		redraw = true;
-	}, INTERVAL);
+    // Disable redrawing while stopping the updater, to avoid toggle buttons to be
+    // switched back again, caused by badly timed asynchronous draw() calls
+    redraw = false;
+    setTimeout(() => {
+        redraw = true;
+    }, INTERVAL);
     updaterStop();
 });
 
