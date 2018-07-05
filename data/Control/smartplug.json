@@ -1,7 +1,7 @@
 {
-	"name": "Smartplug",
-	"category": "Control",
-	"group": "MQTT",
+    "name": "Smartplug",
+    "category": "Control",
+    "group": "MQTT",
     "description": "Smartplug control",
 
     "items": [

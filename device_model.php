@@ -407,7 +407,7 @@ class Device
             }
         }
         
-        $result = $this->mysqli->query("DELETE FROM device WHERE `id` = '$id'");
+        $this->mysqli->query("DELETE FROM device WHERE `id` = '$id'");
         if (isset($device_exists_cache[$id])) { unset($device_exists_cache[$id]); } // Clear static cache
         
         if ($this->redis) {
@@ -573,8 +573,13 @@ class Device
                 return $template;
             }
         }
-        else if(!empty($this->templates) && isset($this->templates[$id])) {
-            return $this->templates[$id];
+        else {
+            if (empty($this->templates)) { // Cache it now
+                $this->load_template_list($userid);
+            }
+            if(isset($this->templates[$id])) {
+                return $this->templates[$id];
+            }
         }
         return array('success'=>false, 'message'=>'Device template does not exist');
     }
