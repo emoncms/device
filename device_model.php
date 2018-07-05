@@ -151,14 +151,14 @@ class Device
         for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
         $ip = implode(".", $ip_parts);
         
-        $allow_ip = $redis->get("device:auth:allow");
+        $allow_ip = $this->redis->get("device:auth:allow");
         // Only show authentication details to allowed ip address
         if ($allow_ip == $ip) {
-            $redis->del("device:auth:allow");
+            $this->redis->del("device:auth:allow");
             global $mqtt_server;
             return $mqtt_server["user"].":".$mqtt_server["password"].":".$mqtt_server["basetopic"];
         } else {
-            $redis->set("device:auth:request", json_encode(array("ip"=>$ip)));
+            $this->redis->set("device:auth:request", json_encode(array("ip"=>$ip)));
             return array("success"=>true, "message"=>"Authentication request registered for IP $ip");
         }
     }
@@ -167,7 +167,7 @@ class Device
         if (!$this->redis) {
             return array("success"=>false, "message"=>"Unable to handle authentication requests without redis");
         }
-        if ($device_auth = $redis->get("device:auth:request")) {
+        if ($device_auth = $this->redis->get("device:auth:request")) {
             return array_merge(array("success"=>true, json_decode($device_auth)));
         } else {
             return array("success"=>true, "message"=>"No authentication request registered");
@@ -182,9 +182,9 @@ class Device
         for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
         $ip = implode(".", $ip_parts);
         
-        $redis->set("device:auth:allow", $ip);    // Temporary availability of auth for device ip address
-        $redis->expire("device:auth:allow", 60);  // Expire after 60 seconds
-        $redis->del("device:auth:request");
+        $this->redis->set("device:auth:allow", $ip);    // Temporary availability of auth for device ip address
+        $this->redis->expire("device:auth:allow", 60);  // Expire after 60 seconds
+        $this->redis->del("device:auth:request");
         
         return array("success"=>true, "message"=>"Authentication request allowed for IP $ip");
     }
