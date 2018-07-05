@@ -1,7 +1,7 @@
 {
-	"name": "Wi-Fi relay",
-	"category": "Control",
-	"group": "MQTT",
+    "name": "Wi-Fi relay",
+    "category": "Control",
+    "group": "MQTT",
     "description": "Wi-Fi relay control",
     "inputs": [
         {
