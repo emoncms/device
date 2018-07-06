@@ -2,130 +2,9 @@
     global $path;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js"></script>
 <link href="<?php echo $path; ?>Modules/device/Lib/titatoggle-dist-min.css" rel="stylesheet">
-
-<style>
-    input[type="checkbox"] { margin:0px; }
-
-    /* Chrome */
-    @supports (-webkit-appearance:none ) {
-        .checkbox-slider--b {
-            height:20px;    
-        }
-    }
-    
-    /* IE */
-    @media screen and (-ms-high-contrast: active) , ( -ms-high-contrast : none) {
-        .checkbox-slider--b {
-            height: 20px;
-        }
-    }
-    
-    /* Firefox */
-    _:-moz-tree-row(hover), .checkbox-slider--b {
-        width: 20px;
-        border-radius: 25px;
-        background-color: gainsboro;
-        height: 20px;
-    }
-    
-    *::before, *::after {
-        box-sizing: border-box;
-    }
-
-    .group-body tr:hover > td {
-        background-color: #44b3e2;
-    }
-
-    .device-selected {
-        background-color: #209ed3;
-        color: #fff;
-    }
-
-    .modal-adjust {
-        width: 60%; left:20%; /* (100%-width)/2 */
-        margin-left: auto; margin-right: auto;
-        overflow-y: hidden;
-    }
-
-    .modal-adjust .modal-body {
-        max-height: none;
-        overflow-y: hidden;
-    }
-
-    .modal-adjust .divider {
-        *width: 100%;
-        height: 1px;
-        margin: 9px 1px;
-        *margin: -5px 0 5px;
-        overflow: hidden;
-        background-color: #e5e5e5;
-        border-bottom: 1px solid #ffffff;
-    }
-
-    #sidebar-wrapper {
-        position: absolute;
-        margin-top: -15px;
-        margin-left: -15px;
-        max-height: none;
-        height: 100%;
-        width: 250px;
-        overflow-y: auto;
-        background-color: #eee;
-        z-index: 1000;
-    }
-
-    #content-wrapper {
-        position: absolute;
-        left: 15px;
-        right: 15px;
-        margin-top: -15px;
-        margin-left: 250px;
-        height: 100%;
-        max-height: none;
-        overflow-y: auto;
-    }
-
-    #template-info .tooltip-inner {
-        max-width: 500px;
-    }
-
-    #template-options .input-large {
-        margin-bottom: 0px;
-    }
-
-    #template-options .template-option-selected {
-        background-color: #f5f5f5;
-    }
-
-    #template-options table tr:nth-of-type(2n) td  { border-top-width: 0px; }
-    #template-options table td:nth-of-type(2) { width:25%; }
-    #template-options table td:nth-of-type(3) { text-align: right; }
-    #template-options table td:nth-of-type(4) { width:14px; text-align: center; }
-
-    #device-init-modal .content {
-        position: absolute;
-        left: 15px;
-        right: 0px;
-        bottom: 0px;
-        height: 100%;
-        overflow-y: auto;
-    }
-
-    #device-init-modal table td { text-align: left; }
-
-    #device-init-feeds table td:nth-of-type(1) { width:14px; text-align: center; }
-    #device-init-feeds table td:nth-of-type(2) { width:5%; }
-    #device-init-feeds table td:nth-of-type(3) { width:15%; }
-    #device-init-feeds table td:nth-of-type(4) { width:25%; }
-
-    #device-init-inputs table td:nth-of-type(1) { width:14px; text-align: center; }
-    #device-init-inputs table td:nth-of-type(2) { width:5%; }
-    #device-init-inputs table td:nth-of-type(3) { width:5%; }
-    #device-init-inputs table td:nth-of-type(4) { width:10%; }
-    #device-init-inputs table td:nth-of-type(5) { width:25%; }
-</style>
+<link href="<?php echo $path; ?>Modules/device/Views/device_dialog.css" rel="stylesheet">
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js"></script>
 
 <div id="device-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-config-modal-label" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
@@ -133,9 +12,9 @@
         <h3 id="device-config-modal-label"><?php echo _('Configure Device'); ?></h3>
     </div>
     <div id="device-config-body" class="modal-body">
-        <div id="sidebar-wrapper">
+        <div id="device-sidebar" class="modal-sidebar">
             <div style="padding-left:10px;">
-                <div id="sidebar-close" style="float:right; cursor:pointer; padding:10px;"><i class="icon-remove"></i></div>
+                <div id="device-sidebar-close" style="float:right; cursor:pointer; padding:10px;"><i class="icon-remove"></i></div>
                 <h3><?php echo _('Devices'); ?></h3>
             </div>
             <div style="overflow-x: hidden; background-color:#f3f3f3; width:100%">
@@ -143,7 +22,7 @@
             </div>
         </div>
         
-        <div id="content-wrapper" style="max-width:1280px">
+        <div id="device-content" class="modal-content" style="max-width:1280px">
             
             <h3><?php echo _('Configuration'); ?></h3>
             
@@ -175,8 +54,8 @@
                 <button id="device-config-devicekey-new" class="btn"><?php echo _('New'); ?></button>
             </div>
             
-            <div id="template-options" style="display:none">
-                <table class="table table-hover">
+            <div id="template-options" class="modal-options" style="display:none">
+                <table class="table table-hover table-options">
                     <tbody>
                         <tr>
                             <th id="template-options-header" colspan="4">
@@ -226,7 +105,7 @@
         
             <div id="device-init-feeds" style="display:none; margin-top:10px;">
                 <label><b><?php echo _('Feeds'); ?></b></label>
-                <table class="table table-hover">
+                <table class="table table-hover table-feeds">
                     <tr>
                         <th></th>
                         <th></th>
@@ -240,7 +119,7 @@
             
             <div id="device-init-inputs" style="display:none">
                 <label><b><?php echo _('Inputs'); ?></b></label>
-                <table class="table table-hover">
+                <table class="table table-hover table-inputs">
                     <tr>
                         <th></th>
                         <th></th>

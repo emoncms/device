@@ -27,7 +27,7 @@
     <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Devices Help'); ?></a></div>
     <div id="local-header"><h2><?php echo _('Devices'); ?></h2></div>
 
-    <div id="table"><div align='center'>loading...</div></div>
+    <div id="table"></div>
 
     <div id="device-none" class="hide">
         <div class="alert alert-block">
@@ -45,6 +45,8 @@
     <div id="toolbar_bottom"><hr>
         <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
     </div>
+	
+	<div id="device-loader" class="ajax-loader"></div>
 </div>
 
 <?php require "Modules/device/Views/device_dialog.php"; ?>
@@ -109,6 +111,7 @@
         $("#device-none").show();
         $("#local-header").hide();
       }
+      $("#device-loader").hide();
     }});
   }
 
@@ -134,7 +137,6 @@
   });
 
   $("#table").bind("onDelete", function(e,id,row) {
-
     // Get device of clicked row
     var localDevice = device.get(id);
     device_dialog.loadDelete(localDevice, row);

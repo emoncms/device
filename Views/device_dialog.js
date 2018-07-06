@@ -119,9 +119,8 @@ var device_dialog =
     'clearConfigModal':function() {
         $("#template-table").text('');
         
-        var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device." +
-                "<br><br>" +
-                "Initializing a device usualy should only be done once on installation.<br>" +
+        var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device.<br>" +
+                "Initializing a device usualy should only be done once on installation. " +
                 "If the configuration was already applied, only missing inputs and feeds will be created.";
         
         $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
@@ -164,20 +163,20 @@ var device_dialog =
             $("#device-config-body").height(h);
         }
 
-        $("#content-wrapper").css("transition","0");
-        $("#sidebar-wrapper").css("transition","0");
+        $("#device-content").css("transition","0");
+        $("#device-sidebar").css("transition","0");
         if (width < 1024) {
-            $("#content-wrapper").css("margin-left","0");
-            $("#sidebar-wrapper").css("width","0");
+            $("#device-content").css("margin-left","0");
+            $("#device-sidebar").css("width","0");
             $("#sidebar-open").show();
 
-            $("#content-wrapper").css("transition","0.5s");
-            $("#sidebar-wrapper").css("transition","0.5s");
+            $("#device-content").css("transition","0.5s");
+            $("#device-sidebar").css("transition","0.5s");
         } else {
-            $("#content-wrapper").css("margin-left","250px");
-            $("#sidebar-wrapper").css("width","250px");
+            $("#device-content").css("margin-left","250px");
+            $("#device-sidebar").css("width","250px");
             $("#sidebar-open").hide();
-            $("#sidebar-close").hide();
+            $("#device-sidebar-close").hide();
         }
     },
 
@@ -251,13 +250,13 @@ var device_dialog =
         });
 
         $("#sidebar-open").off('click').on('click', function () {
-            $("#sidebar-wrapper").css("width","250px");
-            $("#sidebar-close").show();
+            $("#device-sidebar").css("width","250px");
+            $("#device-sidebar-close").show();
         });
 
-        $("#sidebar-close").off('click').on('click', function () {
-            $("#sidebar-wrapper").css("width","0");
-            $("#sidebar-close").hide();
+        $("#device-sidebar-close").off('click').on('click', function () {
+            $("#device-sidebar").css("width","0");
+            $("#device-sidebar-close").hide();
         });
 
         $("#device-save").off('click').on('click', function () {
@@ -526,7 +525,7 @@ var device_dialog =
                     $("#template-options-table").show();
                     $("#template-options-footer").show();
 
-                    $("#content-wrapper").animate({ scrollTop:  $("#content-wrapper").height() }, 1000);
+                    $("#device-content").animate({ scrollTop:  $("#device-content").height() }, 1000);
                 }
                 else {
                     header.addClass('icon-plus-sign');
@@ -552,7 +551,7 @@ var device_dialog =
                         $("#template-options-table").show();
                         $("#template-options-footer").show();
                         
-                        $("#content-wrapper").animate({ scrollTop:  $("#content-wrapper").height() }, 1000);
+                        $("#device-content").animate({ scrollTop:  $("#device-content").height() }, 1000);
                     }
                     else {
                         header.addClass('icon-plus-sign');
