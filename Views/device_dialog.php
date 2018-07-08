@@ -39,14 +39,18 @@
             
             <div class="divider"></div>
             
-            <label><b><?php echo _('Node'); ?></b></label>
-            <input id="device-config-node" class="input-medium" type="text">
-            
-            <label><b><?php echo _('Name'); ?></b></label>
-            <input id="device-config-name" class="input-large" type="text">
-            
-            <label><b><?php echo _('Location'); ?></b></label>
-            <input id="device-config-description" class="input-large" type="text">
+            <table class="device-input">
+                <tr>
+                    <th><?php echo _('Node'); ?></th>
+                    <th><?php echo _('Name'); ?></th>
+                    <th><?php echo _('Location'); ?></th>
+                </tr>
+                <tr>
+                    <td><input id="device-config-node" class="input-small" type="text" required></td>
+                    <td><input id="device-config-name" class="input-medium" type="text" required></td>
+                    <td><input id="device-config-description" class="input-large" type="text"></td>
+                </tr>
+            </table>
             
             <label><b><?php echo _('Device Key'); ?></b></label>
             <div class="input-append">
@@ -54,11 +58,11 @@
                 <button id="device-config-devicekey-new" class="btn"><?php echo _('New'); ?></button>
             </div>
             
-            <div id="template-options" class="modal-options" style="display:none">
-                <div id="template-options-header" class="option-header" data-toggle="collapse" data-target="#template-options-list">
+            <div class="modal-options">
+                <div id="template-options-header" class="option-header" data-toggle="collapse" data-target="#template-options">
                     <h5><span class="icon-chevron-right icon-collapse"></span><?php echo _('Options'); ?></h5>
                 </div>
-                <div id="template-options-list" class="collapse">
+                <div id="template-options" class="collapse">
                     <table id="template-options-table" class="table table-options"></table>
                     <div id="template-options-none" class="alert" style="display:none"><?php echo _('You have no options configured'); ?></div>
                     
@@ -70,6 +74,7 @@
                         </span>
                     </div>
                 </div>
+                <div id="template-options-overlay" class="modal-overlay"></div>
             </div>
         </div>
     </div>

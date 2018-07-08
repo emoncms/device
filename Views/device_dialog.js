@@ -359,46 +359,34 @@ var device_dialog =
     'drawTemplate':function() {
         device_dialog.deviceOptions = [];
         
+        $('#template-options-overlay').show();
+        $("#template-options").collapse('hide');
+        $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
+        $("#template-options-table").empty().hide();
+        $("#template-options-select").prop("disabled", true).empty().append("<option selected hidden value=''>Select an Option</option>");
+        $("#template-options-add").prop("disabled", true);
+        
         if (this.deviceType !== null && this.deviceType in this.templates) {
             var template = this.templates[this.deviceType];
             $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
             $('#template-info').show();
             
             if (template.options) {
-                // Clear all options table while requesting template options from server
-                $("#template-options").show();
-                var header = $('#template-options-header-icon');
-                if (header.hasClass('icon-minus-sign')) {
-                    header.removeClass('icon-minus-sign');
-                    header.addClass('icon-plus-sign');
-                }
-                $("#template-options-table-header").hide();
-                $("#template-options-table").empty().hide();
-                $("#template-options-select").prop("disabled", true).empty().append("<option selected hidden value=''>Select an Option</option>");
-                $("#template-options-add").prop("disabled", true);
-                
                 device.getTemplateOptions(this.deviceType, function(result) {
                     device_dialog.deviceOptions = result;
                     device_dialog.drawOptions();
+                    $('#template-options-overlay').hide();
                 });
             }
-            else {
-                $("#template-options").hide();
-            }
-            
-            // Initialize callbacks
             this.registerTemplateEvents();
         }
         else {
             $('#template-description').text('');
             $('#template-info').hide();
-            $("#template-options").hide();
         }
     },
     
     'drawOptions':function() {
-        $("#template-options-table").show();
-        
         var select = $("#template-options-select");
         
         // Show options, if at least one of them is defined or mandatory
@@ -413,8 +401,16 @@ var device_dialog =
                 select.append($("<option />").val(option.id).text(option.name).css('color', 'black'));
             }
         }
+        if (device_dialog.device != null && Object.keys(device_dialog.device.options).length > 0) {
+            $("#template-options-table").show();
+            $("#template-options-none").hide();
+        }
+        else {
+        	$("#template-options-table").hide();
+            $("#template-options-none").show();
+        }
         if (show) {
-            $("#template-options-list").collapse('show');
+            $("#template-options").collapse('show');
             $("#template-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
         }
         
@@ -510,7 +506,7 @@ var device_dialog =
     'registerTemplateEvents':function() {
 
         $("#template-options-header").off().on("click", function() {
-            if ($("#template-options-list").hasClass('in')) {
+            if ($("#template-options").hasClass('in')) {
                 $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
             }
             else {

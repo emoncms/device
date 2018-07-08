@@ -43,6 +43,13 @@
     overflow-y: auto;
 }
 
+.modal-overlay {
+    position: absolute;
+    top: 0; bottom:0; left: 0; right:0;
+    margin: auto;
+    background: rgba(255, 255, 255, .8) center;
+}
+
 .modal-sidebar {
     position: absolute;
     margin-top: -15px;
@@ -69,13 +76,19 @@
     background-color: #44b3e2;
 }
 
-.device-selected {
-    background-color: #209ed3;
-    color: #fff;
+.device-input th {
+    text-align: left;
+}
+.device-input th:nth-of-type(3) {
+    width: 60%;
+    color: #888;
+    font-weight: normal;
 }
 
 .modal-options {
     margin-bottom: 10px;
+    position: relative;
+    width:100%;
 }
 
 .modal-options .option-header {
