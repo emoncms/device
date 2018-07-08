@@ -55,31 +55,20 @@
             </div>
             
             <div id="template-options" class="modal-options" style="display:none">
-                <table class="table table-hover table-options">
-                    <tbody>
-                        <tr>
-                            <th id="template-options-header" colspan="4">
-                                <i id="template-options-header-icon" class="toggle-header icon-plus-sign" style="cursor:pointer"></i>
-                                <a class="toggle-header" style="cursor:pointer"><?php echo _('Options'); ?></a>
-                            </th>
-                        </tr>
-                        <tr id="template-options-table-header">
-                            <th><?php echo _('Option'); ?></th>
-                            <th><?php echo _('Value'); ?></th>
-                            <th colspan="2"></th>
-                        </tr>
-                    </tbody>
+                <div id="template-options-header" class="option-header" data-toggle="collapse" data-target="#template-options-list">
+                    <h5><span class="icon-chevron-right icon-collapse"></span><?php echo _('Options'); ?></h5>
+                </div>
+                <div id="template-options-list" class="collapse">
+                    <table id="template-options-table" class="table table-options"></table>
+                    <div id="template-options-none" class="alert" style="display:none"><?php echo _('You have no options configured'); ?></div>
                     
-                    <tbody id="template-options-table"></tbody>
-                </table>
-                <div id="template-options-none" class="alert" style="display:none"><?php echo _('You have no options configured'); ?></div>
-                
-                <div id="template-options-footer" style="margin-bottom: 8px; display:none">
-                    <h5><?php echo _('Add option:'); ?></h5>
-                    <span>
-                        <select id="template-options-select" class="input-large" disabled></select>
-                        <button id="template-options-add" class="btn btn-info" style="border-radius: 4px" disabled><?php echo _('Add'); ?></button>
-                    </span>
+                    <div id="template-options-footer" style="margin-bottom: 8px;">
+                        <h5><?php echo _('Add option:'); ?></h5>
+                        <span>
+                            <select id="template-options-select" class="input-large" disabled></select>
+                            <button id="template-options-add" class="btn btn-info" style="border-radius: 4px" disabled><?php echo _('Add'); ?></button>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

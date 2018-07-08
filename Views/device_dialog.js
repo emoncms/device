@@ -376,9 +376,8 @@ var device_dialog =
                 $("#template-options-table").empty().hide();
                 $("#template-options-select").prop("disabled", true).empty().append("<option selected hidden value=''>Select an Option</option>");
                 $("#template-options-add").prop("disabled", true);
-                $("#template-options-footer").hide();
                 
-                device.getTemplateOptions(template.id, function(result) {
+                device.getTemplateOptions(this.deviceType, function(result) {
                     device_dialog.deviceOptions = result;
                     device_dialog.drawOptions();
                 });
@@ -398,6 +397,8 @@ var device_dialog =
     },
     
     'drawOptions':function() {
+        $("#template-options-table").show();
+        
         var select = $("#template-options-select");
         
         // Show options, if at least one of them is defined or mandatory
@@ -412,15 +413,9 @@ var device_dialog =
                 select.append($("<option />").val(option.id).text(option.name).css('color', 'black'));
             }
         }
-        var header = $('#template-options-header-icon');
         if (show) {
-            if (header.hasClass('icon-plus-sign')) {
-                header.removeClass('icon-plus-sign');
-                header.addClass('icon-minus-sign');
-            }
-            $("#template-options-table-header").show();
-            $("#template-options-table").show();
-            $("#template-options-footer").show();
+            $("#template-options-list").collapse('show');
+            $("#template-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
         }
         
         select.css('color', '#888').css('font-style', 'italic');
@@ -439,9 +434,18 @@ var device_dialog =
     },
 
     'drawOptionInput':function(option) {
-        var table = $("#template-options-table");
-        
-        table.append("<tr id='template-option-"+option.id+"-row' row='"+option.id+"'><td class='template-option'>"+option.name+"</td></tr>");
+    	$("#template-options-table").append(
+    		"<tbody>" +
+                "<tr id='template-option-"+option.id+"-row' data-id='"+option.id+"'>" +
+                	"<td class='option'>"+option.name+"</td>" +
+                "</tr>" +
+                "<tr id='template-option-"+option.id+"-info' data-id='"+option.id+"' data-show='false' style='display:none'>" +
+                	"<td class='option' colspan='4'>" +
+                        "<div class='alert alert-comment'>"+option.description+"</div>" +
+                    "</td>" +
+                "</tr>" +
+            "</tbody>"
+    	);
         var row = $("#template-option-"+option.id+"-row");
         
         var value = null;
@@ -453,16 +457,10 @@ var device_dialog =
         }
         
         var type = option.type;
-        if (type === 'text') {
-            row.append("<td><input id='template-option-"+option.id+"-text' type='text' /></td>").hide().fadeIn(300);
-            if (value != null) {
-                $("#template-option-"+option.id+"-text").val(value);
-            }
-        }
-        else if (type === 'selection') {
-            row.append("<td><select id='template-option-"+option.id+"-select' class='input-large'></select></td>").hide().fadeIn(300);
+        if (type === 'selection') {
+            row.append("<td><select id='template-option-"+option.id+"' class='option option-input input-large'></select></td>").hide().fadeIn(300);
             
-            var select = $("#template-option-"+option.id+"-select").empty();
+            var select = $("#template-option-"+option.id).empty();
             select.append("<option selected hidden value=''>Select a "+option.name+"</option>");
             option.select.forEach(function(val) {
                 select.append($("<option />").val(val.value).text(val.name).css('color', 'black'));
@@ -480,118 +478,76 @@ var device_dialog =
         }
         else if (type === 'switch') {
             row.append(
-                "<td><div class='checkbox checkbox-slider--b checkbox-slider-info'>" +
+                "<td><div class='option option-input checkbox checkbox-slider--b checkbox-slider-info'>" +
                     "<label>" +
-                        "<input id='template-option-"+option.id+"-switch' type='checkbox'><span></span>" +
+                        "<input id='template-option-"+option.id+"' type='checkbox'><span></span>" +
                     "</label>" +
                 "</div></td>"
             ).hide().fadeIn(300);
             if (value != null) {
-                $("#template-option-"+option.id+"-switch").prop("checked", value);
+                $("#template-option-"+option.id).prop("checked", value);
+            }
+        }
+        else {
+            row.append("<td><input id='template-option-"+option.id+"' type='text' class='option option-input'></input></td>").hide().fadeIn(300);
+            if (value != null) {
+                $("#template-option-"+option.id).val(value);
             }
         }
         
         if(!option.mandatory) {
             row.append("<td></td>")
-            row.append("<td class='template-option'><a id='template-option-"+option.id+"-remove' class='template-option-remove' title='Remove'><i class='icon-trash' style='cursor:pointer'></i></a></td>");
+            row.append("<td class='option'><a id='template-option-"+option.id+"-remove' class='option-remove' title='Remove'><i class='icon-trash' style='cursor:pointer'></i></a></td>");
         }
         else {
-            row.append("<td class='template-option'><span style='color:#888; font-size:12px'><em>mandatory</em></span></td>")
-            row.append("<td class='template-option'><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
+            row.append("<td class='option'><span style='color:#888; font-size:12px'><em>mandatory</em></span></td>")
+            row.append("<td class='option'><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
+            
+            $("#template-option-"+option.id).prop("required", true);
         }
-        
-        table.append("<tr><td colspan='4' id='template-option-"+option.id+"-info' class='template-option-info' style='display: none;'>" +
-                "<div class='alert alert-info' style='margin:0px'>"+option.description+"</div></td></tr>");
     },
 
     'registerTemplateEvents':function() {
 
-        // Event: minimise or maximise settings
-        $('#template-options-header').off().on('click touchend', '.toggle-header', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            var $me=$(this);
-            if ($me.data('clicked')) {
-                $me.data('clicked', false); // reset
-                if ($me.data('alreadyclickedTimeout')) clearTimeout($me.data('alreadyclickedTimeout')); // prevent this from happening
-
-                // Do what needs to happen on double click.
-                var header = $('#template-options-header');
-                if (header.hasClass('icon-plus-sign')) {
-                    header.removeClass('icon-plus-sign');
-                    header.addClass('icon-minus-sign');
-                    
-                    $("#template-options-table-header").show();
-                    $("#template-options-table").show();
-                    $("#template-options-footer").show();
-
-                    $("#device-content").animate({ scrollTop:  $("#device-content").height() }, 1000);
-                }
-                else {
-                    header.addClass('icon-plus-sign');
-                    header.removeClass('icon-minus-sign');
-                    
-                    $("#template-options-table-header").hide();
-                    $("#template-options-table").hide();
-                    $("#template-options-footer").hide();
-                }
+        $("#template-options-header").off().on("click", function() {
+            if ($("#template-options-list").hasClass('in')) {
+                $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
             }
             else {
-                $me.data('clicked', true);
-                var alreadyclickedTimeout=setTimeout(function() {
-                    $me.data('clicked', false); // reset when it happens
-    
-                    // Do what needs to happen on single click. Use $me instead of $(this) because $(this) is  no longer the element
-                    var header = $('#template-options-header-icon');
-                    if (header.hasClass("icon-plus-sign")) {
-                        header.removeClass("icon-plus-sign");
-                        header.addClass("icon-minus-sign");
-                        
-                        $("#template-options-table-header").show();
-                        $("#template-options-table").show();
-                        $("#template-options-footer").show();
-                        
-                        $("#device-content").animate({ scrollTop:  $("#device-content").height() }, 1000);
-                    }
-                    else {
-                        header.addClass('icon-plus-sign');
-                        header.removeClass('icon-minus-sign');
-                        
-                        $("#template-options-table-header").hide();
-                        $("#template-options-table").hide();
-                        $("#template-options-footer").hide();
-                    }
-                
-                }, 250); // dblclick tolerance
-                $me.data('alreadyclickedTimeout', alreadyclickedTimeout); // store this id to clear if necessary
+                $("#template-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
+//                $("#device-content").animate({ scrollTop: $('#template-options-footer').offset().top }, 250);
             }
         });
 
-        $('#template-options-table').off();
-
-        $('#template-options-table').on('click', '.template-option', function() {
-            var id = $(this).closest('tr').attr('row');
-            var row = $("#template-option-"+id+"-row");
+        $('#template-options-table').off('click');
+        $('#template-options-table').on('click', '.option', function() {
+            var id = $(this).closest('tr').data('id');
             var info = $("#template-option-"+id+"-info");
-            if (row.hasClass("template-option-selected")) {
-                row.removeClass("template-option-selected");
-                info.removeClass("template-option-selected").fadeOut(100);
+            if (info.data('show')) {
+                if (!$(this).hasClass('option-input')) {
+                	info.data('show', false);
+                    info.slideUp();
+                }
             }
             else {
-                var id = $(".template-option-selected").closest('tr').attr('row');
-                $(".template-option-selected").removeClass("template-option-selected");
-                $("#template-option-"+id+"-info").fadeOut(100);
+                // Hide already shown option infos and open the selected afterwards
+            	$(".table-options tr[data-show]").each(function() {
+            	    if ($(this).data('show')) {
+            	    	$(this).data('show', false);
+            	    	$(this).slideUp(200);
+            	    }
+            	});
                 
-                row.addClass("template-option-selected");
-                info.addClass("template-option-selected").fadeIn(300);
+            	info.data('show', true);
+                info.slideDown();
             }
         });
 
-        $('#template-options-table').on('click', '.template-option-remove', function() {
-            var id = $(this).closest('tr').attr('row');
+        $('#template-options-table').on('click', '.option-remove', function() {
+            var id = $(this).closest('tr').data('id');
             
-            $("#template-option-"+id+"-row").fadeOut(500, $("#template-option-"+id+"-row").remove());
-            $("#template-option-"+id+"-info").fadeOut(500, $("#template-option-"+id+"-info").remove());
+            $("#template-option-"+id+"-row").fadeOut($("#template-option-"+id+"-row").remove());
+            $("#template-option-"+id+"-info").fadeOut($("#template-option-"+id+"-info").remove());
             
             var option = device_dialog.deviceOptions.find(function(opt) {
                 return opt.id === id;
@@ -821,17 +777,20 @@ var device_dialog =
         var options = {};
         for (var i = 0; i < device_dialog.deviceOptions.length; i++) {
             var option = device_dialog.deviceOptions[i];
+            var input = $('#template-option-'+option.id);
             var value = null;
             
-            var type = option.type;
-            if (type === 'text' && $('#template-option-'+option.id+'-text').val() != undefined) {
-                value = $('#template-option-'+option.id+'-text').val();
-            }
-            else if (type === 'selection' && $('#template-option-'+option.id+'-select').val() != undefined) {
-                value = $('#template-option-'+option.id+'-select option:selected').val();
-            }
-            else if (type === 'switch' && $('#template-option-'+option.id+'-switch').val() != undefined) {
-                value = $('#template-option-'+option.id+'-switch').is(':checked');
+            if (input.val() != undefined) {
+                var type = option.type;
+                if (type === 'text') {
+                    value = input.val();
+                }
+                else if (type === 'selection') {
+                    value = $('#template-option-'+option.id+' option:selected').val();
+                }
+                else if (type === 'switch') {
+                    value = input.is(':checked');
+                }
             }
             if (value != null && value != "") {
                 options[option.id] = value;
