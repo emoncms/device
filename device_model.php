@@ -168,7 +168,8 @@ class Device
             return array("success"=>false, "message"=>"Unable to handle authentication requests without redis");
         }
         if ($device_auth = $this->redis->get("device:auth:request")) {
-            return array_merge(array("success"=>true, json_decode($device_auth)));
+            $device_auth = json_decode($device_auth);
+            return array_merge(array("success"=>true, "ip"=>$device_auth->ip));
         } else {
             return array("success"=>true, "message"=>"No authentication request registered");
         }
