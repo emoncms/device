@@ -50,18 +50,6 @@
     background: rgba(255, 255, 255, .8) center;
 }
 
-.modal-sidebar {
-    position: absolute;
-    margin-top: -15px;
-    margin-left: -15px;
-    max-height: none;
-    height: 100%;
-    width: 250px;
-    overflow-y: auto;
-    background-color: #eee;
-    z-index: 1000;
-}
-
 .modal-content {
     position: absolute;
     padding-right: 15px;
@@ -72,18 +60,84 @@
     overflow-y: auto;
 }
 
-.group-body tr:hover > td {
+.modal-sidebar {
+    position: absolute;
+    margin-top: -15px;
+    margin-left: -15px;
+    max-height: none;
+    height: 100%;
+    width: 250px;
+    overflow-y: auto;
+    background-color: #f2f2f2;
+    z-index: 1000;
+}
+.modal-sidebar .accordion {
+  margin-bottom: 0px;
+}
+.modal-sidebar .accordion-group {
+    margin-bottom: 0px;
+    border: 0px;
+    -webkit-border-radius: 0px;
+       -moz-border-radius: 0px;
+            border-radius: 0px;
+}
+.modal-sidebar .accordion-inner {
+    padding: 0px;
+    border-top: 0px;
+}
+.modal-sidebar .category-heading {
+    background-color: #cccccc;
+    border-bottom: 1px solid #d9d9d9;
+    cursor: pointer;
+}
+.modal-sidebar .category-heading:hover {
+    background-color: #d9d9d9;
+}
+.modal-sidebar .category-heading span {
+    font-weight: bold;
+    padding: 6px 6px 6px 10px;
+}
+.modal-sidebar .group-heading {
+    background-color: #e6e6e6;
+    border-bottom: 1px solid #ededed;
+    cursor: pointer;
+}
+.modal-sidebar .group-heading:hover {
+    background-color: #ededed;
+}
+.modal-sidebar .group-heading span {
+    font-weight: bold;
+    padding: 6px 6px 6px 16px;
+}
+.modal-sidebar .group-device {
+    padding: 8px 8px 8px 22px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #fcfcfc;
+    cursor: pointer;
+}
+.modal-sidebar .group-device:hover {
     background-color: #44b3e2;
+    color: #ffffff;
 }
 
-.device-input th {
+.device-selected {
+    background-color: #209ed3 !important;
+    color: #ffffff;
+}
+
+.device-input {
+    width: 100%;
+}
+.device-input th,
+.device-input td {
     text-align: left;
 }
 .device-input th:nth-of-type(3) {
-    width: 60%;
     color: #888;
     font-weight: normal;
 }
+.device-input td:nth-of-type(1) { width:108px; }
+.device-input td:nth-of-type(2) { width:168px; }
 
 .modal-options {
     margin-bottom: 10px;
@@ -92,7 +146,7 @@
 }
 
 .modal-options .option-header {
-    cursor:pointer;
+    cursor: pointer;
     padding-top: 6px;
     padding-bottom: 4px;
     border-bottom: 1px solid #e5e5e5;

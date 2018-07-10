@@ -17,8 +17,8 @@
                 <div id="device-sidebar-close" style="float:right; cursor:pointer; padding:10px;"><i class="icon-remove"></i></div>
                 <h3><?php echo _('Devices'); ?></h3>
             </div>
-            <div style="overflow-x: hidden; background-color:#f3f3f3; width:100%">
-                <table id="template-table" class="table"></table>
+            <div style="overflow-x: hidden; width:100%">
+                <div id="template-list" class="accordion"></div>
             </div>
         </div>
         

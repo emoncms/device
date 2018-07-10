@@ -30,8 +30,6 @@ var device_dialog =
         this.adjustConfigModal();
         this.clearConfigModal();
 
-        var out = "";
-
         var categories = [];
         var devicesByCategory = {};
         for (var id in this.templates) {
@@ -53,7 +51,8 @@ var device_dialog =
         
         for (var i in categories) {
             var category = categories[i];
-
+            var categoryid = category.replace(/\W/g, '').toLowerCase();
+            
             var groups = [];
             var devicesByGroup = {};
             for (var i in devicesByCategory[category]) {
@@ -66,22 +65,39 @@ var device_dialog =
             }
             groups.sort();
             
-            out += "<tbody>"
-            out += "<tr class='category-header' category='"+category+"' style='background-color:#aaa; cursor:pointer'>";
-            out += "<td style='font-size:12px; padding:4px; padding-left:8px; font-weight:bold'>"+category+"</td>";
-            out += "</tr>";
-            out += "</tbody>";
+            $('#template-list').append(
+                "<div class='accordion-group'>" +
+                    "<div class='accordion-heading category-heading'>" +
+                        "<span class='accordion-toggle' data-toggle='collapse' " +
+                            "data-parent='#template-list' data-target='#template-"+categoryid+"-collapse'>" +
+                            category +
+                        "</span>" +
+                    "</div>" +
+                    "<div id='template-"+categoryid+"-collapse' class='accordion-body collapse'>" +
+                        "<div class='accordion-inner'>" +
+                            "<div id='template-"+categoryid+"' class='accordion'></div>" +
+                        "</div>" +
+                    "</div>" +
+                "</div>"
+            );
             
             for (var i in groups) {
                 var group = groups[i];
-                
-                out += "<tbody class='group-header' group='"+group+"' category='"+category+"' style='display:none'>"
-                out += "<tr style='background-color:#ccc; cursor:pointer'>";
-                out += "<td style='font-size:12px; padding:4px; padding-left:16px; font-weight:bold'>"+group+"</td>";
-                out += "</tr>";
-                out += "</tbody>";
-                
-                out += "<tbody class='group-body' group='"+group+"' category='"+category+"' style='display:none'>";
+                var groupid = group.replace(/\W/g, '').toLowerCase();
+                $('#template-'+categoryid).append(
+                    "<div class='accordion-group'>" +
+                        "<div class='accordion-heading group-heading'>" +
+                            "<span class='accordion-toggle' data-toggle='collapse' " +
+                                "data-parent='#template-"+categoryid+"' data-target='#template-"+categoryid+"-"+groupid+"-collapse'>" +
+                                group +
+                            "</span>" +
+                        "</div>" +
+                        "<div id='template-"+categoryid+"-"+groupid+"-collapse' class='accordion-body collapse'>" +
+                            "<div id='template-"+categoryid+"-"+groupid+"' class='accordion-inner'></div>" +
+                        "</div>" +
+                    "</div>"
+                );
+                var body = $('#template-'+categoryid+'-'+groupid);
                 
                 for (var i in devicesByGroup[group]) {
                     var id = devicesByGroup[group][i].id;
@@ -90,22 +106,26 @@ var device_dialog =
                         name = name.substr(0, 25) + "...";
                     }
                     
-                    out += "<tr class='group-row' type='"+id+"'>";
-                    out += "<td style='padding-left:24px; cursor:pointer'>"+name+"</td>";
-                    out += "</tr>";
+                    body.append(
+                        "<div id='template-"+categoryid+"-"+groupid+"-"+id.replace('/', '-')+"'" +
+                        		"data-type='"+id+"' class='group-device'>" +
+                            "<span>"+name+"</span>" +
+                        "</div>"
+                    );
                 }
-                out += "</tbody>";    
             }
         }
-        $("#template-table").html(out);
         
         if (this.deviceType != null && this.deviceType != '') {
             if (this.templates[this.deviceType]!=undefined) {
-                var template = this.templates[this.deviceType]
-                
-                $(".group-header[category='"+template.category+"']").show();
-                $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
-                $(".group-row[type='"+this.deviceType+"']").addClass("device-selected");
+                var template = this.templates[this.deviceType];
+                var category = template.category.replace(/\W/g, '').toLowerCase();
+                var group = template.group.replace(/\W/g, '').toLowerCase();
+                var id = this.deviceType.replace('/', '-');
+
+                $("#template-"+category+"-collapse").collapse('show');
+                $("#template-"+category+"-"+group+"-collapse").collapse('show');
+                $("#template-"+category+"-"+group+"-"+id).addClass("device-selected");
                 
                 $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
                 $('#template-info').show();
@@ -117,7 +137,7 @@ var device_dialog =
     },
 
     'clearConfigModal':function() {
-        $("#template-table").text('');
+        $("#template-list").text('');
         
         var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device.<br>" +
                 "Initializing a device usualy should only be done once on installation. " +
@@ -182,53 +202,10 @@ var device_dialog =
 
     'registerConfigEvents':function() {
 
-        $('#template-table .category-header').off('click').on('click', function() {
-            var category = $(this).attr("category");
+        $("#template-list").off('click').on('click', '.group-device', function () {
+            var type = $(this).data("type");
             
-            var e = $(".group-header[category='"+category+"']");
-            if (e.is(":visible")) {
-                $(".group-body[category='"+category+"']").hide();
-                e.hide();
-            }
-            else {
-                e.show();
-
-                // If a device is selected and in the category to uncollapse, show and select it
-                if (device_dialog.deviceType != null && device_dialog.deviceType != '') {
-                    var template = device_dialog.templates[device_dialog.deviceType];
-                    if (template && category == template.category) {
-                        $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
-                        $(".group-row[type='"+device_dialog.deviceType+"']").addClass("device-selected");
-                    }
-                }
-            }
-        });
-
-        $('#template-table .group-header').off('click').on('click', function() {
-            var group = $(this).attr("group");
-            var category = $(this).attr("category");
-            
-            var e = $(".group-body[group='"+group+"'][category='"+category+"']");
-            if (e.is(":visible")) {
-                e.hide();
-            }
-            else {
-                e.show();
-
-                // If a device is selected and in the category to uncollapse, show and select it
-                if (device_dialog.deviceType != null && device_dialog.deviceType != '') {
-                    var template = device_dialog.templates[device_dialog.deviceType];
-                    if (category == template.category && group == template.group) {
-                        $(".group-row[type='"+device_dialog.deviceType+"']").addClass("device-selected");
-                    }
-                }
-            }
-        });
-
-        $("#template-table .group-row").off('click').on('click', function () {
-            var type = $(this).attr("type");
-            
-            $(".group-row[type='"+device_dialog.deviceType+"']").removeClass("device-selected");
+            $(".group-device[data-type='"+device_dialog.deviceType+"']").removeClass("device-selected");
             if (device_dialog.deviceType !== type) {
                 $(this).addClass("device-selected");
                 device_dialog.deviceType = type;
@@ -358,35 +335,44 @@ var device_dialog =
 
     'drawTemplate':function() {
         device_dialog.deviceOptions = [];
-        
-        $('#template-options-overlay').show();
+
         $("#template-options").collapse('hide');
         $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
+        $('#template-options-overlay').show();
+        
+        if (device_dialog.deviceType == null || !device_dialog.deviceType in device_dialog.templates) {
+            $('#template-description').text('');
+            $('#template-info').hide();
+            
+            return;
+        }
+        
+        var template = device_dialog.templates[device_dialog.deviceType];
+        $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+        $('#template-info').show();
+        
         $("#template-options-table").empty().hide();
         $("#template-options-select").prop("disabled", true).empty().append("<option selected hidden value=''>Select an Option</option>");
         $("#template-options-add").prop("disabled", true);
         
-        if (this.deviceType !== null && this.deviceType in this.templates) {
-            var template = this.templates[this.deviceType];
-            $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
-            $('#template-info').show();
-            
-            if (template.options) {
-                device.getTemplateOptions(this.deviceType, function(result) {
+        if (template.options) {
+            device.getTemplateOptions(device_dialog.deviceType, function(result) {
+                if (typeof result.success !== 'undefined' && !result.success) {
+                    alert('Unable to retrieve template options:\n'+result.message);
+                }
+            	if (result.length > 0) {
                     device_dialog.deviceOptions = result;
                     device_dialog.drawOptions();
-                    $('#template-options-overlay').hide();
-                });
-            }
-            this.registerTemplateEvents();
-        }
-        else {
-            $('#template-description').text('');
-            $('#template-info').hide();
+            	}
+            });
         }
     },
-    
+
     'drawOptions':function() {
+        $("#template-options").collapse('show');
+        $("#template-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
+        $('#template-options-overlay').hide();
+        
         var select = $("#template-options-select");
         
         // Show options, if at least one of them is defined or mandatory
@@ -401,17 +387,13 @@ var device_dialog =
                 select.append($("<option />").val(option.id).text(option.name).css('color', 'black'));
             }
         }
-        if (device_dialog.device != null && Object.keys(device_dialog.device.options).length > 0) {
+        if (show) {
             $("#template-options-table").show();
             $("#template-options-none").hide();
         }
         else {
-        	$("#template-options-table").hide();
+            $("#template-options-table").hide();
             $("#template-options-none").show();
-        }
-        if (show) {
-            $("#template-options").collapse('show');
-            $("#template-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
         }
         
         select.css('color', '#888').css('font-style', 'italic');
@@ -427,21 +409,22 @@ var device_dialog =
             select.prop("disabled", true).val('');
             $("#template-options-add").prop("disabled", true);
         }
+        device_dialog.registerOptionEvents();
     },
 
     'drawOptionInput':function(option) {
-    	$("#template-options-table").append(
-    		"<tbody>" +
+        $("#template-options-table").append(
+            "<tbody>" +
                 "<tr id='template-option-"+option.id+"-row' data-id='"+option.id+"'>" +
-                	"<td class='option'>"+option.name+"</td>" +
+                    "<td class='option'>"+option.name+"</td>" +
                 "</tr>" +
                 "<tr id='template-option-"+option.id+"-info' data-id='"+option.id+"' data-show='false' style='display:none'>" +
-                	"<td class='option' colspan='4'>" +
+                    "<td class='option' colspan='4'>" +
                         "<div class='alert alert-comment'>"+option.description+"</div>" +
                     "</td>" +
                 "</tr>" +
             "</tbody>"
-    	);
+        );
         var row = $("#template-option-"+option.id+"-row");
         
         var value = null;
@@ -499,11 +482,11 @@ var device_dialog =
             row.append("<td class='option'><span style='color:#888; font-size:12px'><em>mandatory</em></span></td>")
             row.append("<td class='option'><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
             
-            $("#template-option-"+option.id).prop("required", true);
+//            $("#template-option-"+option.id).prop("required", true);
         }
     },
 
-    'registerTemplateEvents':function() {
+    'registerOptionEvents':function() {
 
         $("#template-options-header").off().on("click", function() {
             if ($("#template-options").hasClass('in')) {
@@ -521,20 +504,20 @@ var device_dialog =
             var info = $("#template-option-"+id+"-info");
             if (info.data('show')) {
                 if (!$(this).hasClass('option-input')) {
-                	info.data('show', false);
+                    info.data('show', false);
                     info.slideUp();
                 }
             }
             else {
                 // Hide already shown option infos and open the selected afterwards
-            	$(".table-options tr[data-show]").each(function() {
-            	    if ($(this).data('show')) {
-            	    	$(this).data('show', false);
-            	    	$(this).slideUp(200);
-            	    }
-            	});
+                $(".table-options tr[data-show]").each(function() {
+                    if ($(this).data('show')) {
+                        $(this).data('show', false);
+                        $(this).slideUp(200);
+                    }
+                });
                 
-            	info.data('show', true);
+                info.data('show', true);
                 info.slideDown();
             }
         });
