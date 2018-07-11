@@ -36,11 +36,26 @@
 <table class="table">
     <tr><td><?php echo _('List devices'); ?></td><td><a href="<?php echo $path; ?>device/list.json"><?php echo $path; ?>device/list.json</a></td></tr>
     <tr><td><?php echo _('Get device details'); ?></td><td><a href="<?php echo $path; ?>device/get.json?id=1"><?php echo $path; ?>device/get.json?id=1</a></td></tr>
-    <tr><td><?php echo _('Add a device'); ?></td><td><a href="<?php echo $path; ?>device/create.json"><?php echo $path; ?>device/create.json</a></td></tr>
-    <tr><td><?php echo _('Delete device'); ?></td><td><a href="<?php echo $path; ?>device/delete.json?id=0"><?php echo $path; ?>device/delete.json?id=0</a></td></tr>
-    <tr><td><?php echo _('Update device'); ?></td><td><a href="<?php echo $path; ?>device/set.json?id=0&fields={%22name%22:%22Test%22,%22description%22:%22Room%22,%22nodeid%22:%22House%22,%22type%22:%22test%22}"><?php echo $path; ?>device/set.json?id=0&fields={"name":"Test","description":"Room","nodeid":"House","type":"test"}</a></td></tr>
-    <tr><td><?php echo _('List templates'); ?></td><td><a href="<?php echo $path; ?>device/listtemplates.json"><?php echo $path; ?>device/listtemplates.json</a></td></tr>
-    <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/inittemplate.json?id=0"><?php echo $path; ?>device/inittemplate.json?id=0</a></td></tr>
+    <tr><td><?php echo _('Add a device'); ?></td><td><a href="<?php echo $path; ?>device/create.json?nodeid=Test&name=Test"><?php echo $path; ?>device/create.json?nodeid=Test&name=Test</a></td></tr>
+    <tr><td><?php echo _('Delete device'); ?></td><td><a href="<?php echo $path; ?>device/delete.json?id=1"><?php echo $path; ?>device/delete.json?id=1</a></td></tr>
+    <tr><td><?php echo _('Update device'); ?></td><td><a href="<?php echo $path; ?>device/set.json?id=1&fields={%22name%22:%22Test%22,%22description%22:%22Room%22,%22nodeid%22:%22House%22,%22type%22:%22test%22}"><?php echo $path; ?>device/set.json?id=1&fields={"name":"Test","description":"Room","nodeid":"House","type":"test"}</a></td></tr>
+    <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/init.json?id=1"><?php echo $path; ?>device/init.json?id=1</a></td></tr>
+</table>
+
+<p><b><?php echo _('Device MQTT authentication'); ?></b></p>
+<table class="table">
+    <tr><td><?php echo _('Request authentication'); ?></td><td><a href="<?php echo $path; ?>device/auth/request.json"><?php echo $path; ?>device/auth/request.json</a></td></tr>
+    <tr><td><?php echo _('Check authentication request'); ?></td><td><a href="<?php echo $path; ?>device/auth/check.json"><?php echo $path; ?>device/auth/check.json</a></td></tr>
+    <tr><td><?php echo _('Allow authentication request'); ?></td><td><a href="<?php echo $path; ?>device/auth/allow.json?ip=127.0.0.1"><?php echo $path; ?>device/auth/allow.json?ip=127.0.0.1</a></td></tr>
+</table>
+
+<p><b><?php echo _('Template actions'); ?></b></p>
+<table class="table">
+    <tr><td><?php echo _('List template metadata'); ?></td><td><a href="<?php echo $path; ?>device/template/listshort.json"><?php echo $path; ?>device/template/listshort.json</a></td></tr>
+    <tr><td><?php echo _('List templates'); ?></td><td><a href="<?php echo $path; ?>device/template/list.json"><?php echo $path; ?>device/template/list.json</a></td></tr>
+    <tr><td><?php echo _('Reload templates'); ?></td><td><a href="<?php echo $path; ?>device/template/reload.json"><?php echo $path; ?>device/template/reload.json</a></td></tr>
+    <tr><td><?php echo _('get template details'); ?></td><td><a href="<?php echo $path; ?>device/template/get.json?type=example"><?php echo $path; ?>device/template/get.json?type=example</a></td></tr>
+    <tr><td><?php echo _('Prepare device initialization'); ?></td><td><a href="<?php echo $path; ?>device/template/prepare.json?id=1"><?php echo $path; ?>device/template/prepare.json?id=1</a></td></tr>
 </table>
 
 <a class="anchor" id="expression"></a> 
@@ -48,7 +63,3 @@
 <p><?php echo _('Template files are located at <b>\'\\Modules\\device\\data\\*.json\'</b>'); ?></p>
 <p><?php echo _('Each file defines a device type and provides the default inputs and feeds configurations for that device.'); ?></p>
 <p><?php echo _('A device should only need to be initialized once on instalation. Initiating a device twice will duplicate its default inputs and feeds.'); ?></p>
-
-
-
-

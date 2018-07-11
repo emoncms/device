@@ -1,0 +1,43 @@
+{
+    "name": "EmonTH",
+    "category": "OpenEnergyMonitor",
+    "group": "Temperature & Humidity",
+    "description": "Automatic inputs and feeds creation for emonTH device.",
+    "inputs": [
+        {
+            "name": "temperature",
+            "description": "Temperature C",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_temperature" }
+                }
+            ]
+        },
+        {
+            "name": "humidity",
+            "description": "Humidity Rh%",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_humidity" }
+                }
+            ]
+        }
+    ],
+
+    "feeds": [
+        {
+            "name": "emonth_temperature",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "emonth_humidity",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        }
+    ]
+}

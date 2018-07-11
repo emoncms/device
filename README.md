@@ -60,11 +60,11 @@ Click save to continue.
 
 ![3.png](files/3.png)
 
-With the device created the next step is to initialize the device, click on the cycling arrows 'refresh icon' to bring up the initialization window.
+When a new device is created, it will automatically be initialized and all input processes and feeds will be created, according to the pre-defined template. If the template needs to be applied again, as e.g. a process list was experimented on and altered, or single feeds deleted, it may be re-initialized. Clicking the cycling arrows 'refresh icon' will bring up the initialization window.
 
 ![4.png](files/4.png)
 
-Click 'Initialize' to initialize the device which will create the input processes and feeds according to the pre-defined template.
+Click 'Initialize' to re-initialize the device and to confirm the creation of missing feeds and inputs, as well as the reset of configured processes to their original state.
 
 ![5.png](files/5.png)
 

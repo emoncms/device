@@ -1,11 +1,13 @@
 {
 	"name": "AMRM",
+	"category": "Datalogger",
+	"group": "ArchiMetrics",
 	"description": "INPUTS & FEEDS for AMRM Logger from archimetrics.co.uk",
 	"inputs": [{
 		"name": "n1T",
 		"description": "N1 Temperature",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n1T"
@@ -16,7 +18,7 @@
 		"name": "n2T",
 		"description": "N2 Temperature",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n2T"
@@ -27,7 +29,7 @@
 		"name": "n3T",
 		"description": "N3 Temperature",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n3T"
@@ -38,7 +40,7 @@
 		"name": "n4T",
 		"description": "N4 Temperature",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n4T"
@@ -49,7 +51,7 @@
 		"name": "n1IM",
 		"description": "N1 IM",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n1IM"
@@ -60,7 +62,7 @@
 		"name": "n2IM",
 		"description": "N2 IM",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n2IM"
@@ -71,7 +73,7 @@
 		"name": "n3IM",
 		"description": "N3 IM",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n3IM"
@@ -82,7 +84,7 @@
 		"name": "n4IM",
 		"description": "N4 IM",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n4IM"
@@ -93,7 +95,7 @@
 		"name": "n1DM",
 		"description": "N1 DM",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n1DM"
@@ -104,7 +106,7 @@
 		"name": "n2DM",
 		"description": "N2 DM",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n2DM"
@@ -115,7 +117,7 @@
 		"name": "n3DM",
 		"description": "N3 DM",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n3DM"
@@ -126,7 +128,7 @@
 		"name": "n4DM",
 		"description": "N4 DM",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "n4DM"
@@ -137,7 +139,7 @@
 		"name": "iTA",
 		"description": "Internal Temperature Air",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "iTA"
@@ -148,7 +150,7 @@
 		"name": "iRH",
 		"description": "Internal RH",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "iRH"
@@ -159,7 +161,7 @@
 		"name": "iDP",
 		"description": "Internal Dew Point",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "iDP"
@@ -170,7 +172,7 @@
 		"name": "SYS",
 		"description": "System Temperature",
 		"processList": [{
-			"process": "1",
+			"process": "log_to_feed",
 			"arguments": {
 				"type": "ProcessArg::FEEDID",
 				"value": "SYS"
@@ -180,98 +182,98 @@
 	"feeds": [{
 		"name": "n1T",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n2T",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 		
 	},
 	{
 		"name": "n3T",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n4T",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n1IM",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n2IM",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n3IM",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n4IM",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n1DM",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n2DM",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n3DM",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n4DM",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "iTA",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "iRH",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "iDP",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "SYS",
 		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
+		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	}]
 }
