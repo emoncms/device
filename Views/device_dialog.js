@@ -473,7 +473,7 @@ var device_dialog =
             }
         }
         else {
-            row.append("<td><input id='template-option-"+option.id+"' type='text' class='option option-input'></input></td>").hide().fadeIn(300);
+            row.append("<td><input id='template-option-"+option.id+"' type='text' class='option option-input input-large'></input></td>").hide().fadeIn(300);
             if (value != null) {
                 $("#template-option-"+option.id).val(value);
             }

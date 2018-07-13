@@ -173,6 +173,10 @@
     margin-bottom: 0px;
 }
 
+input[type="text"] {
+	width: 195px;
+}
+
 input[type="checkbox"] {
     margin: 0px;
 }
