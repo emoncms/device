@@ -335,9 +335,11 @@ var device_dialog =
 
     'drawTemplate':function() {
         device_dialog.deviceOptions = [];
-
-        $("#template-options").collapse('hide');
-        $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
+        
+        if ($("#template-options").hasClass('in')) {
+            $("#template-options").collapse('hide').removeClass('in');
+            $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
+        }
         $('#template-options-overlay').show();
         
         if (device_dialog.deviceType == null || !device_dialog.deviceType in device_dialog.templates) {
@@ -401,7 +403,7 @@ var device_dialog =
             select.off('change');
             select.css('color', 'black').css('font-style', 'normal');
         });
-        if ($("option", select).size() > 1) {
+        if ($("option", select).length > 1) {
             select.prop("disabled", false).val('');
             $("#template-options-add").prop("disabled", false);
         }
@@ -439,7 +441,7 @@ var device_dialog =
         if (type === 'selection') {
             row.append("<td><select id='template-option-"+option.id+"' class='option option-input input-large'></select></td>").hide().fadeIn(300);
             
-            var select = $("#template-option-"+option.id).empty();
+            var select = $("#template-option-"+option.id);
             select.append("<option selected hidden value=''>Select a "+option.name+"</option>");
             option.select.forEach(function(val) {
                 select.append($("<option />").val(val.value).text(val.name).css('color', 'black'));
@@ -459,12 +461,15 @@ var device_dialog =
             row.append(
                 "<td><div class='option option-input checkbox checkbox-slider--b checkbox-slider-info'>" +
                     "<label>" +
-                        "<input id='template-option-"+option.id+"' type='checkbox'><span></span>" +
+                        "<input id='template-option-"+option.id+"' type='checkbox'><span></span></input>" +
                     "</label>" +
                 "</div></td>"
             ).hide().fadeIn(300);
             if (value != null) {
-                $("#template-option-"+option.id).prop("checked", value);
+            	if (typeof value === 'string' || value instanceof String) {
+                	value = (value == 'true');
+            	}
+                $("#template-option-"+option.id).html('<span>checked</span>').prop("checked", value);
             }
         }
         else {
@@ -524,9 +529,17 @@ var device_dialog =
 
         $('#template-options-table').on('click', '.option-remove', function() {
             var id = $(this).closest('tr').data('id');
-            
-            $("#template-option-"+id+"-row").fadeOut($("#template-option-"+id+"-row").remove());
-            $("#template-option-"+id+"-info").fadeOut($("#template-option-"+id+"-info").remove());
+
+            var removeRow = function() {
+                $(this).remove(); 
+                
+                if ($('#template-options-table tr').length == 0) {
+                    $('#template-options-table').hide();
+                    $('#template-options-none').show();
+                }
+            }
+            $("#template-option-"+id+"-row").fadeOut(removeRow);
+            $("#template-option-"+id+"-info").fadeOut(removeRow);
             
             var option = device_dialog.deviceOptions.find(function(opt) {
                 return opt.id === id;
@@ -534,7 +547,7 @@ var device_dialog =
             
             var select = $("#template-options-select");
             select.append($("<option />").val(option.id).text(option.name).css('color', 'black'));
-            if ($("option", select).size() > 1) {
+            if ($("option", select).length > 1) {
                 select.prop("disabled", false).val('');
                 $("#template-options-add").prop("disabled", false);
             }
@@ -562,7 +575,7 @@ var device_dialog =
                     select.off('change');
                     select.css('color', 'black').css('font-style', 'normal');
                 });
-                if ($("option", select).size() > 1) {
+                if ($("option", select).length > 1) {
                     select.prop("disabled", false).val('');
                     $("#template-options-add").prop("disabled", false);
                 }
@@ -771,7 +784,7 @@ var device_dialog =
                     value = input.is(':checked');
                 }
             }
-            if (value != null && value != "") {
+            if (value !== null && value !== "") {
                 options[option.id] = value;
             }
             else if (option.mandatory) {
