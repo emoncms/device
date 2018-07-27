@@ -22,7 +22,7 @@
             </div>
         </div>
         
-        <div id="device-content" class="modal-content" style="max-width:1280px">
+        <div id="device-content" class="modal-content">
             
             <h3><?php echo _('Configuration'); ?></h3>
             

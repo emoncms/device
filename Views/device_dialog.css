@@ -52,9 +52,11 @@
 
 .modal-content {
     position: absolute;
+    left: 15px;
+    right: 0px;
     padding-right: 15px;
+    margin-left: 15px;
     margin-top: -15px;
-    margin-left: 250px;
     height: 100%;
     max-height: none;
     overflow-y: auto;
@@ -130,6 +132,7 @@
 }
 .device-input th,
 .device-input td {
+    white-space: nowrap;
     text-align: left;
 }
 .device-input th:nth-of-type(3) {
