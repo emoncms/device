@@ -5,14 +5,12 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function device_controller()
 {
-    global $mysqli, $redis, $user, $session, $route, $device;
+    global $mysqli, $redis, $session, $route, $device;
 
     $result = false;
 
-    if (!$device) {
-        require_once "Modules/device/device_model.php";
-        $device = new Device($mysqli,$redis);
-    }
+    require_once "Modules/device/device_model.php";
+    $device = new Device($mysqli,$redis);
 
     if ($route->format == 'html')
     {
@@ -85,7 +83,7 @@ function device_controller()
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
                     if ($route->action == "get") $result = $deviceget;
                     else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
-                    else if ($route->action == 'init') $result = $device->init($deviceid, get('template'));
+                    else if ($route->action == 'init') $result = $device->init($deviceid, prop('template'));
                     else if ($route->action == "delete") $result = $device->delete($deviceid);
                     else if ($route->action == "setnewdevicekey") $result = $device->set_new_devicekey($deviceid);
                     else if ($route->action == 'template') {

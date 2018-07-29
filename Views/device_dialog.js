@@ -23,7 +23,6 @@ var device_dialog =
     },
 
     'drawConfig':function() {
-        
         $("#device-config-modal").modal('show');
         this.adjustConfigModal();
         this.clearConfigModal();
@@ -369,6 +368,8 @@ var device_dialog =
 
     'drawInit': function (result) {
         $('#device-init-modal').modal('show');
+        device_dialog.adjustInitModal();
+        
         $('#device-init-modal-label').html('Initialize Device: <b>'+device_dialog.device.name+'</b>');  
         
         if (typeof result.feeds !== 'undefined' && result.feeds.length > 0) {
@@ -508,6 +509,17 @@ var device_dialog =
         }
         
         return template;
+    },
+
+    'adjustInitModal':function() {
+
+        var width = $(window).width();
+        var height = $(window).height();
+        
+        if ($("#device-init-modal").length) {
+            var h = height - $("#device-init-modal").position().top - 180;
+            $("#device-init-body").height(h);
+        }
     },
 
     'loadDelete': function(device, tablerow) {
