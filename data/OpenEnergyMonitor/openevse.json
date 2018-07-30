@@ -1,0 +1,115 @@
+{
+    "name": "OpenEVSE",
+    "category": "OpenEnergyMonitor",
+    "group": "OpenEVSE",
+    "description": "OpenEVSE auto configuration",
+    "inputs": [
+        {
+            "name": "amp",
+            "description": "Charge current",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "amp" }
+                }
+            ]
+        },
+        {
+            "name": "wh",
+            "description": "Cumulative Watt Hours",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "wh" }
+                }
+            ]
+        },
+        {
+            "name": "temp1",
+            "description": "Charger temperature",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.1 }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "temp1" }
+                }
+            ]
+        },
+        {
+            "name": "state",
+            "description": "State",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "state" }
+                }
+            ]
+        },
+        {
+            "name": "pilot",
+            "description": "Pilot",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "pilot" }
+                }
+            ]
+        },
+        {
+            "name": "divertmode",
+            "description": "Divert Mode",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "divertmode" }
+                }
+            ]
+        }
+    ],
+
+    "feeds": [
+        {
+            "name": "amp",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "30"
+        },
+        {
+            "name": "wh",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "30"
+        },
+        {
+            "name": "temp1",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "30"
+        },
+        {
+            "name": "state",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "30"
+        },
+        {
+            "name": "pilot",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "30"
+        },
+        {
+            "name": "divertmode",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "30"
+        }
+    ]
+}
