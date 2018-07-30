@@ -589,7 +589,7 @@ class Device
         $userid = intval($userid);
         
         $result = $this->get_template_meta($userid, $id);
-        if (isset($result['success']) && !$result['success']) {
+        if (!empty($result["success"])) {
             return $result;
         }
         $module = $result['module'];
@@ -604,7 +604,7 @@ class Device
         $userid = intval($userid);
         
         $result = $this->get_template_meta($userid, $id);
-        if (isset($result['success']) && !$result['success']) {
+        if (!empty($result["success"])) {
             return $result;
         }
         $module = $result['module'];
@@ -618,12 +618,10 @@ class Device
     public function prepare_template($id) {
         $id = intval($id);
         
-        if (isset($options)) $options = json_decode($options);
-        
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (isset($result['success']) && !$result['success']) {
+            if (!empty($result["success"])) {
                 return $result;
             }
             $module = $result['module'];
@@ -641,7 +639,7 @@ class Device
         
         $device = $this->get($id);
         $result = $this->init_template($device, $template);
-        if (isset($result) && !$result['success']) {
+        if (!empty($result["success"])) {
             return $result;
         }
         return array('success'=>true, 'message'=>'Device initialized');
@@ -652,7 +650,7 @@ class Device
         
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (isset($result['success']) && !$result['success']) {
+            if (!empty($result["success"])) {
                 return $result;
             }
             $module = $result['module'];
@@ -695,8 +693,6 @@ class Device
     }
 
     private function get_thing_values($device) {
-        $id = intval($device['id']);
-        
         $thing = array(
                 'id' => $device['id'],
                 'userid' => $device['userid'],
@@ -709,7 +705,7 @@ class Device
         $result = $this->get_item_list($device);
         if (isset($result)) {
             // The existence of the success key indicates a failure already
-            if (isset($result['success'])) {
+            if (!empty($result['success'])) {
                 return $result;
             }
             $thing['items'] = array();
@@ -726,13 +722,16 @@ class Device
             'type' => $item['type'],
             'label' => $item['label']
         );
-        if (isset($item['select'])) $itemval['select'] = $item['select'];
+        if (isset($item['left'])) $itemval['left'] = $item['left'];
+        if (isset($item['right'])) $itemval['right'] = $item['right'];
         if (isset($item['format'])) $itemval['format'] = $item['format'];
         if (isset($item['scale'])) $itemval['scale'] = $item['scale'];
-        if (isset($item['max'])) $itemval['max'] = $item['max'];
         if (isset($item['min'])) $itemval['min'] = $item['min'];
+        if (isset($item['max'])) $itemval['max'] = $item['max'];
         if (isset($item['step'])) $itemval['step'] = $item['step'];
         if (isset($item['default'])) $itemval['default'] = $item['default'];
+        if (isset($item['select'])) $itemval['select'] = $item['select'];
+        if (isset($item['write'])) $itemval['write'] = $item['write'];
         
         $value = null;
         if (isset($item['inputid'])) {
@@ -770,7 +769,7 @@ class Device
         }
         else {
             if (empty($this->things)) { // Cache it now
-                $this->load_template_list($userid);
+                $this->load_thing_list($device['userid']);
             }
             if (isset($this->things[$device['id']])) {
                 $items = $this->things[$device['id']];
@@ -783,22 +782,24 @@ class Device
                 $module = $template['module'];
                 $class = $this->get_module_class($module, self::THING);
                 if ($class != null) {
-                    $items = $class->get_item_list($device);
+                    $result = $class->get_item_list($device);
+                    if (!empty($result["success"])) {
+                        return $result;
+                    }
                     $this->cache_items($device['id'], $items);
+                    
+                    return $result;
                 }
-                else {
-                    return array('success'=>false, 'message'=>'Device thing class does not exist');
-                }
+                return array('success'=>false, 'message'=>'Device thing class does not exist');
             }
-            else {
-                return array('success'=>false, 'message'=>'Device thing does not exist');
-            }
+            return array('success'=>false, 'message'=>'Device thing does not exist');
         }
         return $items;
     }
 
     public function get_item($id, $itemid) {
         $id = intval($id);
+        $device = $this->get($id);
         
         if ($this->redis) {
             if ($this->redis->exists("device:thing:$id")) {
@@ -815,7 +816,7 @@ class Device
         }
         else {
             if (empty($this->things)) { // Cache it now
-                $this->load_template_list($userid);
+                $this->load_thing_list($device['userid']);
             }
             if (isset($this->things[$id])) {
                 $items = $this->things[$id];
@@ -828,17 +829,19 @@ class Device
             return array('success'=>false, 'message'=>'Item does not exist');
         }
         
-        $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (isset($result['success']) && !$result['success']) {
+            if (!empty($result["success"])) {
                 return $result;
             }
             $module = $result['module'];
             $class = $this->get_module_class($module, self::THING);
             if ($class != null) {
-                $items = $class->get_item_list($device);
-                foreach ($items as $item) {
+                $result = $class->get_item_list($device);
+                if (!empty($result["success"])) {
+                    return $result;
+                }
+                foreach ($result as $item) {
                     if ($item['id'] == $itemid) {
                         return $item;
                     }
@@ -904,7 +907,7 @@ class Device
         if (isset($item) && isset($item['mapping'])) {
             $mapping = (array) $item['mapping'];
             if (isset($mapping['SET'])) {
-                $mapping['SET']->value = $value;
+                $mapping['SET']['value'] = $value;
                 
                 return $this->set_item($id, $itemid, (array) $mapping['SET']);
             }
@@ -917,7 +920,7 @@ class Device
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (isset($result['success']) && !$result['success']) {
+            if (!empty($result["success"])) {
                 return $result;
             }
             $module = $result['module'];
@@ -936,8 +939,11 @@ class Device
     public function reload_template_list($userid) {
         $userid = intval($userid);
         
-        $templates = $this->load_template_list($userid);
-        if (isset($templates) && count($templates) > 0) {
+        $result = $this->load_template_list($userid);
+        if (!empty($result["success"])) {
+            return $result;
+        }
+        if (isset($result) && count($result) > 0) {
             $this->load_thing_list($userid);
             
             return array('success'=>true, 'message'=>'Templates successfully reloaded');
@@ -964,8 +970,11 @@ class Device
             if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
                 $class = $this->get_module_class($dir[$i], self::TEMPLATE);
                 if ($class != null) {
-                    $module_templates = $class->get_template_list($userid);
-                    foreach($module_templates as $key => $value) {
+                    $result = $class->get_template_list($userid);
+                    if (!empty($result["success"])) {
+                        return $result;
+                    }
+                    foreach($result as $key => $value) {
                         $this->cache_template($dir[$i], $key, $value);
                         $templates[$key] = $value;
                     }
@@ -1027,17 +1036,17 @@ class Device
             $module = $template['module'];
             $class = $this->get_module_class($module, self::THING);
             if ($class != null) {
-                $items = $class->get_item_list($device);
-                if (!isset($items['success'])) {
-                    $this->cache_items($device['id'], $items);
+                $result = $class->get_item_list($device);
+                if (empty($result['success'])) {
+                    return $this->cache_items($device['id'], $result);
                 }
             }
         }
     }
 
-    private function cache_items($id, $item) {
+    private function cache_items($id, $items) {
         if ($this->redis) {
-            foreach ($item as $key => $value) {
+            foreach ($items as $key => $value) {
                 if (isset($value['select'])) $value['select'] = json_encode($value['select']);
                 if (isset($value['mapping'])) $value['mapping'] = json_encode($value['mapping']);
                 $this->redis->sAdd("device:thing:$id", $key);
@@ -1048,14 +1057,11 @@ class Device
             if (empty($this->things[$id])) {
                 $this->things[$id] = array();
             }
-            
-            $items = array();
-            foreach ($item as $value) {
-                $items[] = $value;
+            foreach ($items as $value) {
+                $this->things[$id][] = $value;
             }
-            
-            $this->things[$id] = $items;
         }
+        return $items;
     }
 
     private function get_module_class($module, $type) {

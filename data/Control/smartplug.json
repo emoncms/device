@@ -9,6 +9,8 @@
             "id": "status",
             "type": "Switch",
             "label": "Status",
+            "left": "Off",
+            "right": "On",
             "mapping": {
                 "ON": { "input": "status", "value": 1 },
                 "OFF": { "input": "status", "value": 0 }

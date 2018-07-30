@@ -336,16 +336,11 @@ var device_dialog =
     'drawTemplate':function() {
         device_dialog.deviceOptions = [];
         
-        if ($("#template-options").hasClass('in')) {
-            $("#template-options").collapse('hide').removeClass('in');
-            $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
-        }
-        $('#template-options-overlay').show();
-        
         if (device_dialog.deviceType == null || !device_dialog.deviceType in device_dialog.templates) {
             $('#template-description').text('');
             $('#template-info').hide();
             
+            device_dialog.showOptions(false);
             return;
         }
         
@@ -368,13 +363,12 @@ var device_dialog =
             	}
             });
         }
+        else {
+            device_dialog.showOptions(false);
+        }
     },
 
     'drawOptions':function() {
-        $("#template-options").collapse('show');
-        $("#template-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
-        $('#template-options-overlay').hide();
-        
         var select = $("#template-options-select");
         
         // Show options, if at least one of them is defined or mandatory
@@ -411,17 +405,18 @@ var device_dialog =
             select.prop("disabled", true).val('');
             $("#template-options-add").prop("disabled", true);
         }
+        device_dialog.showOptions(true);
         device_dialog.registerOptionEvents();
     },
 
     'drawOptionInput':function(option) {
         $("#template-options-table").append(
             "<tbody>" +
-                "<tr id='template-option-"+option.id+"-row' data-id='"+option.id+"'>" +
-                    "<td class='option'>"+option.name+"</td>" +
+                "<tr id='template-option-"+option.id+"-row' class='option' data-id='"+option.id+"'>" +
+                    "<td>"+option.name+"</td>" +
                 "</tr>" +
-                "<tr id='template-option-"+option.id+"-info' data-id='"+option.id+"' data-show='false' style='display:none'>" +
-                    "<td class='option' colspan='4'>" +
+                "<tr id='template-option-"+option.id+"-info' class='option' data-id='"+option.id+"' data-show='false' style='display:none'>" +
+                    "<td colspan='4'>" +
                         "<div class='alert alert-comment'>"+option.description+"</div>" +
                     "</td>" +
                 "</tr>" +
@@ -439,7 +434,7 @@ var device_dialog =
         
         var type = option.type;
         if (type === 'selection') {
-            row.append("<td><select id='template-option-"+option.id+"' class='option option-input input-large'></select></td>").hide().fadeIn(300);
+            row.append("<td><select id='template-option-"+option.id+"' class='option-input input-large'></select></td>").hide().fadeIn(300);
             
             var select = $("#template-option-"+option.id);
             select.append("<option selected hidden value=''>Select a "+option.name+"</option>");
@@ -459,7 +454,7 @@ var device_dialog =
         }
         else if (type === 'switch') {
             row.append(
-                "<td><div class='option option-input checkbox checkbox-slider--b checkbox-slider-info'>" +
+                "<td><div class='option-input checkbox checkbox-slider--b-flat checkbox-slider-info'>" +
                     "<label>" +
                         "<input id='template-option-"+option.id+"' type='checkbox'><span></span></input>" +
                     "</label>" +
@@ -473,7 +468,7 @@ var device_dialog =
             }
         }
         else {
-            row.append("<td><input id='template-option-"+option.id+"' type='text' class='option option-input input-large'></input></td>").hide().fadeIn(300);
+            row.append("<td><input id='template-option-"+option.id+"' type='text' class='option-input input-large'></input></td>").hide().fadeIn(300);
             if (value != null) {
                 $("#template-option-"+option.id).val(value);
             }
@@ -481,14 +476,31 @@ var device_dialog =
         
         if(!option.mandatory) {
             row.append("<td></td>")
-            row.append("<td class='option'><a id='template-option-"+option.id+"-remove' class='option-remove' title='Remove'><i class='icon-trash' style='cursor:pointer'></i></a></td>");
+            row.append("<td><a id='template-option-"+option.id+"-remove' class='option-remove' title='Remove'><i class='icon-trash' style='cursor:pointer'></i></a></td>");
         }
         else {
-            row.append("<td class='option'><span style='color:#888; font-size:12px'><em>mandatory</em></span></td>")
-            row.append("<td class='option'><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
+            row.append("<td><span style='color:#888; font-size:12px'><em>mandatory</em></span></td>")
+            row.append("<td><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
             
 //            $("#template-option-"+option.id).prop("required", true);
         }
+    },
+
+    'showOptions':function(show) {
+    	if (show) {
+	    	if (!$("#template-options").hasClass('in')) {
+	    		$("#template-options").collapse('show');
+	            $("#template-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
+	    	}
+	        $('#template-options-overlay').hide();
+	    }
+	    else {
+	        if ($("#template-options").hasClass('in')) {
+	            $("#template-options").collapse('hide').removeClass('in');
+	            $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
+	        }
+	        $('#template-options-overlay').show();
+	    }
     },
 
     'registerOptionEvents':function() {
@@ -507,29 +519,36 @@ var device_dialog =
         $('#template-options-table').on('click', '.option', function() {
             var id = $(this).closest('tr').data('id');
             var info = $("#template-option-"+id+"-info");
-            if (info.data('show')) {
-                if (!$(this).hasClass('option-input')) {
-                    info.data('show', false);
-                    info.slideUp();
-                }
+            if (typeof info !== 'undefined' && info.data('show')) {
+                info.data('show', false);
+                info.find('td > div').slideUp(function() { info.hide(); });
             }
             else {
                 // Hide already shown option infos and open the selected afterwards
-                $(".table-options tr[data-show]").each(function() {
-                    if ($(this).data('show')) {
-                        $(this).data('show', false);
-                        $(this).slideUp(200);
-                    }
-                });
-                
-                info.data('show', true);
-                info.slideDown();
+                // TODO: find a way to avoid display errors with select inputs if an info above it is collapsed
+//                $(".table-options tr[data-show]").each(function() {
+//                	if ($(this).data('show')) {
+//                        info.find('td > div').slideUp(function() { info.hide(); });
+//                    }
+//                });
+                info.data('show', true).show().find('td > div').slideDown();
+            }
+        });
+
+        $('#template-options-table').on('click', '.option-input', function(e) {
+            e.stopPropagation();
+
+            var id = $(this).closest('tr').data('id');
+            var info = $("#template-option-"+id+"-info");
+            if (typeof info !== 'undefined' && !info.data('show')) {
+                info.data('show', true).show().find('td > div').slideDown();
             }
         });
 
         $('#template-options-table').on('click', '.option-remove', function() {
+            e.stopPropagation();
+            
             var id = $(this).closest('tr').data('id');
-
             var removeRow = function() {
                 $(this).remove(); 
                 

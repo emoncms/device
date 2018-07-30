@@ -35,6 +35,9 @@ class DeviceTemplate
         foreach(new RecursiveIteratorIterator($iti) as $file){
             if(strpos($file ,".json") !== false){
                 $content = json_decode(file_get_contents($file));
+                if (json_last_error() != 0) {
+                    return array('success'=>false, 'message'=>"Error reading file $file: ".json_last_error_msg());
+                }
                 $list[basename($file, ".json")] = $content;
             }
         }
@@ -43,11 +46,14 @@ class DeviceTemplate
 
     public function get_template($userid, $type) {
         $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
-        $list = $this->load_template_list($userid);
-        if (!isset($list[$type])) {
+        $result = $this->load_template_list($userid);
+        if (!empty($result["success"])) {
+            return $result;
+        }
+        if (!isset($result[$type])) {
             return array('success'=>false, 'message'=>'Device template "'.$type.'" not found');
         }
-        return $list[$type];
+        return $result[$type];
     }
 
     public function get_template_options($userid, $type) {
@@ -102,7 +108,7 @@ class DeviceTemplate
         
         if (empty($template)) {
             $result = $this->prepare_template($device);
-            if (isset($result["success"]) && !$result["success"]) {
+            if (!empty($result["success"])) {
                 return $result;
             }
             $template = $result;

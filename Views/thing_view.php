@@ -8,7 +8,7 @@
 
 <div>
     <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Things Help'); ?></a></div>
-    <div id="local-header"><h2><?php echo _('Things'); ?></h2></div>
+    <div id="thing-header"><h2><?php echo _('Things'); ?></h2></div>
 
     <div id="thing-list"></div>
 
@@ -39,7 +39,7 @@ function update() {
     device.listThings(function(result) {
         if (result.length != 0) {
             $("#thing-none").hide();
-            $("#local-header").show();
+            $("#thing-header").show();
             $("#api-help-header").show();
             if (redraw) {
                 redraw = Object.keys(things).length == 0 ? true : false;
@@ -60,11 +60,11 @@ function update() {
             if (redraw && updater) {
                 draw();
             }
-            update_inputs();
+            updateItems();
         }
         else {
             $("#thing-none").show();
-            $("#local-header").hide();
+            $("#thing-header").hide();
             $("#api-help-header").hide();
         }
         $('#thing-loader').hide();
@@ -94,25 +94,23 @@ function draw() {
     for (var id in things) {
         if (things.hasOwnProperty(id)) {
             var thing = things[id];
-            var name = thing.name;
-            var items = draw_items(thing.id);
+            var items = drawItems(thing);
             
             list += 
-                "<div class='block-bound thing'>" +
-                    "<div class='thing-info'>" +
-                        "<div class='thing-list'>" +
-                            "<table id='thing-"+name+"' style='width:100%'>" +
-                                "<tr>" +
-                                    "<td>" +
-                                        "<div class='block-title'>"+name+"</div>" +
-                                    "</td>" +
-                                    "<td>" +
-                                        "<div class='thing-configure' thing='"+id+"'><i class='icon-wrench icon-white'></i></div>" +
-                                    "</td>" +
-                                "</tr>" +
-                            "</table>" +
-                            items +
-                        "</div>" +
+                "<div class='thing'>" +
+                    "<div id='thing-"+thing.id+"-header' class='thing-header' data-toggle='collapse' data-target='#thing-"+thing.id+"-body'>" +
+                        "<table>" +
+                            "<tr data-thing='"+thing.id+"'>" +
+                                "<td>" +
+                                    "<span class='thing-name'>"+thing.name+(thing.description.length>0 ? ":" : "")+"</span>" +
+                                    "<span class='thing-description'>"+thing.description+"</span>" +
+                                "</td>" +
+                                "<td class='thing-config'><span class='icon-wrench icon-white' title='Configure'></span></td>" +
+                            "</tr>" +
+                        "</table>" +
+                    "</div>" +
+                    "<div id='thing-"+thing.id+"-body' class='collapse'>" +
+                        "<div class='items'><table>"+items+"</table></div>" +
                     "</div>" +
                 "</div>";
         }
@@ -120,89 +118,79 @@ function draw() {
     $("#thing-list").html(list);
 }
 
-function draw_items(thing) {
-    var list = "";
-    
-    if (things.hasOwnProperty(thing)) {
-        var items = things[thing].items;
-        for (var id in items) {
-            if (items.hasOwnProperty(id)) {
-                var item = items[id];
-                var type = item.type.toLowerCase();
-                var value = parse_input_value(item, type, item.value);
-                
-                var row = "";
-                if (type === "switch") {
-                    row = 
-                        "<td class='item item-left'><span>Off</span></td>" +
-                        "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
-                            "<div class='checkbox checkbox-slider--b checkbox-slider-info'>" +
-                                "<label>" +
-                                    "<input id='thing-"+thing+"-"+id+"' type='checkbox' checked='"+value+"'><span></span>" +
-                                "</label>" +
-                            "</div>" +
-                        "</td>" +
-                        "<td class='item item-right'><span>On</span></td>";
-                }
-                else {
-                    var scale = 1;
-                    if (typeof item.scale !== 'undefined') {
-                        scale = item.scale;
-                    }
-                    
-                    var postfix = "";
-                    if (typeof item.format !== 'undefined') {
-                        var format = item.format;
-                        if (format.startsWith('%s') || format.startsWith('%i')) {
-                            postfix = format.substr(2).trim();
-                        }
-                        else if (format.startsWith('%.') && format.charAt(3) == 'f') {
-                            postfix = format.substr(4).trim();
-                        }
-                    }
-                    
-                    row = "<td class='item item-left'></td>";
-                    if (type === "text") {
-                        row += 
-                            "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
-                                "<span id='thing-"+thing+"-"+id+"' class='text'>"+format_input_value(item, value*scale)+"</span>" +
-                            "</td>" +
-                            "<td class='item item-right'><span>"+postfix+"</span></td>";
-                    }
-                    else if (type === "number") {
-                        row += 
-                            "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
-                                "<input id='thing-"+thing+"-"+id+"' class='number' type='text' value='"+format_input_value(item, value*scale)+"' />" +
-                            "</td>" +
-                            "<td class='item item-right'><span>"+postfix+"</span></td>";
-                    }
-                    else if (type == "slider" && typeof item.max !== 'undefined' && typeof item.min !== 'undefined' && typeof item.step !== 'undefined') {
-                        row = 
-                            "<td class='item item-left'></td>" +
-                            "<td class='item item-input' thing='"+thing+"' item='"+item.id+"'>" +
-                                "<input id='thing-"+thing+"-"+id+"' class='slider' type='range' min='"+item.min+"' max='"+item.max+"'  step='"+item.step+"' value='"+format_input_value(item, value)+"' />" +
-                            "</td>" +
-                            "<td class='item item-right'>" +
-                                "<span id='thing-"+thing+"-"+id+"-value'>"+format_input_value(item, value*scale)+"</span><span> "+postfix+"</span>" +
-                            "</td>";
-                    }
-                }
-                list += 
-                    "<table class='item-list' style='width:100%'>" +
-                        "<tr>" +
-                            "<td class='item item-name'>" +
-                                "<span>"+item.label+"</span>" +
-                            "</td>" +
-                            row +
-                        "</tr>" +
-                    "</table>";
+function drawItems(thing) {
+    var items = "";
+    for (var id in thing.items) {
+        if (thing.items.hasOwnProperty(id)) {
+            var item = thing.items[id];
+            var type = item.type.toLowerCase();
+            var value = parseItemValue(item, type, item.value);
+            
+            var left = "";
+            if (typeof item.left !== 'undefined') {
+                left = item.left;
             }
+            var right = "";
+            if (typeof item.right !== 'undefined') {
+                right = item.right;
+            }
+            var row = "<td><span>"+item.label+"</span></td>";
+            
+            if (type === "switch") {
+                var checked = "";
+                if (value) {
+                    checked = "checked";
+                }
+                row += 
+                    "<td><span class='item-left'>"+left+"</span></td>" +
+                    "<td class='item-checkbox'>" +
+                        "<div class='checkbox checkbox-slider--b-flat checkbox-slider-info'>" +
+                            "<label>" +
+                                "<input id='thing-"+thing.id+"-"+id+"' class='item item-content', type='checkbox' "+value+"><span></span>" +
+                            "</label>" +
+                        "</div>" +
+                    "</td>" +
+                    "<td><span class='item-right'>"+right+"</span></td>";
+            }
+            else {
+                var scale = 1;
+                if (typeof item.scale !== 'undefined') {
+                    scale = item.scale;
+                }
+                if (typeof item.format !== 'undefined' && right.length == 0) {
+                    var format = item.format;
+                    if (format.startsWith('%s') || format.startsWith('%i')) {
+                        right = format.substr(2).trim();
+                    }
+                    else if (format.startsWith('%.') && format.charAt(3) == 'f') {
+                        right = format.substr(4).trim();
+                    }
+                }
+                
+                if (type === "text" || type === "number") {
+                    var content;
+                    if (typeof item.write !== 'undefined' && item.write) {
+                        content = "<input id='thing-"+thing.id+"-"+id+"' class='item item-content input-small' type='"+type+"' value='"+formatItemValue(item, value*scale)+"' />";
+                    }
+                    else {
+                        content = "<span id='thing-"+thing.id+"-"+id+"' class='item-content'>"+formatItemValue(item, value*scale)+"</span>";
+                    }
+                    row += "<td colspan='2'>"+content+"</td><td><span class='item-right'>"+right+"</span></td>";
+                }
+                else if (type == "slider" && typeof item.max !== 'undefined' && typeof item.min !== 'undefined' && typeof item.step !== 'undefined') {
+                    row += 
+                        "<td colspan='2'><input id='thing-"+thing.id+"-"+id+"' class='item item-content slider' type='range' min='"+item.min+"' max='"+item.max+"' step='"+item.step+"' value='"+formatItemValue(item, value)+"' /></td>" +
+                        "<td><span id='thing-"+thing.id+"-"+id+"-value' class='item-content'>"+formatItemValue(item, value*scale)+"</span><span class='item-right'>"+right+"</span></td>";
+                }
+            }
+            items += 
+                "<tr data-thing='"+thing.id+"' data-item='"+id+"'>" + row + "</tr>";
         }
     }
-    return list;
+    return items;
 }
 
-function update_inputs() {
+function updateItems() {
     for (var thing in things) {
         if (things.hasOwnProperty(thing)) {
             var items = things[thing].items;
@@ -212,7 +200,7 @@ function update_inputs() {
                     var input = $("#thing-"+thing+"-"+id);
                     
                     var type = item.type.toLowerCase();
-                    var value = parse_input_value(item, type, item.value);
+                    var value = parseItemValue(item, type, item.value);
                     if (type == "switch") {
                         input.prop("checked", value);
                     }
@@ -222,18 +210,20 @@ function update_inputs() {
                             scale = item.scale;
                         }
                         
-                        if (type == "text") {
+                        if (type === "text" || type === "number") {
                             if (!isNaN(value)) {
                                 value *= scale;
                             }
-                            input.text(format_input_value(item, value));
-                        }
-                        else if (type == "number") {
-                            input.val(format_input_value(item, value*scale));
+                            if (typeof item.write !== 'undefined' && item.write) {
+                                input.val(formatItemValue(item, value));
+                            }
+                            else {
+                                input.text(formatItemValue(item, value));
+                            }
                         }
                         else if (type == "slider") {
-                            input.val(format_input_value(item, value));
-                            $("#thing-"+thing+"-"+id+"-value").text(format_input_value(item, value*scale));
+                            input.val(formatItemValue(item, value));
+                            $("#thing-"+thing+"-"+id+"-value").text(formatItemValue(item, value*scale));
                         }
                     }
                 }
@@ -242,7 +232,7 @@ function update_inputs() {
     }
 }
 
-function parse_input_value(item, type, value) {
+function parseItemValue(item, type, value) {
     if (type === "switch") {
         return (value && Number(value) == 1) ? true : false;
     }
@@ -264,7 +254,7 @@ function parse_input_value(item, type, value) {
     return value;
 }
 
-function format_input_value(item, value) {
+function formatItemValue(item, value) {
     if (!isNaN(value)) {
         if (typeof item.format !== 'undefined') {
             var format = item.format;
@@ -280,13 +270,10 @@ function format_input_value(item, value) {
     return value;
 }
 
-function item_click(thing, id) {
+function itemClick(thing, id) {
     // Disable redrawing while stopping the updater, to avoid toggle buttons to be
     // switched back again, caused by badly timed asynchronous draw() calls
     redraw = false;
-    setTimeout(() => {
-        redraw = true;
-    }, INTERVAL);
     updaterStop();
     
     var item = things[thing].items[id];
@@ -297,15 +284,16 @@ function item_click(thing, id) {
         // The click event toggled the check already
         // Set the item value to the current state
         updateResume = function() {
+            redraw = true;
             updaterStart();
         };
         if (input.is(":checked")) {
-            device.setItemOff(thing, id, updateResume);
-            input.prop("checked", false);
-        }
-        else {
             device.setItemOn(thing, id, updateResume);
             input.prop("checked", true);
+        }
+        else {
+            device.setItemOff(thing, id, updateResume);
+            input.prop("checked", false);
         }
     }
 }
@@ -313,37 +301,50 @@ function item_click(thing, id) {
 // -------------------------------------------------------------------------------
 // Events
 // -------------------------------------------------------------------------------
-$("#thing-list").on('click', '.item-input', function(e) {
-    e.stopPropagation();
-    e.preventDefault();
-    var $me=$(this);
-    if ($me.data('clicked')) {
-        $me.data('clicked', false); // reset
-        if ($me.data('alreadyclickedTimeout')) clearTimeout($me.data('alreadyclickedTimeout')); // prevent this from happening
-
-        // Do what needs to happen on double click.
-        var id = $(this).attr('item');
-        var thing = $(this).attr('thing');
-        item_click(thing, id);
-    }
-    else {
-        $me.data('clicked', true);
-        var alreadyclickedTimeout=setTimeout(function() {
-            $me.data('clicked', false); // reset when it happens
-
-            // Do what needs to happen on single click. Use $me instead of $(this) because $(this) is  no longer the element
-            var id = $me.attr('item');
-            var thing = $me.attr('thing');
-            item_click(thing, id);
-            
-        }, 250); // dblclick tolerance
-        $me.data('alreadyclickedTimeout', alreadyclickedTimeout); // store this id to clear if necessary
-    }
+$("#thing-list").on('click', '.item', function() {
+    var self = $(this);
+    var row = self.closest('tr');
+    var thing = row.data('thing');
+    var id = row.data('item');
+    
+    clearTimeout(self.data('itemClickTimeout'));
+    var itemClickTimeout = setTimeout(function() {
+        itemClick(thing, id);
+        
+    }, 250);
+    self.data('itemClickTimeout', itemClickTimeout);
 });
 
-$('#thing-list').on('input', '.item-input', function () {
-    var id = $(this).attr('item');
-    var thing = $(this).attr('thing');
+$('#thing-list').on('change', '.item', function () {
+    var row = $(this).closest('tr');
+    var thing = row.data('thing');
+    var id = row.data('item');
+    
+    var item = things[thing].items[id];
+    
+    var type = item.type.toLowerCase();
+    var value = parseItemValue(item, type, $(this).val());
+    if (type == "number") {
+        var scale = 1;
+        if (typeof item.scale !== 'undefined' && item.scale != 0) {
+            scale = item.scale;
+        }
+        $("#thing-"+thing+"-"+id).val(formatItemValue(item, value));
+       
+        value = value/scale;
+    }
+    
+    var self = $(this);
+    device.setItemValue(thing, id, value, function() {
+        self.trigger('focusout');
+    });
+});
+
+$('#thing-list').on('input', '.item', function () {
+    var row = $(this).closest('tr');
+    var thing = row.data('thing');
+    var id = row.data('item');
+    
     var item = things[thing].items[id];
     
     var type = item.type.toLowerCase();
@@ -352,52 +353,30 @@ $('#thing-list').on('input', '.item-input', function () {
         if (typeof item.scale !== 'undefined') {
             scale = item.scale;
         }
-        var value = format_input_value(item, $(this).children('.slider').val()*scale);
+        var value = formatItemValue(item, $(this).val()*scale);
         
         $("#thing-"+thing+"-"+id+"-value").text(value);
     }
 });
 
-$('#thing-list').on('change', '.item-input', function () {
-    var id = $(this).attr('item');
-    var thing = $(this).attr('thing');
-    var item = things[thing].items[id];
-    
-    var type = item.type.toLowerCase();
-    var value = parse_input_value(item, type, $(this).children('input').val());
-    if (type == "number") {
-        var scale = 1;
-        if (typeof item.scale !== 'undefined' && item.scale != 0) {
-            scale = item.scale;
-        }
-        $("#thing-"+thing+"-"+id).val(format_input_value(item, value));
-        
-        value = value/scale;
-    }
-
-    var $me=$(this);
-    device.setItemValue(thing, id, value, function() {
-        $me.children('input').trigger('focusout');
-    });
-});
-
-$("#thing-list").on("click", ".thing-configure", function() {
-    // Get device of clicked thing
-    var thing = $(this).attr('thing');
-    device_dialog.loadConfig(templates, device.get(thing));
-});
-
-$('#thing-list').on('focus', '.item-input input', function () {
+$('#thing-list').on('focus', '.item', function () {
     // Disable redrawing while stopping the updater, to avoid toggle buttons to be
     // switched back again, caused by badly timed asynchronous draw() calls
     redraw = false;
-    setTimeout(() => {
-        redraw = true;
-    }, INTERVAL);
     updaterStop();
 });
 
-$('#thing-list').on('focusout', '.item-input input', function () {
+$('#thing-list').on('focusout', '.item', function () {
+    redraw = true;
     updaterStart();
 });
+
+$("#thing-list").on("click", ".thing-config", function(e) {
+    e.stopPropagation();
+    
+    // Get device of clicked thing
+    var thing = device.get($(this).closest('tr').data('thing'));
+    device_dialog.loadConfig(templates, thing);
+});
+
 </script>
