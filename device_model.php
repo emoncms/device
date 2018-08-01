@@ -589,7 +589,7 @@ class Device
         $userid = intval($userid);
         
         $result = $this->get_template_meta($userid, $id);
-        if (!empty($result["success"])) {
+        if (isset($result["success"]) && $result["success"] == false) {
             return $result;
         }
         $module = $result['module'];
@@ -604,7 +604,7 @@ class Device
         $userid = intval($userid);
         
         $result = $this->get_template_meta($userid, $id);
-        if (!empty($result["success"])) {
+        if (isset($result["success"]) && $result["success"] == false) {
             return $result;
         }
         $module = $result['module'];
@@ -621,7 +621,7 @@ class Device
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (!empty($result["success"])) {
+            if (isset($result["success"]) && $result["success"] == false) {
                 return $result;
             }
             $module = $result['module'];
@@ -639,7 +639,7 @@ class Device
         
         $device = $this->get($id);
         $result = $this->init_template($device, $template);
-        if (!empty($result["success"])) {
+        if (isset($result["success"]) && $result["success"] == false) {
             return $result;
         }
         return array('success'=>true, 'message'=>'Device initialized');
@@ -650,7 +650,7 @@ class Device
         
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (!empty($result["success"])) {
+            if (isset($result["success"]) && $result["success"] == false) {
                 return $result;
             }
             $module = $result['module'];
@@ -783,7 +783,7 @@ class Device
                 $class = $this->get_module_class($module, self::THING);
                 if ($class != null) {
                     $result = $class->get_item_list($device);
-                    if (!empty($result["success"])) {
+                    if (isset($result["success"]) && $result["success"] == false) {
                         return $result;
                     }
                     $this->cache_items($device['id'], $items);
@@ -831,14 +831,14 @@ class Device
         
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (!empty($result["success"])) {
+            if (isset($result["success"]) && $result["success"] == false) {
                 return $result;
             }
             $module = $result['module'];
             $class = $this->get_module_class($module, self::THING);
             if ($class != null) {
                 $result = $class->get_item_list($device);
-                if (!empty($result["success"])) {
+                if (isset($result["success"]) && $result["success"] == false) {
                     return $result;
                 }
                 foreach ($result as $item) {
@@ -920,7 +920,7 @@ class Device
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (!empty($result["success"])) {
+            if (isset($result["success"]) && $result["success"] == false) {
                 return $result;
             }
             $module = $result['module'];
@@ -940,7 +940,7 @@ class Device
         $userid = intval($userid);
         
         $result = $this->load_template_list($userid);
-        if (!empty($result["success"])) {
+        if (isset($result["success"]) && $result["success"] == false) {
             return $result;
         }
         if (isset($result) && count($result) > 0) {
@@ -971,7 +971,7 @@ class Device
                 $class = $this->get_module_class($dir[$i], self::TEMPLATE);
                 if ($class != null) {
                     $result = $class->get_template_list($userid);
-                    if (!empty($result["success"])) {
+                    if (isset($result["success"]) && $result["success"] == false) {
                         return $result;
                     }
                     foreach($result as $key => $value) {
