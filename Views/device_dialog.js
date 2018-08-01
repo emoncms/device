@@ -27,8 +27,6 @@ var device_dialog =
         this.adjustConfigModal();
         this.clearConfigModal();
 
-        var out = "";
-
         var categories = [];
         var devicesByCategory = {};
         for (var id in this.templates) {
@@ -50,7 +48,8 @@ var device_dialog =
         
         for (var i in categories) {
             var category = categories[i];
-
+            var categoryid = category.replace(/\W/g, '').toLowerCase();
+            
             var groups = [];
             var devicesByGroup = {};
             for (var i in devicesByCategory[category]) {
@@ -63,22 +62,39 @@ var device_dialog =
             }
             groups.sort();
             
-            out += "<tbody>"
-            out += "<tr class='category-header' category='"+category+"' style='background-color:#aaa; cursor:pointer'>";
-            out += "<td style='font-size:12px; padding:4px; padding-left:8px; font-weight:bold'>"+category+"</td>";
-            out += "</tr>";
-            out += "</tbody>";
+            $('#template-list').append(
+                "<div class='accordion-group'>" +
+                    "<div class='accordion-heading category-heading'>" +
+                        "<span class='accordion-toggle' data-toggle='collapse' " +
+                            "data-parent='#template-list' data-target='#template-"+categoryid+"-collapse'>" +
+                            category +
+                        "</span>" +
+                    "</div>" +
+                    "<div id='template-"+categoryid+"-collapse' class='accordion-body collapse'>" +
+                        "<div class='accordion-inner'>" +
+                            "<div id='template-"+categoryid+"' class='accordion'></div>" +
+                        "</div>" +
+                    "</div>" +
+                "</div>"
+            );
             
             for (var i in groups) {
                 var group = groups[i];
-                
-                out += "<tbody class='group-header' group='"+group+"' category='"+category+"' style='display:none'>"
-                out += "<tr style='background-color:#ccc; cursor:pointer'>";
-                out += "<td style='font-size:12px; padding:4px; padding-left:16px; font-weight:bold'>"+group+"</td>";
-                out += "</tr>";
-                out += "</tbody>";
-                
-                out += "<tbody class='group-body' group='"+group+"' category='"+category+"' style='display:none'>";
+                var groupid = group.replace(/\W/g, '').toLowerCase();
+                $('#template-'+categoryid).append(
+                    "<div class='accordion-group'>" +
+                        "<div class='accordion-heading group-heading'>" +
+                            "<span class='accordion-toggle' data-toggle='collapse' " +
+                                "data-parent='#template-"+categoryid+"' data-target='#template-"+categoryid+"-"+groupid+"-collapse'>" +
+                                group +
+                            "</span>" +
+                        "</div>" +
+                        "<div id='template-"+categoryid+"-"+groupid+"-collapse' class='accordion-body collapse'>" +
+                            "<div id='template-"+categoryid+"-"+groupid+"' class='accordion-inner'></div>" +
+                        "</div>" +
+                    "</div>"
+                );
+                var body = $('#template-'+categoryid+'-'+groupid);
                 
                 for (var i in devicesByGroup[group]) {
                     var id = devicesByGroup[group][i].id;
@@ -87,22 +103,26 @@ var device_dialog =
                         name = name.substr(0, 25) + "...";
                     }
                     
-                    out += "<tr class='group-row' type='"+id+"'>";
-                    out += "<td style='padding-left:24px; cursor:pointer'>"+name+"</td>";
-                    out += "</tr>";
+                    body.append(
+                        "<div id='template-"+categoryid+"-"+groupid+"-"+id.replace('/', '-')+"'" +
+                        		"data-type='"+id+"' class='group-device'>" +
+                            "<span>"+name+"</span>" +
+                        "</div>"
+                    );
                 }
-                out += "</tbody>";    
             }
         }
-        $("#template-table").html(out);
         
         if (this.deviceType != null && this.deviceType != '') {
             if (this.templates[this.deviceType]!=undefined) {
-                var template = this.templates[this.deviceType]
-                
-                $(".group-header[category='"+template.category+"']").show();
-                $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
-                $(".group-row[type='"+this.deviceType+"']").addClass("device-selected");
+                var template = this.templates[this.deviceType];
+                var category = template.category.replace(/\W/g, '').toLowerCase();
+                var group = template.group.replace(/\W/g, '').toLowerCase();
+                var id = this.deviceType.replace('/', '-');
+
+                $("#template-"+category+"-collapse").collapse('show');
+                $("#template-"+category+"-"+group+"-collapse").collapse('show');
+                $("#template-"+category+"-"+group+"-"+id).addClass("device-selected");
                 
                 $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
                 $('#template-info').show();
@@ -114,11 +134,10 @@ var device_dialog =
     },
 
     'clearConfigModal':function() {
-        $("#template-table").text('');
+        $("#template-list").text('');
         
-        var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device." +
-                "<br><br>" +
-                "Initializing a device usualy should only be done once on installation.<br>" +
+        var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device.<br>" +
+                "Initializing a device usualy should only be done once on installation. " +
                 "If the configuration was already applied, only missing inputs and feeds will be created.";
         
         $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
@@ -160,73 +179,36 @@ var device_dialog =
             var h = height - $("#device-config-modal").position().top - 180;
             $("#device-config-body").height(h);
         }
-
-        $("#content-wrapper").css("transition","0");
-        $("#sidebar-wrapper").css("transition","0");
+        
         if (width < 1024) {
-            $("#content-wrapper").css("margin-left","0");
-            $("#sidebar-wrapper").css("width","0");
-            $("#sidebar-open").show();
-
-            $("#content-wrapper").css("transition","0.5s");
-            $("#sidebar-wrapper").css("transition","0.5s");
+            $("#device-sidebar-open").show();
+            $("#device-sidebar-close").show();
+            
+            $("#device-sidebar").css("transition","0.5s");
+            $("#device-sidebar").css("width","0");
+            
+            $("#device-content").css("transition","0.5s");
+            $("#device-content").css("margin-left","0");
+        	$("#device-config-modal").css("margin-left","0").css("margin-right","0");
         } else {
-            $("#content-wrapper").css("margin-left","250px");
-            $("#sidebar-wrapper").css("width","250px");
-            $("#sidebar-open").hide();
-            $("#sidebar-close").hide();
+            $("#device-sidebar-open").hide();
+            $("#device-sidebar-close").hide();
+            
+            $("#device-sidebar").css("transition","0");
+            $("#device-sidebar").css("width","250px");
+            
+            $("#device-content").css("transition","0");
+            $("#device-content").css("margin-left","250px");
+        	$("#device-config-modal").css("margin-left","auto").css("margin-right","auto");
         }
     },
 
     'registerConfigEvents':function() {
 
-        $('#template-table .category-header').off('click').on('click', function() {
-            var category = $(this).attr("category");
+        $("#template-list").off('click').on('click', '.group-device', function () {
+            var type = $(this).data("type");
             
-            var e = $(".group-header[category='"+category+"']");
-            if (e.is(":visible")) {
-                $(".group-body[category='"+category+"']").hide();
-                e.hide();
-            }
-            else {
-                e.show();
-
-                // If a device is selected and in the category to uncollapse, show and select it
-                if (device_dialog.deviceType != null && device_dialog.deviceType != '') {
-                    var template = device_dialog.templates[device_dialog.deviceType];
-                    if (template && category == template.category) {
-                        $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
-                        $(".group-row[type='"+device_dialog.deviceType+"']").addClass("device-selected");
-                    }
-                }
-            }
-        });
-
-        $('#template-table .group-header').off('click').on('click', function() {
-            var group = $(this).attr("group");
-            var category = $(this).attr("category");
-            
-            var e = $(".group-body[group='"+group+"'][category='"+category+"']");
-            if (e.is(":visible")) {
-                e.hide();
-            }
-            else {
-                e.show();
-
-                // If a device is selected and in the category to uncollapse, show and select it
-                if (device_dialog.deviceType != null && device_dialog.deviceType != '') {
-                    var template = device_dialog.templates[device_dialog.deviceType];
-                    if (category == template.category && group == template.group) {
-                        $(".group-row[type='"+device_dialog.deviceType+"']").addClass("device-selected");
-                    }
-                }
-            }
-        });
-
-        $("#template-table .group-row").off('click').on('click', function () {
-            var type = $(this).attr("type");
-            
-            $(".group-row[type='"+device_dialog.deviceType+"']").removeClass("device-selected");
+            $(".group-device[data-type='"+device_dialog.deviceType+"']").removeClass("device-selected");
             if (device_dialog.deviceType !== type) {
                 $(this).addClass("device-selected");
                 device_dialog.deviceType = type;
@@ -243,18 +225,19 @@ var device_dialog =
                 $('#template-info').hide();
                 $("#device-init").show()
             }
+            if ($(window).width() < 1024) {
+                $("#device-sidebar").css("width","0");
+            }
             
             device_dialog.drawTemplate();
         });
 
-        $("#sidebar-open").off('click').on('click', function () {
-            $("#sidebar-wrapper").css("width","250px");
-            $("#sidebar-close").show();
+        $("#device-sidebar-open").off('click').on('click', function () {
+            $("#device-sidebar").css("width","250px");
         });
 
-        $("#sidebar-close").off('click').on('click', function () {
-            $("#sidebar-wrapper").css("width","0");
-            $("#sidebar-close").hide();
+        $("#device-sidebar-close").off('click').on('click', function () {
+            $("#device-sidebar").css("width","0");
         });
 
         $("#device-save").off('click').on('click', function () {
@@ -333,15 +316,15 @@ var device_dialog =
     },
 
     'drawTemplate':function() {
-        if (this.deviceType !== null && this.deviceType in this.templates) {
-            var template = this.templates[this.deviceType];
-            $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
-            $('#template-info').show();
-        }
-        else {
+        if (device_dialog.deviceType == null || !device_dialog.deviceType in device_dialog.templates) {
             $('#template-description').text('');
             $('#template-info').hide();
+            return;
         }
+        
+        var template = device_dialog.templates[device_dialog.deviceType];
+        $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+        $('#template-info').show();
     },
 
     'loadInit': function() {
@@ -485,6 +468,17 @@ var device_dialog =
         return out;
     },
 
+    'adjustInitModal':function() {
+
+        var width = $(window).width();
+        var height = $(window).height();
+        
+        if ($("#device-init-modal").length) {
+            var h = height - $("#device-init-modal").position().top - 180;
+            $("#device-init-body").height(h);
+        }
+    },
+
     'parseTemplate': function() {
         var template = {};
         
@@ -509,17 +503,6 @@ var device_dialog =
         }
         
         return template;
-    },
-
-    'adjustInitModal':function() {
-
-        var width = $(window).width();
-        var height = $(window).height();
-        
-        if ($("#device-init-modal").length) {
-            var h = height - $("#device-init-modal").position().top - 180;
-            $("#device-init-body").height(h);
-        }
     },
 
     'loadDelete': function(device, tablerow) {
