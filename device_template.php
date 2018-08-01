@@ -47,7 +47,7 @@ class DeviceTemplate
     public function get_template($userid, $type) {
         $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
         $result = $this->load_template_list($userid);
-        if (!empty($result["success"])) {
+        if (isset($result["success"]) && $result["success"] == false) {
             return $result;
         }
         if (!isset($result[$type])) {
@@ -96,7 +96,7 @@ class DeviceTemplate
         
         if (empty($template)) {
             $result = $this->prepare_template($device);
-            if (!empty($result["success"])) {
+            if (isset($result["success"]) && $result["success"] == false) {
                 return $result;
             }
             $template = $result;
