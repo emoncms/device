@@ -13,32 +13,38 @@
     </div>
     <div id="device-config-body" class="modal-body">
         <div id="device-sidebar" class="modal-sidebar">
-            <div style="padding-left:10px;">
-                <div id="device-sidebar-close" style="float:right; cursor:pointer; padding:10px;"><i class="icon-remove"></i></div>
-                <h3><?php echo _('Devices'); ?></h3>
-            </div>
+            <h3 style="padding-left:10px;">
+                <span><?php echo _('Devices'); ?></span>
+                <span id="device-sidebar-close" style="float:right; cursor:pointer;"><i class="icon-remove" style="margin:8px;"></i></span>
+            </h3>
             <div style="overflow-x: hidden; width:100%">
                 <div id="template-list" class="accordion"></div>
             </div>
         </div>
         
         <div id="device-content" class="modal-content">
-            
-            <h3><?php echo _('Configuration'); ?></h3>
-            
-            <div id="navigation" style="padding-bottom:5px;">
-                <button class="btn" id="sidebar-open"><i class="icon-list"></i></button>
-            </div>
+            <h3>
+                <span id="device-sidebar-open" class="btn btn-sidebar"><i class="icon-th-list"></i></span>
+                <span><?php echo _('Configuration'); ?></span>
+            </h3>
             
             <span id="template-info" style="display:none;">
                 <span id="template-description"></span>
-                <span id="template-tooltip" data-toggle="tooltip" data-placement="bottom">
+                <span id="template-tooltip" data-toggle="tooltip" data-placement="bottom" data-container="#device-config-modal">
                     <i class="icon-info-sign" style="cursor:pointer; padding-left:6px;"></i>
                 </span>
             </span>
             
             <div class="divider"></div>
             
+            <!-- label><b><?php echo _('Node'); ?></b></label>
+            <input id="device-config-node" class="input-medium" type="text" required>
+            
+            <label><b><?php echo _('Name'); ?></b></label>
+            <input id="device-config-name" class="input-large" type="text" required>
+            
+            <label><b><?php echo _('Location'); ?></b></label>
+            <input id="device-config-description" class="input-large" type="text" -->
             <table class="device-input">
                 <tr>
                     <th><?php echo _('Node'); ?></th>

@@ -182,21 +182,27 @@ var device_dialog =
             var h = height - $("#device-config-modal").position().top - 180;
             $("#device-config-body").height(h);
         }
-
-        $("#device-content").css("transition","0");
-        $("#device-sidebar").css("transition","0");
+        
         if (width < 1024) {
-            $("#device-content").css("margin-left","0");
-            $("#device-sidebar").css("width","0");
-            $("#sidebar-open").show();
-
-            $("#device-content").css("transition","0.5s");
+            $("#device-sidebar-open").show();
+            $("#device-sidebar-close").show();
+            
             $("#device-sidebar").css("transition","0.5s");
+            $("#device-sidebar").css("width","0");
+            
+            $("#device-content").css("transition","0.5s");
+            $("#device-content").css("margin-left","0");
+        	$("#device-config-modal").css("margin-left","0").css("margin-right","0");
         } else {
-            $("#device-content").css("margin-left","250px");
-            $("#device-sidebar").css("width","250px");
-            $("#sidebar-open").hide();
+            $("#device-sidebar-open").hide();
             $("#device-sidebar-close").hide();
+            
+            $("#device-sidebar").css("transition","0");
+            $("#device-sidebar").css("width","250px");
+            
+            $("#device-content").css("transition","0");
+            $("#device-content").css("margin-left","250px");
+        	$("#device-config-modal").css("margin-left","auto").css("margin-right","auto");
         }
     },
 
@@ -222,18 +228,19 @@ var device_dialog =
                 $('#template-info').hide();
                 $("#device-init").show()
             }
+            if ($(window).width() < 1024) {
+                $("#device-sidebar").css("width","0");
+            }
             
             device_dialog.drawTemplate();
         });
 
-        $("#sidebar-open").off('click').on('click', function () {
+        $("#device-sidebar-open").off('click').on('click', function () {
             $("#device-sidebar").css("width","250px");
-            $("#device-sidebar-close").show();
         });
 
         $("#device-sidebar-close").off('click').on('click', function () {
             $("#device-sidebar").css("width","0");
-            $("#device-sidebar-close").hide();
         });
 
         $("#device-save").off('click').on('click', function () {

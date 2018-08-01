@@ -1,6 +1,8 @@
 .modal-adjust {
-    width: 60%; left:20%; /* (100%-width)/2 */
-    margin-left: auto; margin-right: auto;
+    width: 60%;
+    left: 20%; /* (100%-width)/2 */
+    margin-left: auto;
+    margin-right: auto;
     overflow-y: hidden;
 }
 
@@ -62,6 +64,9 @@
     overflow-y: auto;
 }
 
+.modal-content .btn-sidebar {
+    margin-bottom: 5px;
+}
 .modal-sidebar {
     position: absolute;
     margin-top: -15px;
@@ -69,6 +74,7 @@
     max-height: none;
     height: 100%;
     width: 250px;
+    overflow-x: hidden;
     overflow-y: auto;
     background-color: #f2f2f2;
     z-index: 1000;
