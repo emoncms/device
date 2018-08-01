@@ -567,7 +567,7 @@ class Device
         if ($this->redis) {
             if ($this->redis->exists("device:template:$id")) {
                 $template = $this->redis->hGetAll("device:template:$id");
-                $template["control"] = (bool) $template["control"];
+                $template["options"] = (bool) $template["options"];
                 $template["thing"] = (bool) $template["thing"];
                 $template["control"] = (bool) $template["control"];
                 
