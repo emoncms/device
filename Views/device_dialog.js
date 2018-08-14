@@ -428,41 +428,56 @@ var device_dialog =
 
     'drawInitProcessList': function (processList) {
         if (!processList || processList.length < 1) return "";
+
         var out = "";
         for (var i = 0; i < processList.length; i++) {
             var process = processList[i];
-            if (process['arguments'] != undefined && process['arguments']['value'] != undefined && process['arguments']['type'] != undefined) {
-                var name = "<small>"+process["name"]+"</small>";
-                var value = process['arguments']['value'];
-                
+            if (process['arguments'] != undefined && process['arguments']['type'] != undefined) {
                 var title;
-                var color = "info";
+                var label;
                 switch(process['arguments']['type']) {
                 case 0: // VALUE
-                    title = "Value: " + value;
+                	label = "important";
+                    title = "Value - ";
                     break;
                     
                 case 1: //INPUTID
-                    title = "Input: " + value;
+                	label = "warning";
+                    title = "Input - ";
                     break;
                     
                 case 2: //FEEDID
-                    title = "Feed: " + value;
+                	label = "info";
+                    title = "Feed - ";
+                    break;
+                    
+                case 3: // NONE
+                	label = "important";
+                    title = "";
                     break;
                     
                 case 4: // TEXT
-                    title = "Text: " + value;
+                	label = "important";
+                    title = "Text - ";
                     break;
-
+                    
                 case 5: // SCHEDULEID
-                    title = "Schedule: " + value;
+                	label = "warning";
+                    title = "Schedule - "
                     break;
-
+                    
                 default:
-                    title = value;
+                	label = "important";
+                    title = "ERROR - ";
                     break;
                 }
-                out += "<span class='label label-"+color+"' title='"+title+"' style='cursor:default'>"+name+"</span> ";
+            	title += process["name"];
+                
+                if (process['arguments']['value'] != undefined) {
+                	title += ": " + process['arguments']['value'];
+                }
+                
+                out += "<span class='label label-"+label+"' title='"+title+"' style='cursor:default'><small>"+process["short"]+"</small></span> ";
             }
         }
         return out;
