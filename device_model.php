@@ -328,7 +328,7 @@ class Device
         }
         
         $result = $this->set_fields($deviceid,json_encode(array("name"=>$name,"nodeid"=>$nodeid,"type"=>$type)));
-        if ($result["success"]==true) {
+        if ($result['success']==true) {
             return $this->init_template($deviceid);
         } else {
             return $result;
