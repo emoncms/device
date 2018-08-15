@@ -316,12 +316,14 @@ var device_dialog =
     },
 
     'drawTemplate':function() {
-        if (device_dialog.deviceType == null || !device_dialog.deviceType in device_dialog.templates) {
+        if (device_dialog.deviceType == null || device_dialog.deviceType == "" || !device_dialog.deviceType in device_dialog.templates) {
             $('#template-description').text('');
             $('#template-info').hide();
             return;
         }
         
+        console.log("deviceType:"+device_dialog.deviceType)
+        console.log(device_dialog.templates)
         var template = device_dialog.templates[device_dialog.deviceType];
         $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
         $('#template-info').show();
