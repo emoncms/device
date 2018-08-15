@@ -36,8 +36,8 @@ function device_controller()
             if ($route->subaction=="request") {
                 // 1. Register request for authentication details, or provide if allowed
                 $result = $device->request_auth($_SERVER['REMOTE_ADDR']);
-                if (isset($result["success"])) {
-                    $result = $result["message"];
+                if (isset($result['success'])) {
+                    $result = $result['message'];
                 }
                 $route->format = "text";
             }

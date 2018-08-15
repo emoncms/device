@@ -226,10 +226,9 @@ class Device
         $userid = intval($userid);
         
         if (!$this->redis->exists("user:device:$userid")) {
-            $this->log->info("Load devices to redis in get_list_redis");
             $this->load_list_to_redis($userid);
         }
-
+        
         $devices = array();
         $deviceids = $this->redis->sMembers("user:device:$userid");
         foreach ($deviceids as $id) {
@@ -320,7 +319,7 @@ class Device
         }
         
         $result = $this->set_fields($deviceid,json_encode(array("name"=>$name,"nodeid"=>$nodeid,"type"=>$type)));
-        if ($result["success"]==true) {
+        if ($result['success']==true) {
             return $this->init_template($deviceid);
         } else {
             return $result;
@@ -497,6 +496,10 @@ class Device
         }
     }
 
+    public function get_template_list($userid) {
+        return $this->load_template_list($userid);
+    }
+
     public function get_template_list_meta($userid) {
         $templates = array();
         
@@ -541,15 +544,11 @@ class Device
         return array('success'=>false, 'message'=>'Device template does not exist');
     }
 
-    public function get_template_list($userid) {
-        return $this->load_template_list($userid);
-    }
-
     public function get_template($userid, $id) {
         $userid = intval($userid);
         
         $result = $this->get_template_meta($userid, $id);
-        if (isset($result['success']) && !$result['success']) {
+        if (isset($result['success']) && $result['success'] == false) {
             return $result;
         }
         $module = $result['module'];
@@ -557,7 +556,7 @@ class Device
         if ($class != null) {
             return $class->get_template($userid, $id);
         }
-        return array('success'=>false, 'message'=>'Unknown error while loading device template details');
+        return array('success'=>false, 'message'=>'Device template class is not defined');
     }
 
     public function prepare_template($id) {
@@ -566,7 +565,7 @@ class Device
         $device = $this->get($id);
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (isset($result['success']) && !$result['success']) {
+            if (isset($result["success"]) && $result["success"] == false) {
                 return $result;
             }
             $module = $result['module'];
@@ -584,7 +583,7 @@ class Device
         
         $device = $this->get($id);
         $result = $this->init_template($device, $template);
-        if (isset($result) && !$result['success']) {
+        if (isset($result['success']) && $result['success'] == false) {
             return $result;
         }
         return array('success'=>true, 'message'=>'Device initialized');
@@ -595,7 +594,7 @@ class Device
         
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
-            if (isset($result['success']) && !$result['success']) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             $module = $result['module'];
@@ -611,11 +610,11 @@ class Device
     public function reload_template_list($userid) {
         $userid = intval($userid);
         
-        $templates = $this->load_template_list($userid);
-        if (isset($templates) && count($templates) > 0) {
-            return array('success'=>true, 'message'=>'Templates successfully reloaded');
+        $result = $this->load_template_list($userid);
+        if (isset($result['success']) && $result['success'] == false) {
+            return $result;
         }
-        return array('success'=>false, 'message'=>'Unknown error while reloading templates');
+        return array('success'=>true, 'message'=>'Templates successfully reloaded');
     }
 
     private function load_template_list($userid) {
@@ -637,8 +636,11 @@ class Device
             if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
                 $class = $this->get_module_class($dir[$i], self::TEMPLATE);
                 if ($class != null) {
-                    $module_templates = $class->get_template_list($userid);
-                    foreach($module_templates as $key => $value) {
+                    $result = $class->get_template_list($userid);
+                    if (isset($result['success']) && $result['success'] == false) {
+                        return $result;
+                    }
+                    foreach($result as $key => $value) {
                         $this->cache_template($dir[$i], $key, $value);
                         $templates[$key] = $value;
                     }
