@@ -84,6 +84,17 @@ function device_controller()
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template_options($session['userid'], get('type'));
             }
         }
+        else if ($route->action == "scan") {
+            if ($route->subaction == "start") {
+                if ($session['userid']>0 && $session['write']) $result = $device->scan_start($session['userid'],get("type"),get("options"));
+            }
+            else if ($route->subaction == "progress") {
+                if ($session['userid']>0 && $session['write']) $result = $device->scan_progress($session['userid'],get("type"));
+            }
+            else if ($route->subaction == "cancel") {
+                if ($session['userid']>0 && $session['write']) $result = $device->scan_cancel($session['userid'],get("type"));
+            }
+        }
         else if ($route->action == "thing" && 
                 $route->subaction == "list") {
             if ($session['userid']>0 && $session['write']) $result = $device->get_thing_list($session['userid']);

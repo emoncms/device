@@ -26,7 +26,7 @@ class DeviceThing
 
     public function get_item_list($device) {
         $result = $this->get_template($device['userid'], $device['type']);
-        if (is_array($result) && !empty($result["success"])) {
+        if (is_array($result) && !empty($result['success'])) {
             return $result;
         }
         $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $result);

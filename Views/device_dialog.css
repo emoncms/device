@@ -183,7 +183,7 @@
 }
 
 .table-options input[type="text"] {
-	width: 195px;
+    width: 195px;
 }
 
 .table-options input[type="checkbox"] {
@@ -224,7 +224,7 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
 }
 
 .table-options .option-input {
-	margin: 0px;
+    margin: 0px;
 }
 
 .table-options tbody + tbody {
@@ -250,3 +250,50 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
 .table-inputs td:nth-of-type(3) { width:5%; }
 .table-inputs td:nth-of-type(4) { width:10%; }
 .table-inputs td:nth-of-type(5) { width:25%; }
+
+.scan-container {
+    width:100%;
+    position: relative;
+    overflow-y: auto;
+}
+
+.scan-progress {
+    margin-top:-15px;
+    margin-left:-15px;
+    margin-right:-15px;
+    -webkit-border-radius: 0px;
+       -moz-border-radius: 0px;
+            border-radius: 0px;
+}
+
+.progress-default .bar,
+.progress .bar-default {
+    background-color: #dddddd;
+    background-image: -moz-linear-gradient(top, #eeeeee, #cccccc);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#eeeeee), to(#cccccc));
+    background-image: -webkit-linear-gradient(top, #eeeeee, #cccccc);
+    background-image: -o-linear-gradient(top, #eeeeee, #cccccc);
+    background-image: linear-gradient(to bottom, #eeeeee, #cccccc);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffeeeeee', endColorstr='#ffcccccc', GradientType=0);
+}
+
+.progress-default.progress-striped .bar,
+.progress-striped .bar-default {
+    background-color: #eeeeee;
+    background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.scan-result li {
+    padding: 6px 6px 6px 0px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+.scan-result li:hover,
+.scan-result li:focus {
+    color: #3a87ad;
+}

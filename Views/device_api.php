@@ -65,6 +65,13 @@
     <tr><td><?php echo _('Prepare device initialization'); ?></td><td><a href="<?php echo $path; ?>device/template/prepare.json?id=1"><?php echo $path; ?>device/template/prepare.json?id=1</a></td></tr>
 </table>
 
+<p><b><?php echo _('Scan actions'); ?></b></p>
+<table class="table">
+    <tr><td><?php echo _('Start device scan'); ?></td><td><a href="<?php echo $path; ?>device/scan/start.json?type=example&options={}"><?php echo $path; ?>device/scan/start.json?type=example&options={}</a></td></tr>
+    <tr><td><?php echo _('Get device scan progress'); ?></td><td><a href="<?php echo $path; ?>device/scan/progress.json?type=example"><?php echo $path; ?>device/scan/progress.json?type=example</a></td></tr>
+    <tr><td><?php echo _('Cancel device scan'); ?></td><td><a href="<?php echo $path; ?>device/scan/camncel.json?type=example"><?php echo $path; ?>device/scan/camncel.json?type=example</a></td></tr>
+</table>
+
 <a class="anchor" id="expression"></a> 
 <h3><?php echo _('Devices templates documentation'); ?></h3>
 <p><?php echo _('Template files are located at <b>\'\\Modules\\device\\data\\*.json\'</b>'); ?></p>

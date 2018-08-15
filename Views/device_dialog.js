@@ -108,7 +108,7 @@ var device_dialog =
                     
                     body.append(
                         "<div id='template-"+categoryid+"-"+groupid+"-"+id.replace('/', '-')+"'" +
-                        		"data-type='"+id+"' class='group-device'>" +
+                                "data-type='"+id+"' class='group-device'>" +
                             "<span>"+name+"</span>" +
                         "</div>"
                     );
@@ -146,18 +146,32 @@ var device_dialog =
         $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
         
         if (this.device != null) {
-            $('#device-config-node').val(this.device.nodeid);
-            $('#device-config-name').val(this.device.name);
             $('#device-config-description').val(this.device.description);
-            $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
-            $("#device-config-devicekey-new").prop("disabled", false);
-            $('#device-delete').show();
+
             $("#device-save").html("Save");
-            if (this.device.type != null && this.device.type != '') {
-                $("#device-init").show();
+            if (typeof this.device.scanned !== 'undefined' && this.device.scanned) {
+                $('#device-config-devicekey').val('').prop("disabled", true);
+                $("#device-config-devicekey-new").prop("disabled", true);
+                
+                $('#device-scan').hide();
+                $('#device-back').show();
+                $('#device-delete').hide();
             }
             else {
-                $("#device-init").hide();
+                $('#device-config-node').val(this.device.nodeid);
+                $('#device-config-name').val(this.device.name);
+                $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
+                $("#device-config-devicekey-new").prop("disabled", false);
+                
+                if (this.device.type != null && this.device.type != '') {
+                    $("#device-init").show();
+                }
+                else {
+                    $("#device-init").hide();
+                }
+                $('#device-scan').hide();
+                $('#device-back').hide();
+                $('#device-delete').show();
             }
         }
         else {
@@ -166,9 +180,12 @@ var device_dialog =
             $('#device-config-description').val('');
             $('#device-config-devicekey').val('').prop("disabled", true);
             $("#device-config-devicekey-new").prop("disabled", true);
-            $('#device-delete').hide();
-            $("#device-init").hide();
+            
             $("#device-save").html("Save & Initialize");
+            $("#device-init").hide();
+            $('#device-scan').hide();
+            $('#device-back').hide();
+            $('#device-delete').hide();
         }
         device_dialog.drawTemplate();
     },
@@ -192,7 +209,7 @@ var device_dialog =
             
             $("#device-content").css("transition","0.5s");
             $("#device-content").css("margin-left","0");
-        	$("#device-config-modal").css("margin-left","0").css("margin-right","0");
+            $("#device-config-modal").css("margin-left","0").css("margin-right","0");
         } else {
             $("#device-sidebar-open").hide();
             $("#device-sidebar-close").hide();
@@ -202,7 +219,7 @@ var device_dialog =
             
             $("#device-content").css("transition","0");
             $("#device-content").css("margin-left","250px");
-        	$("#device-config-modal").css("margin-left","auto").css("margin-right","auto");
+            $("#device-config-modal").css("margin-left","auto").css("margin-right","auto");
         }
     },
 
@@ -220,13 +237,18 @@ var device_dialog =
                 $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
                 $('#template-info').show();
                 $("#device-init").hide();
+                $("#device-scan").show();
             }
             else {
                 device_dialog.deviceType = null;
                 
                 $('#template-description').text('');
                 $('#template-info').hide();
-                $("#device-init").show()
+                
+                if (device_dialog.device != null) {
+                    $("#device-init").show()
+                }
+                $("#device-scan").hide();
             }
             if ($(window).width() < 1024) {
                 $("#device-sidebar").css("width","0");
@@ -323,17 +345,36 @@ var device_dialog =
                 return false;
             }
         });
-        
+
         $("#device-delete").off('click').on('click', function () {
             $('#device-config-modal').modal('hide');
             device_dialog.loadDelete(device_dialog.device, null);
         });
-        
+
+        $("#device-back").off('click').on('click', function () {
+            $('#device-config-modal').modal('hide');
+            $('#device-scan-modal').modal('show');
+        });
+
+        $("#device-scan").off('click').on('click', function () {
+            var options = null;
+            if (device_dialog.deviceType != null && device_dialog.templates[device_dialog.deviceType].options) {
+                options = device_dialog.parseOptions(true);
+                if (options == null) {
+                    alert('Required options need to be configured first.');
+                    return false;
+                }
+            }
+            $('#device-config-modal').modal('hide');
+            
+            device_dialog.loadScan(options);
+        });
+
         $("#device-init").off('click').on('click', function () {
             $('#device-config-modal').modal('hide');
             device_dialog.loadInit();
         });
-        
+
         $("#device-config-devicekey-new").off('click').on('click', function () {
             device_dialog.device.devicekey = device.setNewDeviceKey(device_dialog.device.id);
             $('#device-config-devicekey').val(device_dialog.device.devicekey);
@@ -355,19 +396,19 @@ var device_dialog =
         $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
         $('#template-info').show();
         
-        $("#template-options-table").empty().hide();
-        $("#template-options-select").prop("disabled", true).empty().append("<option selected hidden value=''>Select an Option</option>");
-        $("#template-options-add").prop("disabled", true);
+        $("#device-config-options-table").empty().hide();
+        $("#device-config-options-select").prop("disabled", true).empty().append("<option selected hidden value=''>Select an Option</option>");
+        $("#device-config-options-add").prop("disabled", true);
         
         if (template.options) {
             device.getTemplateOptions(device_dialog.deviceType, function(result) {
                 if (typeof result.success !== 'undefined' && !result.success) {
                     alert('Unable to retrieve template options:\n'+result.message);
                 }
-            	if (result.length > 0) {
+                if (result.length > 0) {
                     device_dialog.deviceOptions = result;
                     device_dialog.drawOptions();
-            	}
+                }
             });
         }
         else {
@@ -376,7 +417,7 @@ var device_dialog =
     },
 
     'drawOptions':function() {
-        var select = $("#template-options-select");
+        var select = $("#device-config-options-select");
         
         // Show options, if at least one of them is defined or mandatory
         var show = false;
@@ -391,12 +432,12 @@ var device_dialog =
             }
         }
         if (show) {
-            $("#template-options-table").show();
-            $("#template-options-none").hide();
+            $("#device-config-options-table").show();
+            $("#device-config-options-none").hide();
         }
         else {
-            $("#template-options-table").hide();
-            $("#template-options-none").show();
+            $("#device-config-options-table").hide();
+            $("#device-config-options-none").show();
         }
         
         select.css('color', '#888').css('font-style', 'italic');
@@ -406,30 +447,30 @@ var device_dialog =
         });
         if ($("option", select).length > 1) {
             select.prop("disabled", false).val('');
-            $("#template-options-add").prop("disabled", false);
+            $("#device-config-options-add").prop("disabled", false);
         }
         else {
             select.prop("disabled", true).val('');
-            $("#template-options-add").prop("disabled", true);
+            $("#device-config-options-add").prop("disabled", true);
         }
         device_dialog.showOptions(true);
         device_dialog.registerOptionEvents();
     },
 
     'drawOptionInput':function(option) {
-        $("#template-options-table").append(
+        $("#device-config-options-table").append(
             "<tbody>" +
-                "<tr id='template-option-"+option.id+"-row' class='option' data-id='"+option.id+"'>" +
+                "<tr id='device-config-option-"+option.id+"-row' class='option' data-id='"+option.id+"'>" +
                     "<td>"+option.name+"</td>" +
                 "</tr>" +
-                "<tr id='template-option-"+option.id+"-info' class='option' data-id='"+option.id+"' data-show='false' style='display:none'>" +
+                "<tr id='device-config-option-"+option.id+"-info' class='option' data-id='"+option.id+"' data-show='false' style='display:none'>" +
                     "<td colspan='4'>" +
                         "<div class='alert alert-comment'>"+option.description+"</div>" +
                     "</td>" +
                 "</tr>" +
             "</tbody>"
         );
-        var row = $("#template-option-"+option.id+"-row");
+        var row = $("#device-config-option-"+option.id+"-row");
         
         var value = null;
         if (device_dialog.device != null && typeof device_dialog.device.options[option.id] !== 'undefined') {
@@ -441,9 +482,9 @@ var device_dialog =
         
         var type = option.type;
         if (type === 'selection') {
-            row.append("<td><select id='template-option-"+option.id+"' class='option-input input-large'></select></td>").hide().fadeIn(300);
+            row.append("<td><select id='device-config-option-"+option.id+"' class='option-input input-large'></select></td>").hide().fadeIn(300);
             
-            var select = $("#template-option-"+option.id);
+            var select = $("#device-config-option-"+option.id);
             select.append("<option selected hidden value=''>Select a "+option.name+"</option>");
             option.select.forEach(function(val) {
                 select.append($("<option />").val(val.value).text(val.name).css('color', 'black'));
@@ -463,69 +504,73 @@ var device_dialog =
             row.append(
                 "<td><div class='option-input checkbox checkbox-slider--b-flat checkbox-slider-info'>" +
                     "<label>" +
-                        "<input id='template-option-"+option.id+"' type='checkbox'><span></span></input>" +
+                        "<input id='device-config-option-"+option.id+"' type='checkbox'><span></span></input>" +
                     "</label>" +
                 "</div></td>"
             ).hide().fadeIn(300);
             if (value != null) {
-            	if (typeof value === 'string' || value instanceof String) {
-                	value = (value == 'true');
-            	}
-                $("#template-option-"+option.id).html('<span>checked</span>').prop("checked", value);
+                if (typeof value === 'string' || value instanceof String) {
+                    value = (value == 'true');
+                }
+                $("#device-config-option-"+option.id).html('<span>checked</span>').prop("checked", value);
             }
         }
         else {
-            row.append("<td><input id='template-option-"+option.id+"' type='text' class='option-input input-large'></input></td>").hide().fadeIn(300);
+            row.append("<td><input id='device-config-option-"+option.id+"' type='text' class='option-input input-large'></input></td>").hide().fadeIn(300);
             if (value != null) {
-                $("#template-option-"+option.id).val(value);
+                $("#device-config-option-"+option.id).val(value);
             }
         }
         
         if(!option.mandatory) {
             row.append("<td></td>")
-            row.append("<td><a id='template-option-"+option.id+"-remove' class='option-remove' title='Remove'><i class='icon-trash' style='cursor:pointer'></i></a></td>");
+            row.append("<td><a id='device-config-option-"+option.id+"-remove' class='option-remove' title='Remove'><i class='icon-trash' style='cursor:pointer'></i></a></td>");
         }
         else {
-            row.append("<td><span style='color:#888; font-size:12px'><em>mandatory</em></span></td>")
+            var comment = 'mandatory';
+            if (typeof option.scan !== 'undefined' && option.scan) {
+                comment = 'scannable';
+            }
+            row.append("<td><span style='color:#888; font-size:12px'><em>"+comment+"</em></span></td>")
             row.append("<td><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
             
-//            $("#template-option-"+option.id).prop("required", true);
+//            $("#device-config-option-"+option.id).prop("required", true);
         }
     },
 
     'showOptions':function(show) {
-    	if (show) {
-	    	if (!$("#template-options").hasClass('in')) {
-	    		$("#template-options").collapse('show');
-	            $("#template-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
-	    	}
-	        $('#template-options-overlay').hide();
-	    }
-	    else {
-	        if ($("#template-options").hasClass('in')) {
-	            $("#template-options").collapse('hide').removeClass('in');
-	            $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
-	        }
-	        $('#template-options-overlay').show();
-	    }
+        if (show) {
+            if (!$("#device-config-options").hasClass('in')) {
+                $("#device-config-options").collapse('show');
+                $("#device-config-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
+            }
+            $('#device-config-options-overlay').hide();
+        }
+        else {
+            if ($("#device-config-options").hasClass('in')) {
+                $("#device-config-options").collapse('hide').removeClass('in');
+                $("#device-config-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
+            }
+            $('#device-config-options-overlay').show();
+        }
     },
 
     'registerOptionEvents':function() {
 
-        $("#template-options-header").off().on("click", function() {
-            if ($("#template-options").hasClass('in')) {
-                $("#template-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
+        $("#device-config-options-header").off().on("click", function() {
+            if ($("#device-config-options").hasClass('in')) {
+                $("#device-config-options-header .icon-collapse").removeClass('icon-chevron-down').addClass('icon-chevron-right');
             }
             else {
-                $("#template-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
-//                $("#device-content").animate({ scrollTop: $('#template-options-footer').offset().top }, 250);
+                $("#device-config-options-header .icon-collapse").removeClass('icon-chevron-right').addClass('icon-chevron-down');
+//                $("#device-content").animate({ scrollTop: $('#device-config-options-footer').offset().top }, 250);
             }
         });
 
-        $('#template-options-table').off('click');
-        $('#template-options-table').on('click', '.option', function() {
+        $('#device-config-options-table').off('click');
+        $('#device-config-options-table').on('click', '.option', function() {
             var id = $(this).closest('tr').data('id');
-            var info = $("#template-option-"+id+"-info");
+            var info = $("#device-config-option-"+id+"-info");
             if (typeof info !== 'undefined' && info.data('show')) {
                 info.data('show', false);
                 info.find('td > div').slideUp(function() { info.hide(); });
@@ -534,7 +579,7 @@ var device_dialog =
                 // Hide already shown option infos and open the selected afterwards
                 // TODO: find a way to avoid display errors with select inputs if an info above it is collapsed
 //                $(".table-options tr[data-show]").each(function() {
-//                	if ($(this).data('show')) {
+//                    if ($(this).data('show')) {
 //                        info.find('td > div').slideUp(function() { info.hide(); });
 //                    }
 //                });
@@ -542,53 +587,53 @@ var device_dialog =
             }
         });
 
-        $('#template-options-table').on('click', '.option-input', function(e) {
+        $('#device-config-options-table').on('click', '.option-input', function(e) {
             e.stopPropagation();
 
             var id = $(this).closest('tr').data('id');
-            var info = $("#template-option-"+id+"-info");
+            var info = $("#device-config-option-"+id+"-info");
             if (typeof info !== 'undefined' && !info.data('show')) {
                 info.data('show', true).show().find('td > div').slideDown();
             }
         });
 
-        $('#template-options-table').on('click', '.option-remove', function() {
+        $('#device-config-options-table').on('click', '.option-remove', function() {
             e.stopPropagation();
             
             var id = $(this).closest('tr').data('id');
             var removeRow = function() {
                 $(this).remove(); 
                 
-                if ($('#template-options-table tr').length == 0) {
-                    $('#template-options-table').hide();
-                    $('#template-options-none').show();
+                if ($('#device-config-options-table tr').length == 0) {
+                    $('#device-config-options-table').hide();
+                    $('#device-config-options-none').show();
                 }
             }
-            $("#template-option-"+id+"-row").fadeOut(removeRow);
-            $("#template-option-"+id+"-info").fadeOut(removeRow);
+            $("#device-config-option-"+id+"-row").fadeOut(removeRow);
+            $("#device-config-option-"+id+"-info").fadeOut(removeRow);
             
             var option = device_dialog.deviceOptions.find(function(opt) {
                 return opt.id === id;
             });
             
-            var select = $("#template-options-select");
+            var select = $("#device-config-options-select");
             select.append($("<option />").val(option.id).text(option.name).css('color', 'black'));
             if ($("option", select).length > 1) {
                 select.prop("disabled", false).val('');
-                $("#template-options-add").prop("disabled", false);
+                $("#device-config-options-add").prop("disabled", false);
             }
             else {
                 select.prop("disabled", true).val('');
-                $("#template-options-add").prop("disabled", true);
+                $("#device-config-options-add").prop("disabled", true);
             }
         });
 
-        $("#template-options-add").off('click').on('click', function() {
-            var select = $("#template-options-select");
+        $("#device-config-options-add").off('click').on('click', function() {
+            var select = $("#device-config-options-select");
             var value = $('option:selected', select);
             
             var id = value.val();
-            if (id != "" && $("#template-option-"+id+"-row").val() === undefined) {
+            if (id != "" && $("#device-config-option-"+id+"-row").val() === undefined) {
                 value.remove();
                 
                 var option = device_dialog.deviceOptions.find(function(opt) {
@@ -603,11 +648,11 @@ var device_dialog =
                 });
                 if ($("option", select).length > 1) {
                     select.prop("disabled", false).val('');
-                    $("#template-options-add").prop("disabled", false);
+                    $("#device-config-options-add").prop("disabled", false);
                 }
                 else {
                     select.prop("disabled", true).val('');
-                    $("#template-options-add").prop("disabled", true);
+                    $("#device-config-options-add").prop("disabled", true);
                 }
             }
         });
@@ -723,44 +768,44 @@ var device_dialog =
                 var label;
                 switch(process['arguments']['type']) {
                 case 0: // VALUE
-                	label = "important";
+                    label = "important";
                     title = "Value - ";
                     break;
                     
                 case 1: //INPUTID
-                	label = "warning";
+                    label = "warning";
                     title = "Input - ";
                     break;
                     
                 case 2: //FEEDID
-                	label = "info";
+                    label = "info";
                     title = "Feed - ";
                     break;
                     
                 case 3: // NONE
-                	label = "important";
+                    label = "important";
                     title = "";
                     break;
                     
                 case 4: // TEXT
-                	label = "important";
+                    label = "important";
                     title = "Text - ";
                     break;
                     
                 case 5: // SCHEDULEID
-                	label = "warning";
+                    label = "warning";
                     title = "Schedule - "
                     break;
                     
                 default:
-                	label = "important";
+                    label = "important";
                     title = "ERROR - ";
                     break;
                 }
-            	title += process["name"];
+                title += process["name"];
                 
                 if (process['arguments']['value'] != undefined) {
-                	title += ": " + process['arguments']['value'];
+                    title += ": " + process['arguments']['value'];
                 }
                 
                 out += "<span class='label label-"+label+"' title='"+title+"' style='cursor:default'><small>"+process["short"]+"</small></span> ";
@@ -806,11 +851,11 @@ var device_dialog =
         return template;
     },
 
-    'parseOptions': function() {
+    'parseOptions': function(scan) {
         var options = {};
         for (var i = 0; i < device_dialog.deviceOptions.length; i++) {
             var option = device_dialog.deviceOptions[i];
-            var input = $('#template-option-'+option.id);
+            var input = $('#device-config-option-'+option.id);
             var value = null;
             
             if (input.val() != undefined) {
@@ -819,7 +864,7 @@ var device_dialog =
                     value = input.val();
                 }
                 else if (type === 'selection') {
-                    value = $('#template-option-'+option.id+' option:selected').val();
+                    value = $('#device-config-option-'+option.id+' option:selected').val();
                 }
                 else if (type === 'switch') {
                     value = input.is(':checked');
@@ -828,11 +873,137 @@ var device_dialog =
             if (value !== null && value !== "") {
                 options[option.id] = value;
             }
-            else if (option.mandatory) {
+            else if (option.mandatory && (scan && (typeof option.scan === 'undefined' || !option.scan))) {
                 return null;
             }
         }
         return options;
+    },
+
+    'loadScan':function(options) {
+        this.scanUpdater = null;
+        this.scanDevices = [];
+        
+        this.drawScan();
+        
+        device.scanStart(device_dialog.deviceType, options, function(result) {
+            $('#device-scan-loader').hide();
+            
+            device_dialog.scanProgress(result);
+        });
+
+        $('#device-scan-results').on('click', '.device-scan-row', function() {
+            var row = $(this).data('row');
+            var device = device_dialog.scanDevices[row];
+            device['scanned'] = true;
+            
+            $("#device-scan-modal").modal('hide');
+            device_dialog.device = device;
+            device_dialog.drawConfig();
+        });
+    },
+
+    'drawScan':function() {
+        $("#device-scan-modal").modal('show');
+        
+        var template = device_dialog.templates[device_dialog.deviceType];
+        $('#device-scan-description').html("<b>"+template.group+"</b>: "+template.name+"<br>" +
+                "<em style='color:#888'>"+template.description+"</em>");
+        
+        device_dialog.adjustScanModal();
+    },
+
+    'drawScanProgress':function(progress) {
+        device_dialog.drawScanProgressBar(progress);
+        
+        if (!progress.success) {
+            alert(progress.message);
+            return;
+        }
+        
+        device_dialog.scanDevices = progress.devices;
+        if (device_dialog.scanDevices.length > 0) {
+            
+            $('#device-scan-results').show();
+            $('#device-scan-results-none').hide();
+            
+            var list = '';
+            for (var i = 0; i < device_dialog.scanDevices.length; i++) {
+                var name = device_dialog.scanDevices[i].name;
+                var description = device_dialog.scanDevices[i].description;
+                list += '<li class="device-scan-row" title="Add" data-row='+i+'>' +
+                        name+(description.length>0 ? ": <em style='color:#888'>"+description+"</em>" : "") +
+                    '</li>';
+            }
+            $('#device-scan-results').html(list);
+        }
+        else {
+            $('#device-scan-results').hide();
+            $('#device-scan-results-none').show();
+        }
+    },
+
+    'drawScanProgressBar':function(progress) {
+        var bar = $('#device-scan-progress');
+
+        var value = 100;
+        var type = 'danger';
+        if (progress.success) {
+            value = progress.info.progress;
+            
+            if (progress.info.interrupted) {
+                value = 100;
+                type = 'warning';
+            }
+            else if (progress.info.finished) {
+                value = 100;
+                type = 'success';
+            }
+            else if (value > 0) {
+                // If the progress value equals zero, set it to 5%, so the user can see the bar already
+                if (value == 0) {
+                    value = 5;
+                }
+                type = 'info';
+            }
+            else {
+                value = 100;
+                type = 'default';
+            }
+        }
+        $('#device-scan-progress-bar').css('width', value+'%');
+        
+        if (value < 100 || type == 'default') {
+            bar.addClass('active');
+        }
+        else {
+            bar.removeClass('active');
+        }
+        bar.removeClass('progress-default progress-info progress-success progress-warning progress-danger');
+        bar.addClass('progress-'+type);
+        bar.show();
+    },
+
+    'scanProgress':function(progress) {
+        if (device_dialog.scanUpdater != null) {
+            clearTimeout(device_dialog.scanUpdater);
+            device_dialog.scanUpdater = null;
+        }
+        device_dialog.drawScanProgress(progress);
+        
+        // Continue to schedule scan progress requests every second until the scan info signals completion
+        if (progress.success && !progress.info.finished && !progress.info.interrupted && progress.info.progress < 100) {
+            
+            device_dialog.scanUpdater = setTimeout(device.scanProgress(device_dialog.deviceType,
+                    device_dialog.scanProgress), 10000);
+        }
+    },
+
+    'adjustScanModal':function() {
+        if ($("#device-scan-modal").length) {
+            var h = $(window).height() - $("#device-scan-modal").position().top - 180;
+            $("#device-scan-body").height(h);
+        }
     },
 
     'loadDelete': function(device, tablerow) {

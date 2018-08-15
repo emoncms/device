@@ -102,6 +102,36 @@ var device = {
         return result;
     },
 
+    'scanStart':function(type, options, callback) {
+        return $.ajax({
+            url: path+"device/scan/start.json",
+            data: "type="+type+"&options="+JSON.stringify(options),
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    },
+
+    'scanProgress':function(type, callback) {
+        return $.ajax({
+            url: path+"device/scan/progress.json",
+            data: "type="+type,
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    },
+
+    'scanCancel':function(type, callback) {
+        return $.ajax({
+            url: path+"device/scan/cancel.json",
+            data: "type="+type,
+            dataType: 'json',
+            async: true,
+            success: callback
+        });
+    },
+
     'getThing':function(id) {
         var result = {};
         $.ajax({ url: path+"device/thing/get.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });

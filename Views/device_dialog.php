@@ -65,28 +65,30 @@
             </div>
             
             <div class="modal-options">
-                <div id="template-options-header" class="option-header" data-toggle="collapse" data-target="#template-options">
+                <div id="device-config-options-header" class="option-header" data-toggle="collapse" data-target="#device-config-options">
                     <h5><span class="icon-chevron-right icon-collapse"></span><?php echo _('Options'); ?></h5>
                 </div>
-                <div id="template-options" class="collapse">
-                    <table id="template-options-table" class="table table-options"></table>
-                    <div id="template-options-none" class="alert" style="display:none"><?php echo _('You have no options configured'); ?></div>
+                <div id="device-config-options" class="collapse">
+                    <table id="device-config-options-table" class="table table-options"></table>
+                    <div id="device-config-options-none" class="alert" style="display:none"><?php echo _('You have no options configured'); ?></div>
                     
-                    <div id="template-options-footer" style="margin-bottom: 8px;">
+                    <div id="device-config-options-footer" style="margin-bottom: 8px;">
                         <h5><?php echo _('Add option:'); ?></h5>
                         <span>
-                            <select id="template-options-select" class="input-large" disabled></select>
-                            <button id="template-options-add" class="btn btn-info" style="border-radius: 4px" disabled><?php echo _('Add'); ?></button>
+                            <select id="device-config-options-select" class="input-large" disabled></select>
+                            <button id="device-config-options-add" class="btn btn-info" style="border-radius: 4px" disabled><?php echo _('Add'); ?></button>
                         </span>
                     </div>
                 </div>
-                <div id="template-options-overlay" class="modal-overlay"></div>
+                <div id="device-config-options-overlay" class="modal-overlay"></div>
             </div>
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="device-back" class="btn" style="display:none; float:left"><?php echo _('Back'); ?></button>
+        <button id="device-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="device-delete" class="btn btn-danger" style="cursor:pointer"><i class="icon-trash icon-white"></i> <?php echo _('Delete'); ?></button>
+        <button id="device-scan" class="btn btn-info" style="display:none"><i class="icon-search icon-white"></i> <?php echo _('Scan'); ?></button>
         <button id="device-init" class="btn btn-primary"><i class="icon-refresh icon-white"></i> <?php echo _('Initialize'); ?></button>
         <button id="device-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
@@ -137,6 +139,32 @@
         <button id="device-init-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="device-init-confirm" class="btn btn-primary"><?php echo _('Initialize'); ?></button>
     </div>
+</div>
+
+<div id="device-scan-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-scan-label" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="device-scan-label"><?php echo _('Scan Devices'); ?></h3>
+    </div>
+    <div id="device-scan-body" class="modal-body">
+        <div id="device-scan-progress" class="scan-progress progress progress-default progress-striped active">
+            <div id="device-scan-progress-bar" class="bar" style="width:100%;"></div>
+        </div>
+        <p id="device-scan-description"></p>
+        
+        <div class="divider"></div>
+        
+        <div class="scan-container">
+            <ul id="device-scan-results" class="scan-result" style="display:none"></ul>
+            <div id="device-scan-results-none" class="alert" style="display:none"><?php echo _('No devices found'); ?></div>
+            
+            <div id="device-scan-container"></div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="device-scan-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+    </div>
+    <div id="device-scan-loader" class="ajax-loader"></div>
 </div>
 
 <div id="device-delete-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="device-delete-modal-label" aria-hidden="true" data-backdrop="static">
