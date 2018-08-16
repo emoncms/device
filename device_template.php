@@ -331,7 +331,7 @@ class DeviceTemplate
                 $unit = "";
                 $server = 0;
                 $result = $this->feed->create($userid,$f->tag,$f->name,$datatype,$engine,$options,$unit,$server);
-                if($result["success"] !== true) {
+                if($result['success'] !== true) {
                     $this->log->error("create_feeds() failed for userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine");
                 }
                 else {
