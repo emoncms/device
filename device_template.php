@@ -377,7 +377,7 @@ class DeviceTemplate
                         $failed = false;
                         foreach($processes as $process) {
                             $result = $this->convert_process($feeds, $inputs, $process, $process_list);
-                            if (isset($result['success'])) {
+                            if (isset($result['success']) && !$result['success']) {
                                 $failed = true;
                                 break;
                             }
@@ -412,7 +412,7 @@ class DeviceTemplate
                         $failed = false;
                         foreach($processes as $process) {
                             $result = $this->convert_process($feeds, $inputs, $process, $process_list);
-                            if (isset($result['success'])) {
+                            if (isset($result['success']) && !$result['success']) {
                                 $failed = true;
                                 break;
                             }
