@@ -384,7 +384,7 @@ var device_dialog =
     'drawTemplate':function() {
         device_dialog.deviceOptions = [];
         
-        if (device_dialog.deviceType == null || !device_dialog.deviceType in device_dialog.templates) {
+        if (device_dialog.deviceType == null || device_dialog.deviceType == "" || !device_dialog.deviceType in device_dialog.templates) {
             $('#template-description').text('');
             $('#template-info').hide();
             
