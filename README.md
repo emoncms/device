@@ -25,11 +25,6 @@ Clone the device module into the modules folder using git:
 
     git clone https://github.com/emoncms/device.git
     
-Switch to the new device-integration branch of the device module
-
-    cd device
-    git checkout device-integration
-    
 Login to emoncms on your emonpi/emonbase, navigate to Setup > Administration, Update the emoncms database by running 'Update & Check' under the Update database section.
 
 ## Using the device module
