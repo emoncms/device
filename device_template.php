@@ -16,12 +16,27 @@ class DeviceTemplate
     protected $mysqli;
     protected $redis;
     protected $log;
+    
+    protected $feed;
+    protected $input;
+    protected $process; 
 
     // Module required constructor, receives parent as reference
     public function __construct(&$parent) {
         $this->mysqli = &$parent->mysqli;
         $this->redis = &$parent->redis;
         $this->log = new EmonLogger(__FILE__);
+
+        global $user,$feed_settings;
+        
+        require_once "Modules/feed/feed_model.php";
+        $this->feed = new Feed($this->mysqli, $this->redis, $feed_settings);
+        
+        require_once "Modules/input/input_model.php";
+        $this->input = new Input($this->mysqli, $this->redis, $this->feed);
+        
+        require_once "Modules/process/process_model.php";
+        $this->process = new Process($this->mysqli, $this->input, $this->feed,"UTC");
     }
 
     public function get_template_list($userid) {
@@ -70,7 +85,7 @@ class DeviceTemplate
             $this->prepare_feeds($userid, $device['nodeid'], $prefix, $feeds);
         }
         else {
-            $feeds = [];
+            $feeds = array();
         }
         
         if (isset($result->inputs)) {
@@ -78,7 +93,7 @@ class DeviceTemplate
             $this->prepare_inputs($userid, $device['nodeid'], $prefix, $inputs);
         }
         else {
-            $inputs = [];
+            $inputs = array();
         }
         
         if (!empty($feeds)) {
@@ -108,7 +123,7 @@ class DeviceTemplate
             $this->create_feeds($userid, $feeds);
         }
         else {
-            $feeds = [];
+            $feeds = array();
         }
         
         if (isset($template->inputs)) {
@@ -116,7 +131,7 @@ class DeviceTemplate
             $this->create_inputs($userid, $inputs);
         }
         else {
-            $inputs = [];
+            $inputs = array();
         }
         
         if (!empty($feeds)) {
@@ -130,18 +145,14 @@ class DeviceTemplate
     }
 
     protected function prepare_feeds($userid, $nodeid, $prefix, &$feeds) {
-        global $feed_settings;
-        
-        require_once "Modules/feed/feed_model.php";
-        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
-        
+
         foreach($feeds as $f) {
             $f->name = $prefix.$f->name;
             if (!isset($f->tag)) {
                 $f->tag = $nodeid;
             }
             
-            $feedid = $feed->exists_tag_name($userid, $f->tag, $f->name);
+            $feedid = $this->feed->exists_tag_name($userid, $f->tag, $f->name);
             if ($feedid == false) {
                 $f->action = 'create';
                 $f->id = -1;
@@ -154,8 +165,6 @@ class DeviceTemplate
     }
 
     protected function prepare_inputs($userid, $nodeid, $prefix, &$inputs) {
-        require_once "Modules/input/input_model.php";
-        $input = new Input($this->mysqli, $this->redis, null);
         
         foreach($inputs as $i) {
             $i->name = $prefix.$i->name;
@@ -163,7 +172,7 @@ class DeviceTemplate
                 $i->node = $nodeid;
             }
             
-            $inputid = $input->exists_nodeid_name($userid, $i->node, $i->name);
+            $inputid = $this->input->exists_nodeid_name($userid, $i->node, $i->name);
             if ($inputid == false) {
                 $i->action = 'create';
                 $i->id = -1;
@@ -177,17 +186,8 @@ class DeviceTemplate
 
     // Prepare the input process lists
     protected function prepare_input_processes($userid, $prefix, $feeds, &$inputs) {
-        global $user, $feed_settings;
-        
-        require_once "Modules/feed/feed_model.php";
-        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
-        
-        require_once "Modules/input/input_model.php";
-        $input = new Input($this->mysqli, $this->redis, $feed);
-        
-        require_once "Modules/process/process_model.php";
-        $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
-        $process_list = $process->get_process_list(); // emoncms supported processes
+
+        $process_list = $this->process->get_process_list(); // emoncms supported processes
         
         foreach($inputs as $i) {
             // for each input
@@ -196,7 +196,7 @@ class DeviceTemplate
                 if (!empty($processes)) {
                     $processes = $this->prepare_processes($prefix, $feeds, $inputs, $processes, $process_list);
                     if (isset($i->action) && $i->action != 'create') {
-                        $processes_input = $input->get_processlist($i->id);
+                        $processes_input = $this->input->get_processlist($i->id);
                         if (!isset($processes['success'])) {
                             if ($processes_input == '' && $processes != '') {
                                 $i->action = 'set';
@@ -221,17 +221,8 @@ class DeviceTemplate
 
     // Prepare the feed process lists
     protected function prepare_feed_processes($userid, $prefix, &$feeds, $inputs) {
-        global $user, $feed_settings;
-        
-        require_once "Modules/feed/feed_model.php";
-        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
-        
-        require_once "Modules/input/input_model.php";
-        $input = new Input($this->mysqli, $this->redis, $feed);
-        
-        require_once "Modules/process/process_model.php";
-        $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
-        $process_list = $process->get_process_list(); // emoncms supported processes
+                
+        $process_list = $this->process->get_process_list(); // emoncms supported processes
         
         foreach($feeds as $f) {
             // for each feed
@@ -240,7 +231,7 @@ class DeviceTemplate
                 if (!empty($processes)) {
                     $processes = $this->prepare_processes($prefix, $feeds, $inputs, $processes, $process_list);
                     if (isset($f->action) && $f->action != 'create') {
-                        $processes_input = $feed->get_processlist($f->id);
+                        $processes_input = $this->feed->get_processlist($f->id);
                         if (!isset($processes['success'])) {
                             if ($processes_input == '' && $processes != '') {
                                 $f->action = 'set';
@@ -324,10 +315,6 @@ class DeviceTemplate
 
     // Create the feeds
     protected function create_feeds($userid, &$feeds) {
-        global $feed_settings;
-        
-        require_once "Modules/feed/feed_model.php";
-        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
         
         foreach($feeds as $f) {
             $datatype = constant($f->type); // DataType::
@@ -340,7 +327,8 @@ class DeviceTemplate
             if ($f->action === 'create') {
                 $this->log->info("create_feeds() userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine");
                 
-                $result = $feed->create($userid, $f->tag, $f->name, $datatype, $engine, $options);
+                $unit = "";
+                $result = $this->feed->create($userid,$f->tag,$f->name,$datatype,$engine,$options,$unit);
                 if($result['success'] !== true) {
                     $this->log->error("create_feeds() failed for userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine");
                 }
@@ -353,19 +341,17 @@ class DeviceTemplate
 
     // Create the inputs
     protected function create_inputs($userid, &$inputs) {
-        require_once "Modules/input/input_model.php";
-        $input = new Input($this->mysqli, $this->redis, null);
         
         foreach($inputs as $i) {
             if ($i->action === 'create') {
                 $this->log->info("create_inputs() userid=$userid nodeid=$i->node name=$i->name description=$i->description");
                 
-                $inputid = $input->create_input($userid, $i->node, $i->name);
-                if(!$input->exists($inputid)) {
+                $inputid = $this->input->create_input($userid, $i->node, $i->name);
+                if(!$this->input->exists($inputid)) {
                     $this->log->error("create_inputs() failed for userid=$userid nodeid=$i->node name=$i->name description=$i->description");
                 }
                 else {
-                    $input->set_fields($inputid, '{"description":"'.$i->description.'"}');
+                    $this->input->set_fields($inputid, '{"description":"'.$i->description.'"}');
                     $i->id = $inputid; // Assign the created input id to the inputs array
                 }
             }
@@ -374,17 +360,8 @@ class DeviceTemplate
 
     // Create the input process lists
     protected function create_input_processes($userid, $feeds, $inputs) {
-        global $user, $feed_settings;
         
-        require_once "Modules/feed/feed_model.php";
-        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
-        
-        require_once "Modules/input/input_model.php";
-        $input = new Input($this->mysqli, $this->redis, $feed);
-        
-        require_once "Modules/process/process_model.php";
-        $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
-        $process_list = $process->get_process_list(); // emoncms supported processes
+        $process_list = $this->process->get_process_list(); // emoncms supported processes
         
         foreach($inputs as $i) {
             if ($i->action !== 'none') {
@@ -407,7 +384,7 @@ class DeviceTemplate
                         $processes = implode(",", $processes_converted);
                         if (!$failed && $processes != "") {
                             $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
-                            $input->set_processlist($userid, $inputid, $processes, $process_list);
+                            $this->input->set_processlist($userid, $inputid, $processes, $process_list);
                         }
                     }
                 }
@@ -417,17 +394,8 @@ class DeviceTemplate
 
     // Create the feed process lists
     protected function create_feed_processes($userid, $feeds, $inputs) {
-        global $user, $feed_settings;
         
-        require_once "Modules/feed/feed_model.php";
-        $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
-        
-        require_once "Modules/input/input_model.php";
-        $input = new Input($this->mysqli, $this->redis, $feed);
-        
-        require_once "Modules/process/process_model.php";
-        $process = new Process($this->mysqli, $input, $feed, $user->get_timezone($userid));
-        $process_list = $process->get_process_list(); // emoncms supported processes
+        $process_list = $this->process->get_process_list(); // emoncms supported processes
         
         foreach($feeds as $f) {
             if ($f->action !== 'none') {
@@ -450,7 +418,7 @@ class DeviceTemplate
                         $processes = implode(",", $processes_converted);
                         if (!$failed && $processes != "") {
                             $this->log->info("create_feeds_processes() calling feed->set_processlist feedId=$feedid processes=$processes");
-                            $feed->set_processlist($userid, $feedid, $processes, $process_list);
+                            $this->feed->set_processlist($userid, $feedid, $processes, $process_list);
                         }
                     }
                 }
