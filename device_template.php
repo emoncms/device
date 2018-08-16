@@ -35,8 +35,8 @@ class DeviceTemplate
         require_once "Modules/input/input_model.php";
         $this->input = new Input($this->mysqli, $this->redis, $this->feed);
         
-        require_once "Modules/input/process_model.php";
-        $this->process = new Process($this->mysqli, $this->input, $this->feed);
+        require_once "Modules/process/process_model.php";
+        $this->process = new Process($this->mysqli, $this->input, $this->feed,"UTC");
     }
 
     public function get_template_list($userid) {
@@ -328,7 +328,9 @@ class DeviceTemplate
             if ($f->action === 'create') {
                 $this->log->info("create_feeds() userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine");
                 
-                $result = $this->feed->create($userid, $f->tag, $f->name, $datatype, $engine, $options, 0);
+                $unit = "";
+                $server = 0;
+                $result = $this->feed->create($userid,$f->tag,$f->name,$datatype,$engine,$options,$unit,$server);
                 if($result["success"] !== true) {
                     $this->log->error("create_feeds() failed for userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine");
                 }
