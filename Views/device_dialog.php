@@ -36,27 +36,16 @@
             </span>
             
             <div class="divider"></div>
-            
-            <!-- label><b><?php echo _('Node'); ?></b></label>
-            <input id="device-config-node" class="input-medium" type="text" required>
-            
-            <label><b><?php echo _('Name'); ?></b></label>
-            <input id="device-config-name" class="input-large" type="text" required>
-            
-            <label><b><?php echo _('Location'); ?></b></label>
-            <input id="device-config-description" class="input-large" type="text" -->
-            <table class="device-input">
-                <tr>
-                    <th><?php echo _('Node'); ?></th>
-                    <th><?php echo _('Name'); ?></th>
-                    <th><?php echo _('Location'); ?></th>
-                </tr>
-                <tr>
-                    <td><input id="device-config-node" class="input-small" type="text" required></td>
-                    <td><input id="device-config-name" class="input-medium" type="text" required></td>
-                    <td><input id="device-config-description" class="input-large" type="text"></td>
-                </tr>
-            </table>
+            <div id="device-config-inputs">
+                <label><b><?php echo _('Node'); ?></b></label>
+                <input id="device-config-node" class="input-medium" type="text" required>
+                
+                <label><b><?php echo _('Name'); ?></b></label>
+                <input id="device-config-name" class="input-large" type="text" required>
+                
+                <label><b><?php echo _('Location'); ?></b></label>
+                <input id="device-config-description" class="input-large" type="text">
+            </div>
             
             <label><b><?php echo _('Device Key'); ?></b></label>
             <div class="input-append">
@@ -64,18 +53,18 @@
                 <button id="device-config-devicekey-new" class="btn"><?php echo _('New'); ?></button>
             </div>
             
-            <div class="modal-options">
-                <div id="device-config-options-header" class="option-header" data-toggle="collapse" data-target="#device-config-options">
+            <div id="device-config-options" class="modal-options hide">
+                <div id="device-config-options-header" class="option-header" data-toggle="collapse" data-target="#device-config-options-body">
                     <h5><span class="icon-chevron-right icon-collapse"></span><?php echo _('Options'); ?></h5>
                 </div>
-                <div id="device-config-options" class="collapse">
+                <div id="device-config-options-body" class="collapse">
                     <table id="device-config-options-table" class="table table-options"></table>
                     <div id="device-config-options-none" class="alert" style="display:none"><?php echo _('You have no options configured'); ?></div>
                     
-                    <div id="device-config-options-footer" style="margin-bottom: 8px;">
+                    <div id="device-config-options-footer" style="margin-bottom: 8px" >
                         <h5><?php echo _('Add option:'); ?></h5>
                         <span>
-                            <select id="device-config-options-select" class="input-large" disabled></select>
+                            <select id="device-config-options-select" style="margin: 0px" disabled></select>
                             <button id="device-config-options-add" class="btn btn-info" style="border-radius: 4px" disabled><?php echo _('Add'); ?></button>
                         </span>
                     </div>
@@ -190,7 +179,8 @@
 
 <script>
     $(window).resize(function() {
-        device_dialog.adjustConfigModal()
-        device_dialog.adjustInitModal()
+        device_dialog.adjustConfigModal();
+        device_dialog.adjustInitModal();
+        device_dialog.adjustScanModal();
     });
 </script>
