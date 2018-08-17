@@ -15,19 +15,18 @@ class DeviceTemplate
 {
     protected $mysqli;
     protected $redis;
-    protected $log;
-    
     protected $feed;
     protected $input;
-    protected $process; 
+    protected $process;
+    protected $log;
 
     // Module required constructor, receives parent as reference
     public function __construct(&$parent) {
+        global $feed_settings;
+        
         $this->mysqli = &$parent->mysqli;
         $this->redis = &$parent->redis;
         $this->log = new EmonLogger(__FILE__);
-
-        global $user,$feed_settings;
         
         require_once "Modules/feed/feed_model.php";
         $this->feed = new Feed($this->mysqli, $this->redis, $feed_settings);
@@ -387,7 +386,7 @@ class DeviceTemplate
                         $failed = false;
                         foreach($processes as $process) {
                             $result = $this->convert_process($feeds, $inputs, $process, $process_list);
-                            if (isset($result['success'])) {
+                            if (isset($result['success']) && $result['success'] == false) {
                                 $failed = true;
                                 break;
                             }
@@ -421,7 +420,7 @@ class DeviceTemplate
                         $failed = false;
                         foreach($processes as $process) {
                             $result = $this->convert_process($feeds, $inputs, $process, $process_list);
-                            if (isset($result['success'])) {
+                            if (isset($result['success']) && $result['success'] == false) {
                                 $failed = true;
                                 break;
                             }
