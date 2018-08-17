@@ -130,25 +130,23 @@
     </div>
 </div>
 
-<div id="device-scan-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-scan-label" aria-hidden="true" data-backdrop="static">
+<div id="device-scan-modal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="device-scan-label" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="device-scan-label"><?php echo _('Scan Devices'); ?></h3>
     </div>
-    <div id="device-scan-body" class="modal-body">
-        <div id="device-scan-progress" class="scan-progress progress progress-default progress-striped active">
-            <div id="device-scan-progress-bar" class="bar" style="width:100%;"></div>
-        </div>
-        <p id="device-scan-description"></p>
-        
-        <div class="divider"></div>
-        
-        <div class="scan-container">
+    <div id="device-scan-progress" class="scan-progress progress progress-default progress-striped active">
+        <div id="device-scan-progress-bar" class="bar" style="width:100%;"></div>
+    </div>
+    <div id="device-scan-body" class="modal-body" style="margin-top: 20px">
+            <p id="device-scan-description"></p>
+            
+            <div class="divider"></div>
+            
             <ul id="device-scan-results" class="scan-result" style="display:none"></ul>
             <div id="device-scan-results-none" class="alert" style="display:none"><?php echo _('No devices found'); ?></div>
             
             <div id="device-scan-container"></div>
-        </div>
     </div>
     <div class="modal-footer">
         <button id="device-scan-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
