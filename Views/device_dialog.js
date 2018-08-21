@@ -732,6 +732,7 @@ var device_dialog =
                 alert('Unable to initialize device:\n'+result.message);
                 return false;
             }
+            update();
         });
     },
 
