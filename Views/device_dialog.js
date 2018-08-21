@@ -732,7 +732,7 @@ var device_dialog =
                 alert('Unable to initialize device:\n'+result.message);
                 return false;
             }
-            update();
+            $('#wrap').trigger("device-init");
         });
     },
 
@@ -1097,6 +1097,7 @@ var device_dialog =
             device.remove(device_dialog.device.id);
             if (row != null) {
                 table.remove(row);
+                update();
             }
             else if (typeof device_dialog.device.inputs !== 'undefined') {
                 // If the table row is undefined and an input list exists, the config dialog
@@ -1108,7 +1109,7 @@ var device_dialog =
                 }
                 input.delete_multiple(inputIds);
             }
-            update();
+            $('#wrap').trigger("device-delete");
             
             $('#device-delete-modal').modal('hide');
         });
