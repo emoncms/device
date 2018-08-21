@@ -240,15 +240,20 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
 .table-options td:nth-of-type(3) { text-align: right; }
 .table-options td:nth-of-type(4) { width:14px; text-align: center; }
 
+.table-feeds td,
+.table-inputs td {
+    text-align: left;
+    white-space: nowrap;
+}
 .table-feeds td:nth-of-type(1) { width:14px; text-align: center; }
 .table-feeds td:nth-of-type(2) { width:5%; }
-.table-feeds td:nth-of-type(3) { width:15%; }
+.table-feeds td:nth-of-type(3) { width:20%; }
 .table-feeds td:nth-of-type(4) { width:25%; }
 
 .table-inputs td:nth-of-type(1) { width:14px; text-align: center; }
 .table-inputs td:nth-of-type(2) { width:5%; }
 .table-inputs td:nth-of-type(3) { width:5%; }
-.table-inputs td:nth-of-type(4) { width:10%; }
+.table-inputs td:nth-of-type(4) { width:15%; }
 .table-inputs td:nth-of-type(5) { width:25%; }
 
 .scan-progress {

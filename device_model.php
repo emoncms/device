@@ -426,6 +426,7 @@ class Device
         else if (isset($this->things[$id])) {
             unset($this->things[$id]);
         }
+        return array('success'=>true, 'message'=>'Device successfully deleted');
     }
 
     public function set_fields($id, $fields) {

@@ -144,12 +144,18 @@ var device_dialog =
         
         $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
         
-        if (this.device != null) {
-            $("#device-save").html("Save");
-            if (typeof this.device.scanned !== 'undefined' && this.device.scanned) {
+        if (device_dialog.device != null) {
+        	if (typeof this.device.devicekey !== 'undefined') {
+                $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
+                $("#device-config-devicekey-new").prop("disabled", false);
+        	}
+        	else {
                 $('#device-config-devicekey').val('').prop("disabled", true);
                 $("#device-config-devicekey-new").prop("disabled", true);
-                
+        	}
+        	
+            $("#device-save").html("Save");
+            if (typeof this.device.scanned !== 'undefined' && this.device.scanned) {
                 $('#device-scan').hide();
                 $('#device-back').show();
                 $('#device-delete').hide();
@@ -158,8 +164,6 @@ var device_dialog =
                 $('#device-config-node').val(this.device.nodeid);
                 $('#device-config-name').val(this.device.name);
                 $('#device-config-description').val(this.device.description);
-                $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
-                $("#device-config-devicekey-new").prop("disabled", false);
                 
                 if (this.device.type != null && this.device.type != '') {
                     $("#device-init").show();
@@ -185,7 +189,7 @@ var device_dialog =
             $('#device-back').hide();
             $('#device-delete').hide();
         }
-        device_dialog.drawTemplate();
+        this.drawTemplate();
     },
 
     'adjustConfigModal':function() {
@@ -319,7 +323,7 @@ var device_dialog =
                 }
                 
                 var init = false;
-                if (device_dialog.device != null) {
+                if (device_dialog.device != null && typeof device_dialog.device.id !== 'undefined') {
                     var fields = {};
                     if (device_dialog.device.nodeid != node) fields['nodeid'] = node;
                     if (device_dialog.device.name != name) fields['name'] = name;
@@ -922,6 +926,9 @@ var device_dialog =
                 }
             }
             if (value !== null && value !== "") {
+            	if (!isNaN(value)) {
+            		value = Number(value);
+            	}
                 options[option.id] = value;
             }
             else if (option.mandatory && (scan && (typeof option.scan === 'undefined' || !option.scan))) {
@@ -945,11 +952,14 @@ var device_dialog =
 
         $('#device-scan-results').on('click', '.device-scan-row', function() {
             var row = $(this).data('row');
-            var device = device_dialog.scanDevices[row];
+            var device = {};
+            if (device_dialog.device != null) {
+            	device = device_dialog.device
+            }
+            device['options'] = device_dialog.scanDevices[row].options;
             device['scanned'] = true;
             
             $("#device-scan-modal").modal('hide');
-            device_dialog.deviceType = device.type;
             device_dialog.device = device;
             device_dialog.drawConfig();
         });
@@ -1086,7 +1096,6 @@ var device_dialog =
             device.remove(device_dialog.device.id);
             if (row != null) {
                 table.remove(row);
-                update();
             }
             else if (typeof device_dialog.device.inputs !== 'undefined') {
                 // If the table row is undefined and an input list exists, the config dialog
@@ -1098,6 +1107,8 @@ var device_dialog =
                 }
                 input.delete_multiple(inputIds);
             }
+            update();
+            
             $('#device-delete-modal').modal('hide');
         });
     }
