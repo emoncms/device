@@ -31,13 +31,15 @@
             "name": "emonth_temperature",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+            "unit": "°C"
         },
         {
             "name": "emonth_humidity",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "60"
+            "interval": "60",
+            "unit": "%"
         }
     ]
 }

@@ -55,37 +55,43 @@
             "name": "use",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "10"
+            "interval": "10",
+            "unit": "W"
         },
         {
             "name": "use_kwh",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "10"
+            "interval": "10",
+            "unit": "kWh"
         },
         {
             "name": "solar",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "10"
+            "interval": "10",
+            "unit": "W"
         },
         {
             "name": "solar_kwh",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "10"
+            "interval": "10",
+            "unit": "kWh"
         },
         {
             "name": "import",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "10"
+            "interval": "10",
+            "unit": "W"
         },
         {
             "name": "import_kwh",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "10"
+            "interval": "10",
+            "unit": "kWh"
         }
     ]
 }
