@@ -348,6 +348,8 @@ var device_dialog =
                 alert('Unable to initialize device:\n'+result.message);
                 return false;
             }
+            
+            $('#wrap').trigger("device-init");
         });
     },
 
@@ -551,6 +553,7 @@ var device_dialog =
                 input.delete_multiple(inputIds);
             }
             $('#device-delete-modal').modal('hide');
+            $('#wrap').trigger("device-delete");
         });
     }
 }
