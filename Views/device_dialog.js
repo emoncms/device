@@ -180,7 +180,7 @@ var device_dialog =
             $("#device-config-body").height(h);
         }
         
-        if (width < 1024) {
+        if (width < 680) {
             $("#device-sidebar-open").show();
             $("#device-sidebar-close").show();
             
