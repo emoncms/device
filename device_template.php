@@ -387,7 +387,7 @@ class DeviceTemplate
                         $processes = implode(",", $processes_converted);
                         if (!$failed && $processes != "") {
                             $this->log->info("create_inputs_processes() calling input->set_processlist inputid=$inputid processes=$processes");
-                            $this->input->set_processlist2($userid, $inputid, $processes, $process_list);
+                            $this->input->set_processlist($userid, $inputid, $processes, $process_list);
                         }
                     }
                 }
