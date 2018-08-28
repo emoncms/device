@@ -79,37 +79,43 @@
             "name": "amp",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "30"
+            "interval": "30",
+            "unit": "A"
         },
         {
             "name": "wh",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "30"
+            "interval": "30",
+            "unit": "Wh"
         },
         {
             "name": "temp1",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "30"
+            "interval": "30",
+            "unit": "°C"
         },
         {
             "name": "state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "30"
+            "interval": "30",
+            "unit": ""
         },
         {
             "name": "pilot",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "30"
+            "interval": "30",
+            "unit": ""
         },
         {
             "name": "divertmode",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
-            "interval": "30"
+            "interval": "30",
+            "unit": ""
         }
     ]
 }
