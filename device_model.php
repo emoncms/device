@@ -689,7 +689,7 @@ class Device
         foreach ($devices as $device) {
             if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
                 $template = $this->get_template_meta($userid, $device['type']);
-                if (isset($template['thing']) && $template['thing']) {
+                if (isset($template['thing']) && $template['thing'] == true) {
                     $things[] = $this->get_thing_values($device);
                 }
             }
@@ -722,8 +722,7 @@ class Device
         
         $result = $this->get_item_list($device);
         if (isset($result)) {
-            // The existence of the success key indicates a failure already
-            if (!empty($result['success'])) {
+            if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             $thing['items'] = array();
@@ -806,9 +805,9 @@ class Device
             
             $result = $class->get_item_list($device);
             if (isset($result['success']) && $result['success'] == false) {
-                return $result;
+                $result;
             }
-            $this->cache_items($device['id'], $items);
+            return $this->cache_items($device['id'], $result);
         }
         return $items;
     }
@@ -1048,7 +1047,7 @@ class Device
 
     private function cache_items($id, $items) {
         if ($this->redis) {
-            foreach ($items as $key => $value) {
+            foreach ((array) $items as $key => $value) {
                 if (isset($value['select'])) $value['select'] = json_encode($value['select']);
                 if (isset($value['mapping'])) $value['mapping'] = json_encode($value['mapping']);
                 $this->redis->sAdd("device:thing:$id", $key);
