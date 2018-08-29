@@ -623,6 +623,9 @@ var device_dialog =
         });
 
         $('#device-config-options-table').off('click');
+        $('#device-config-options-table').on('click', '.alert', function(e) {
+        	e.stopPropagation();
+        });
         $('#device-config-options-table').on('click', '.option', function() {
             var id = $(this).closest('tr').data('id');
             var info = $("#device-config-option-"+id+"-info");

@@ -32,6 +32,7 @@ var path = "<?php echo $path; ?>";
 var templates = <?php echo json_encode($templates); ?>;
 
 var things = {};
+var collapsed = {};
 
 var redraw = true;
 
@@ -95,7 +96,10 @@ function draw() {
         if (things.hasOwnProperty(id)) {
             var thing = things[id];
             var items = drawItems(thing);
-            
+
+            if (typeof collapsed[thing.id] === 'undefined') {
+                collapsed[thing.id] = false;
+            }
             list += 
                 "<div class='thing'>" +
                     "<div id='thing-"+thing.id+"-header' class='thing-header' data-toggle='collapse' data-target='#thing-"+thing.id+"-body'>" +
@@ -109,7 +113,7 @@ function draw() {
                             "</tr>" +
                         "</table>" +
                     "</div>" +
-                    "<div id='thing-"+thing.id+"-body' class='collapse'>" +
+                    "<div id='thing-"+thing.id+"-body' class='collapse "+(collapsed[thing.id] ? '' : 'in')+"' data-thing='"+thing.id+"'>" +
                         "<div class='items'><table>"+items+"</table></div>" +
                     "</div>" +
                 "</div>";
@@ -301,6 +305,14 @@ function itemClick(thing, id) {
 // -------------------------------------------------------------------------------
 // Events
 // -------------------------------------------------------------------------------
+$("#thing-list .collapse").off('show hide').on('show hide', function(e) {
+    // Remember if the device block is collapsed, to redraw it correctly
+    var id = $(this).data('thing');
+    var collapse = $(this).hasClass('in');
+
+    collapsed[id] = collapse;
+});
+
 $("#thing-list").on('click', '.item', function() {
     var self = $(this);
     var row = self.closest('tr');
