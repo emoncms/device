@@ -777,7 +777,7 @@ class Device
                 
                 $itemids = $this->redis->sMembers("device:thing:".$device['id']);
                 foreach ($itemids as $i) {
-                    $item = (array) $this->redis->hGetAll("device:".$device['id'].":item:".$i);
+                    $item = (array) $this->redis->hGetAll("device:item:".$device['id'].":$i");
                     if (isset($item['select'])) $item['select'] = json_decode($item['select']);
                     if (isset($item['mapping'])) $item['mapping'] = json_decode($item['mapping']);
                     $items[] = $item;
@@ -820,7 +820,7 @@ class Device
             if ($this->redis->exists("device:thing:$id")) {
                 $itemids = $this->redis->sMembers("device:thing:".$id);
                 foreach ($itemids as $i) {
-                    $item = (array) $this->redis->hGetAll("device:".$id.":item:".$i);
+                    $item = (array) $this->redis->hGetAll("device:item:$id:$i");
                     if ($item['id'] == $itemid) {
                         if (isset($item['select'])) $item['select'] = json_decode($item['select']);
                         if (isset($item['mapping'])) $item['mapping'] = json_decode($item['mapping']);
