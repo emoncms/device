@@ -13,7 +13,7 @@
 #table input[type="text"] {
   width: 88%;
 }
-#table td:nth-of-type(1) { width:5%;}
+#table td:nth-of-type(1) { width:10%;}
 #table th:nth-of-type(5), td:nth-of-type(5) { text-align: right; }
 #table th:nth-of-type(6), td:nth-of-type(6) { text-align: right; }
 #table th[fieldg="time"] { font-weight:normal; text-align: right; }
