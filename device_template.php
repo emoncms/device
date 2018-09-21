@@ -166,20 +166,24 @@ class DeviceTemplate
 
     protected function prepare_inputs($userid, $nodeid, $prefix, &$inputs) {
         
-        foreach($inputs as $i) {
+        $dbinputs = $this->input->get_inputs($userid);
+        
+        foreach($inputs as $index=>$i) {
             $i->name = $prefix.$i->name;
             if(!isset($i->node)) {
                 $i->node = $nodeid;
             }
             
-            $inputid = $this->input->exists_nodeid_name($userid, $i->node, $i->name);
-            if ($inputid == false) {
+            if (!isset($dbinputs['byindex'][$i->node][$index])) {
                 $i->action = 'create';
                 $i->id = -1;
+                $i->index = $index;
             }
             else {
                 $i->action = 'none';
-                $i->id = $inputid;
+                $i->id = $dbinputs['byindex'][$i->node][$index]['id'];
+                
+                if ($dbinputs['byindex'][$i->node][$index]['name']!=$i->name) $i->action = 'rename';
             }
         }
     }
@@ -344,10 +348,13 @@ class DeviceTemplate
     protected function create_inputs($userid, &$inputs) {
         
         foreach($inputs as $i) {
+        
+            $this->log->warn($i->action." ".$i->node." ".$i->index." ".$i->name);
+        
             if ($i->action === 'create') {
-                $this->log->info("create_inputs() userid=$userid nodeid=$i->node name=$i->name description=$i->description");
+                $this->log->info("create_inputs() userid=$userid nodeid=$i->node index=$i->index name=$i->name description=$i->description");
                 
-                $inputid = $this->input->create_input($userid, $i->node, $i->name);
+                $inputid = $this->input->create_input($userid, $i->node, $i->index, $i->name);
                 if(!$this->input->exists($inputid)) {
                     $this->log->error("create_inputs() failed for userid=$userid nodeid=$i->node name=$i->name description=$i->description");
                 }
@@ -355,6 +362,10 @@ class DeviceTemplate
                     $this->input->set_fields($inputid, '{"description":"'.$i->description.'"}');
                     $i->id = $inputid; // Assign the created input id to the inputs array
                 }
+            }
+            
+            if ($i->action === 'set' || $i->action === 'rename') {
+                $this->input->set_name($i->id,$i->name); 
             }
         }
     }

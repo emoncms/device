@@ -35,6 +35,16 @@
             ]
         },
         {
+            "name": "power2",
+            "description": "",
+            "processList": []
+        },
+        {
+            "name": "power3",
+            "description": "",
+            "processList": []    
+        },
+        {
             "name": "power4",
             "description": "Solar generation",
             "processList": [
