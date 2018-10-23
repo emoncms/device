@@ -176,22 +176,18 @@ var device_dialog =
         var height = $(window).height();
         
         if ($("#device-config-modal").length) {
-            var h = height - $("#device-config-modal").position().top - 160;
+            var h = height - $("#device-config-modal").position().top - 180;
             $("#device-config-body").height(h);
         }
         
         if (width < 680) {
             $("#device-sidebar-open").show();
             $("#device-sidebar-close").show();
-
             $("#device-sidebar").removeClass('show')
-                   
         } else {
             $("#device-sidebar-open").hide();
             $("#device-sidebar-close").hide();
-
             $("#device-sidebar").addClass('show')
-            
         }
     },
 
@@ -217,7 +213,7 @@ var device_dialog =
                 $('#template-info').hide();
                 $("#device-init").show()
             }
-            if ($(window).width() < 1024) {
+            if ($(window).width() < 680) {
                 $("#device-sidebar").removeClass('show')
             }
             
@@ -314,8 +310,8 @@ var device_dialog =
             return;
         }
         
-        console.log("deviceType:"+device_dialog.deviceType)
-        console.log(device_dialog.templates)
+        // console.log("deviceType:"+device_dialog.deviceType)
+        // console.log(device_dialog.templates)
         var template = device_dialog.templates[device_dialog.deviceType];
         $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
         $('#template-info').show();
