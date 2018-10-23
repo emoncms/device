@@ -168,7 +168,7 @@
 .table-inputs td:nth-of-type(5) { width:25%; }
 
 
-#device-config-modal{
+.modal{
     margin: 0;
     border-radius: 0;
     border: none;
@@ -177,7 +177,7 @@
     top: 3%;
 }
 #device-config-body{padding: 0}
-#device-config-modal .accordion-toggle{
+.modal .accordion-toggle{
     white-space: nowrap;
     overflow: hidden;
 }
@@ -202,13 +202,13 @@
 #device-sidebar.show{
     width: 100%;
 }
-#device-config-modal .modal-content{margin-top:0}
-#device-config-modal .modal-sidebar{margin-left:-1rem}
+.modal .modal-content{margin-top:0}
+.modal .modal-sidebar{margin: 0}
 
 /* add horizontal padding to devices larger than iphone5 (320px)*/
 @media (min-width: 340px) {
-    #device-config-modal{margin: 0 auto}
-    .modal-sidebar{margin:0 -1rem}
+    .modal{margin: 0 auto}
+    .modal .modal-sidebar{margin: 0 -1.2em}
     #device-content{ left: 15px; }
     #device-config-body{padding: 0 1rem}
 }
@@ -219,11 +219,13 @@
         transition: none;
     }
     #device-content{ left: 270px; }
-    #device-config-modal{
+    .modal{
         margin: 0;
         border-radius: 6px;
         border: 1px solid rgba(0,0,0,0.3);
         width: 94%;
         left:3%;
     }
+    .modal .modal-sidebar{margin: 0 -1.2em}
+
 }

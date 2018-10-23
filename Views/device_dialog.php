@@ -5,7 +5,7 @@
 <link href="<?php echo $path; ?>Modules/device/Views/device_dialog.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js"></script>
 
-<div id="device-config-modal" class="modal hide keyboard modal-adjust fade" tabindex="-1" role="dialog" aria-labelledby="device-config-modal-label" aria-hidden="true" data-backdrop="static">
+<div id="device-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-config-modal-label" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="device-config-modal-label"><?php echo _('Configure Device'); ?></h3>
