@@ -155,6 +155,7 @@ var device_dialog =
             }
             else {
                 $("#device-init").hide();
+                $('#device-sidebar').addClass('show')
             }
         }
         else {

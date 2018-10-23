@@ -47,7 +47,7 @@
             
             <label><b><?php echo _('Device Key'); ?></b></label>
             <div class="input-append">
-                <input id="device-config-devicekey" class="input-large" type="text" style="width:260px">
+                <input id="device-config-devicekey" class="input-large key" type="text" style="width:245px;">
                 <button id="device-config-devicekey-new" class="btn"><?php echo _('New'); ?></button>
             </div>
         </div>
@@ -55,8 +55,8 @@
     <div class="modal-footer">
         <button class="btn hidden-xs" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button class="btn visible-xs pull-left"  title="<?php echo _('Cancel'); ?>" style="margin-left:0;font-weight:bold" data-dismiss="modal" aria-hidden="true" type="button">×</button>
-        <button id="device-delete" class="btn btn-danger" style="cursor:pointer"><i class="icon-trash icon-white hidden-phone"></i> <?php echo _('Delete'); ?></button>
-        <button id="device-init" class="btn btn-primary"><i class="icon-refresh icon-white hidden-phone"></i> <?php echo _('Initialize'); ?></button>
+        <button id="device-delete" class="btn btn-danger" style="cursor:pointer"><i class="icon-trash icon-white hidden-xs"></i> <?php echo _('Delete'); ?></button>
+        <button id="device-init" class="btn btn-primary"><i class="icon-refresh icon-white hidden-xs"></i> <?php echo _('Initialize'); ?></button>
         <button id="device-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
 </div>

@@ -202,6 +202,10 @@
 #device-sidebar.show{
     width: 100%;
 }
+.key {
+    font-size: 12px !important;
+    font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+}
 .modal .modal-content{margin-top:0}
 .modal .modal-sidebar{margin: 0}
 
