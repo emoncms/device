@@ -13,9 +13,14 @@
     <div id="device-config-body" class="modal-body">
         <div id="device-sidebar" class="modal-sidebar">
             <h3 style="padding-left:10px;">
-                <span><?php echo _('Devices'); ?></span>
+                <span><?php echo _('Devices'); ?></span>            
                 <span id="device-sidebar-close"><i class="icon-remove"></i></span>
             </h3>
+            <div id="select-device-alert" class="hidden" style="max-height: 3rem; overflow: hidden">
+                <div class="alert" style="border: 0; line-height: 1.1; margin-bottom: 0; padding-left: .8em; border-radius: 0;">
+                <?php echo _('Please select the correct device template to setup your device:'); ?>
+                </div>
+            </div>
             <div style="overflow-x: hidden; width:100%">
                 <div id="template-list" class="accordion"></div>
             </div>

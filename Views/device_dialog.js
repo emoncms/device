@@ -152,10 +152,11 @@ var device_dialog =
             $("#device-save").html("Save");
             if (this.device.type != null && this.device.type != '') {
                 $("#device-init").show();
-            }
-            else {
+                $('#select-device-alert').addClass('hidden')
+            } else {
                 $("#device-init").hide();
                 $('#device-sidebar').addClass('show')
+                $('#select-device-alert').removeClass('hidden')
             }
         }
         else {
