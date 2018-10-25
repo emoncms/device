@@ -1,224 +1,95 @@
 var device = {
-    'list':function() {
-        var result = {};
-        $.ajax({ url: path+"device/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
+
+    'create':function(nodeid, name, description, type, options, callback) {
+        return device.request(callback, "device/create.json", "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type+
+        		"&options="+JSON.stringify(options));
     },
 
-    'get':function(id) {
-        var result = {};
-        $.ajax({ url: path+"device/get.json", data: "id="+id, async: false, success: function(data) {result = data;} });
-        return result;
+    'list':function(callback) {
+        return device.request(callback, "device/list.json");
     },
 
-    'set':function(id, fields) {
-        var result = {};
-        $.ajax({ url: path+"device/set.json", data: "id="+id+"&fields="+JSON.stringify(fields), async: false, success: function(data) {result = data;} });
-        return result;
+    'get':function(id, callback) {
+        return device.request(callback, "device/get.json", "id="+id);
     },
 
-    'setNewDeviceKey':function(id) {
-        var result = {};
-        $.ajax({ url: path+"device/setnewdevicekey.json", data: "id="+id, async: false, success: function(data) {result = data;} });
-        return result;
+    'options':function(type, callback) {
+        return device.request(callback, "device/template/options.json", "type="+type);
     },
 
-    'remove':function(id) {
-        var result = {};
-        $.ajax({ url: path+"device/delete.json", data: "id="+id, async: false, success: function(data) {result = data;} });
-        return result;
+    'newDeviceKey':function(id, callback) {
+        return device.request(callback, "device/newdevicekey.json", "id="+id);
     },
 
-    'create':function(nodeid, name, description, type, options) {
-        var result = {};
-        $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type+"&options="+JSON.stringify(options), async: false, success: function(data) {result = data;} });
-        return result;
+    'set':function(id, fields, callback) {
+        return device.request(callback, "device/set.json", "id="+id+"&fields="+JSON.stringify(fields));
     },
 
-    'init':function(id, template) {
-        var result = {};
-        $.ajax({ url: path+"device/init.json?id="+id, type: 'POST', data: "template="+JSON.stringify(template), dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
-    },
-
-    'prepareTemplate':function(id) {
-        var result = {};
-        $.ajax({ url: path+"device/template/prepare.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
-    },
-
-    'getTemplateOptions':function(type, callback) {
-        var async = false;
-        if (typeof callback == 'function') {
-            async = true;
-        }
-        
-        var result = false;
-        var promise = $.ajax({
-            url: path+"device/template/options.json",
-            dataType: 'json',
-            async: async,
-            data: "type="+type,
-            success(data) {
-                if (async) {
-                    callback(data);
-                }
-                else {
-                    result = data;
-                }
-            }
-        });
-        
-        if (async) {
-            return promise;
-        }
-        return result;
-    },
-
-    'listThings':function(callback) {
-        var async = false;
-        if (typeof callback == 'function') {
-            async = true;
-        }
-        
-        var result = false;
-        var promise = $.ajax({
-            url: path+"device/thing/list.json",
-            dataType: 'json',
-            async: async,
-            success(data) {
-                if (async) {
-                    callback(data);
-                }
-                else {
-                    result = data;
-                }
-            }
-        });
-        
-        if (async) {
-            return promise;
-        }
-        return result;
+    'remove':function(id, callback) {
+        return device.request(callback, "device/delete.json", "id="+id);
     },
 
     'scanStart':function(type, options, callback) {
-        return $.ajax({
-            url: path+"device/scan/start.json",
-            data: "type="+type+"&options="+JSON.stringify(options),
-            dataType: 'json',
-            async: true,
-            success: callback
-        });
+        return device.request(callback, "device/scan/start.json", "type="+type+"&options="+JSON.stringify(options));
     },
 
     'scanProgress':function(type, callback) {
-        return $.ajax({
-            url: path+"device/scan/progress.json",
-            data: "type="+type,
-            dataType: 'json',
-            async: true,
-            success: callback
-        });
+        return device.request(callback, "device/scan/progress.json", "type="+type);
     },
 
     'scanCancel':function(type, callback) {
+        return device.request(callback, "device/scan/cancel.json", "type="+type);
+    },
+
+    'prepare':function(id, callback) {
+        return device.request(callback, "device/template/prepare.json", "id="+id);
+    },
+
+    'init':function(id, template, callback) {
         return $.ajax({
-            url: path+"device/scan/cancel.json",
-            data: "type="+type,
-            dataType: 'json',
-            async: true,
-            success: callback
+        	'url': path+"device/init.json?id="+id,
+        	'data': "template="+JSON.stringify(template),
+        	'dataType': 'json',
+        	'type': 'POST',
+        	'async': true,
+        	'success': callback
         });
     },
 
-    'getThing':function(id) {
-        var result = {};
-        $.ajax({ url: path+"device/thing/get.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
-    },
-
-    'setItemOn':function(id, itemid, callback) {
-        return device.setItemAsync('on', id, itemid, callback);
-    },
-
-    'setItemOff':function(id, itemid, callback) {
-        return device.setItemAsync('off', id, itemid, callback);
-    },
-
-    'toggleItemValue':function(id, itemid, callback) {
-        return device.setItemAsync('toggle', id, itemid, callback);
-    },
-
-    'increaseItemValue':function(id, itemid, callback) {
-        return device.setItemAsync('increase', id, itemid, callback);
-    },
-
-    'decreaseItemValue':function(id, itemid, callback) {
-        return device.setItemAsync('decrease', id, itemid, callback);
-    },
-
-    'setItemPercent':function(id, itemid, value, callback) {
-        return device.setItemValueAsync('percent', id, itemid, value, callback);
-    },
-
-    'setItemValue':function(id, itemid, value, callback) {
-        return device.setItemValueAsync('set', id, itemid, value, callback);
-    },
-
-    'setItemValueAsync':function(action, id, itemid, value, callback) {
-        var async = false;
-        if (typeof callback == 'function') {
-            async = true;
-        }
-        
-        var result = false;
-        var promise = $.ajax({
-            url: path+"device/item/"+action+".json",
-            dataType: 'json',
-            async: async,
-            data: "id="+id+"&itemid="+itemid+"&value="+value,
-            success(data) {
-                if (async) {
-                    callback(data);
-                }
-                else {
-                    result = data;
-                }
-            }
-        });
-        
-        if (async) {
-            return promise;
-        }
-        return result;
-    },
-
-    'setItemAsync':function(action, id, itemid, callback) {
-        var async = false;
-        if (typeof callback == 'function') {
-            async = true;
-        }
-        
-        var result = false;
-        var promise = $.ajax({
-            url: path+"device/item/"+action+".json",
-            dataType: 'json',
-            async: async,
-            data: "id="+id+"&itemid="+itemid,
-            success(data) {
-                if (async) {
-                    callback(data);
-                }
-                else {
-                    result = data;
-                }
-            }
-        });
-        
-        if (async) {
-            return promise;
-        }
-        return result;
+    'request':function(callback, action, data) {
+    	var request = {
+	        'url': path+action,
+	        'dataType': 'json',
+	        'async': true,
+	        'success': callback,
+	        'error': function(error) {
+	            var message = "Failed to request server";
+	            if (typeof error !== 'undefined') {
+	                message += ": ";
+	                
+	                if (typeof error.responseText !== 'undefined') {
+	                    message += error.responseText;
+	                }
+	                else if (typeof error !== 'string') {
+	                    message += JSON.stringify(error);
+	                }
+	                else {
+	                    message += error;
+	                }
+	            }
+	            console.warn(message);
+	            if (typeof callback === 'function') {
+		            callback({
+		            	'success': false,
+		            	'message': message
+		            });
+	            }
+//	        	return device.request(callback, action, data);
+	        }
+	    }
+		if (typeof data !== 'undefined') {
+			request['data'] = data;
+		}
+	    return $.ajax(request);
     }
 }

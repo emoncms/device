@@ -87,7 +87,7 @@
 
   function update(){
     var requestTime = (new Date()).getTime();
-    $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+    device.list(function(data, textStatus, xhr) {
       table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
       table.data = data;
 
@@ -114,7 +114,7 @@
         $("#api-help-header").hide();
       }
       $("#device-loader").hide();
-    }});
+    });
   }
 
   var updater;
@@ -140,8 +140,13 @@
 
   $("#table").bind("onDelete", function(e,id,row) {
     // Get device of clicked row
-    var localDevice = device.get(id);
-    device_dialog.loadDelete(localDevice, row);
+    device.get(id, function(result) {
+        if (typeof result.success !== 'undefined' && !result.success) {
+            alert('Unable to retrieve device:\n'+result.message);
+            return false;
+        }
+        device_dialog.loadDelete(result, row);
+    });
   });
 
   $("#table").on('click', '.icon-wrench', function() {

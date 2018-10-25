@@ -322,8 +322,8 @@ var device_dialog =
                     }
                 }
                 
-                var init = false;
                 if (device_dialog.device != null && typeof device_dialog.device.id !== 'undefined') {
+                    var init = false;
                     var fields = {};
                     if (device_dialog.device.nodeid != node) fields['nodeid'] = node;
                     if (device_dialog.device.name != name) fields['name'] = name;
@@ -351,34 +351,37 @@ var device_dialog =
                         }
                     }
                     
-                    var result = device.set(device_dialog.device.id, fields);
-                    if (typeof result.success !== 'undefined' && !result.success) {
-                        alert('Unable to update device fields:\n'+result.message);
-                        return false;
-                    }
-                    update();
+                    device.set(device_dialog.device.id, fields, function(result) {
+                        if (typeof result.success !== 'undefined' && !result.success) {
+                            alert('Unable to update device fields:\n'+result.message);
+                            return false;
+                        }
+                        if (init) device_dialog.loadInit();
+                        update();
+                    });
                 }
                 else {
                     var type = device_dialog.deviceType;
-                    var result = device.create(node, name, desc, type, options);
-                    if (typeof result.success !== 'undefined' && !result.success) {
-                        alert('Unable to create device:\n'+result.message);
-                        return false;
-                    }
-                    if (type != null) {
-                        device_dialog.device = {
-                                id: result,
-                                nodeid: node,
-                                name: name,
-                                type: type,
-                                options: options
-                        };
-                        init = true;
-                    }
-                    update();
+                    
+                    device.create(node, name, desc, type, options, function(result) {
+                        if (typeof result.success !== 'undefined' && !result.success) {
+                            alert('Unable to create device:\n'+result.message);
+                            return false;
+                        }
+                        if (type != null) {
+                            device_dialog.device = {
+                                    id: result,
+                                    nodeid: node,
+                                    name: name,
+                                    type: type,
+                                    options: options
+                            };
+                        }
+                        device_dialog.loadInit();
+                        update();
+                    });
                 }
                 $('#device-config-modal').modal('hide');
-                if (init) device_dialog.loadInit();
             }
             else {
                 alert('Device needs to be configured first.');
@@ -416,8 +419,14 @@ var device_dialog =
         });
 
         $("#device-config-devicekey-new").off('click').on('click', function () {
-            device_dialog.device.devicekey = device.setNewDeviceKey(device_dialog.device.id);
-            $('#device-config-devicekey').val(device_dialog.device.devicekey);
+            device.newDeviceKey(device_dialog.device.id, function(result) {
+                if (typeof result.success !== 'undefined' && !result.success) {
+                    alert('Unable to generate new devicekey:\n'+result.message);
+                    return false;
+                }
+            	device_dialog.device.devicekey = result;
+            	$('#device-config-devicekey').val(result);
+            });
         });
     },
 
@@ -442,11 +451,11 @@ var device_dialog =
         $("#device-config-options-add").prop("disabled", true);
         
         if (template.options) {
-            device.getTemplateOptions(device_dialog.deviceType, function(result) {
+            device.options(device_dialog.deviceType, function(result) {
                 if (typeof result.success !== 'undefined' && !result.success) {
                     alert('Unable to retrieve template options:\n'+result.message);
                 }
-                if (result.length > 0) {
+                else if (result.length > 0) {
                     $("#device-config-options").show();
                     
                     device_dialog.deviceOptions = result;
@@ -717,25 +726,27 @@ var device_dialog =
     },
 
     'loadInit': function() {
-        var result = device.prepareTemplate(device_dialog.device.id);
-        if (typeof result.success !== 'undefined' && !result.success) {
-            alert('Unable to initialize device:\n'+result.message);
-            return false;
-        }
-        device_dialog.deviceTemplate = result;
-        device_dialog.drawInit(result);
+        device.prepare(device_dialog.device.id, function(result) {
+            if (typeof result.success !== 'undefined' && !result.success) {
+                alert('Unable to initialize device:\n'+result.message);
+                return false;
+            }
+            device_dialog.deviceTemplate = result;
+            device_dialog.drawInit(result);
+        });
         
         // Initialize callbacks
         $("#device-init-confirm").off('click').on('click', function() {
             $('#device-init-modal').modal('hide');
             
             var template = device_dialog.parseTemplate();
-            var result = device.init(device_dialog.device.id, template);
-            if (typeof result.success !== 'undefined' && !result.success) {
-                alert('Unable to initialize device:\n'+result.message);
-                return false;
-            }
-            $('#wrap').trigger("device-init");
+            var result = device.init(device_dialog.device.id, template, function(result) {
+                if (typeof result.success !== 'undefined' && !result.success) {
+                    alert('Unable to initialize device:\n'+result.message);
+                    return false;
+                }
+                $('#wrap').trigger("device-init");
+            });
         });
     },
 
@@ -1097,22 +1108,23 @@ var device_dialog =
     'registerDeleteEvents':function(row) {
         
         $("#device-delete-confirm").off('click').on('click', function() {
-            device.remove(device_dialog.device.id);
             if (row != null) {
                 table.remove(row);
                 update();
             }
-            else if (typeof device_dialog.device.inputs !== 'undefined') {
-                // If the table row is undefined and an input list exists, the config dialog
-                // was opened in the input view and all corresponding inputs will be deleted
-                var inputIds = [];
-                for (var i in device_dialog.device.inputs) {
-                    var inputId = device_dialog.device.inputs[i].id;
-                    inputIds.push(parseInt(inputId));
+            device.remove(device_dialog.device.id, function(result) {
+                if (typeof device_dialog.device.inputs !== 'undefined') {
+                    // If the table row is undefined and an input list exists, the config dialog
+                    // was opened in the input view and all corresponding inputs will be deleted
+                    var inputIds = [];
+                    for (var i in device_dialog.device.inputs) {
+                        var inputId = device_dialog.device.inputs[i].id;
+                        inputIds.push(parseInt(inputId));
+                    }
+                    input.delete_multiple(inputIds);
                 }
-                input.delete_multiple(inputIds);
-            }
-            $('#wrap').trigger("device-delete");
+                $('#wrap').trigger("device-delete");
+            });
             
             $('#device-delete-modal').modal('hide');
         });

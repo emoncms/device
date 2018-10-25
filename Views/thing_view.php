@@ -4,7 +4,7 @@
 
 <link href="<?php echo $path; ?>Modules/device/Lib/titatoggle-dist-min.css" rel="stylesheet">
 <link href="<?php echo $path; ?>Modules/device/Views/thing.css" rel="stylesheet">
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/thing.js"></script>
 
 <div>
     <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Things Help'); ?></a></div>
@@ -37,7 +37,7 @@ var collapsed = {};
 var redraw = true;
 
 function update() {
-    device.listThings(function(result) {
+    thing.list(function(result) {
         if (result.length != 0) {
             $("#thing-none").hide();
             $("#thing-header").show();
@@ -274,14 +274,14 @@ function formatItemValue(item, value) {
     return value;
 }
 
-function itemClick(thing, id) {
+function itemClick(id, itemid) {
     // Disable redrawing while stopping the updater, to avoid toggle buttons to be
     // switched back again, caused by badly timed asynchronous draw() calls
     redraw = false;
     updaterStop();
     
-    var item = things[thing].items[id];
-    var input = $("#thing-"+thing+"-"+id);
+    var item = things[id].items[itemid];
+    var input = $("#thing-"+id+"-"+itemid);
     
     var type = item.type.toLowerCase();
     if (type == "switch") {
@@ -292,11 +292,11 @@ function itemClick(thing, id) {
             updaterStart();
         };
         if (input.is(":checked")) {
-            device.setItemOn(thing, id, updateResume);
+            thing.setItemOn(id, itemid, updateResume);
             input.prop("checked", true);
         }
         else {
-            device.setItemOff(thing, id, updateResume);
+            thing.setItemOff(id, itemid, updateResume);
             input.prop("checked", false);
         }
     }
@@ -329,10 +329,10 @@ $("#thing-list").on('click', '.item', function() {
 
 $('#thing-list').on('change', '.item', function () {
     var row = $(this).closest('tr');
-    var thing = row.data('thing');
-    var id = row.data('item');
+    var id = row.data('thing');
+    var itemid = row.data('item');
     
-    var item = things[thing].items[id];
+    var item = things[id].items[itemid];
     
     var type = item.type.toLowerCase();
     var value = parseItemValue(item, type, $(this).val());
@@ -341,23 +341,23 @@ $('#thing-list').on('change', '.item', function () {
         if (typeof item.scale !== 'undefined' && item.scale != 0) {
             scale = item.scale;
         }
-        $("#thing-"+thing+"-"+id).val(formatItemValue(item, value));
+        $("#thing-"+id+"-"+itemid).val(formatItemValue(item, value));
        
         value = value/scale;
     }
     
     var self = $(this);
-    device.setItemValue(thing, id, value, function() {
+    thing.setItemValue(id, itemid, value, function() {
         self.trigger('focusout');
     });
 });
 
 $('#thing-list').on('input', '.item', function () {
     var row = $(this).closest('tr');
-    var thing = row.data('thing');
-    var id = row.data('item');
+    var id = row.data('thing');
+    var itemid = row.data('item');
     
-    var item = things[thing].items[id];
+    var item = things[id].items[itemid];
     
     var type = item.type.toLowerCase();
     if (type == "slider") {
@@ -367,7 +367,7 @@ $('#thing-list').on('input', '.item', function () {
         }
         var value = formatItemValue(item, $(this).val()*scale);
         
-        $("#thing-"+thing+"-"+id+"-value").text(value);
+        $("#thing-"+id+"-"+itemid+"-value").text(value);
     }
 });
 
@@ -387,8 +387,13 @@ $("#thing-list").on("click", ".thing-config", function(e) {
     e.stopPropagation();
     
     // Get device of clicked thing
-    var thing = device.get($(this).closest('tr').data('thing'));
-    device_dialog.loadConfig(templates, thing);
+    thing.get($(this).closest('tr').data('thing'), function(result) {
+        if (typeof result.success !== 'undefined' && !result.success) {
+            alert('Unable to retrieve thing:\n'+result.message);
+            return false;
+        }
+        device_dialog.loadConfig(templates, result);
+    });
 });
 
 </script>
