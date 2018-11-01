@@ -6,7 +6,7 @@
     "inputs": [
         {
             "name": "amp",
-            "description": "Charge current",
+            "description": "Real-time charging current",
             "processList": [
                 {
                     "process": "scale",
@@ -14,23 +14,27 @@
                 },
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "amp" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "current" }
                 }
             ]
         },
         {
             "name": "wh",
-            "description": "Cumulative Watt Hours",
+            "description": "Cumulative Energy",
             "processList": [
                 {
-                    "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "wh" }
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
+                    "process": "wh_accumulator",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "energy" }
                 }
             ]
         },
         {
             "name": "temp1",
-            "description": "Charger temperature",
+            "description": "EVSE internal temperature",
             "processList": [
                 {
                     "process": "scale",
@@ -38,7 +42,7 @@
                 },
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "temp1" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "temperature" }
                 }
             ]
         },
@@ -64,11 +68,11 @@
         },
         {
             "name": "divertmode",
-            "description": "Divert Mode",
+            "description": "Divert Mode state",
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "divertmode" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "divertmode_state" }
                 }
             ]
         }
@@ -76,21 +80,21 @@
 
     "feeds": [
         {
-            "name": "amp",
+            "name": "current",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "A"
         },
         {
-            "name": "wh",
+            "name": "energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
-            "unit": "Wh"
+            "unit": "kWh"
         },
         {
-            "name": "temp1",
+            "name": "temperature",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
@@ -108,10 +112,10 @@
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
-            "unit": ""
+            "unit": "A"
         },
         {
-            "name": "divertmode",
+            "name": "divertmode_state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
