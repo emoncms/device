@@ -1,6 +1,6 @@
 {
     "name": "OpenEVSE",
-    "category": "OpenEnergyMonitor",
+    "category": "OpenEVSE",
     "group": "OpenEVSE",
     "description": "OpenEVSE auto configuration",
     "inputs": [
