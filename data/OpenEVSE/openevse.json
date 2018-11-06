@@ -1,8 +1,8 @@
 {
-    "name": "OpenEVSE",
-    "category": "OpenEVSE",
+    "name": "Default",
+    "category": "EVSE",
     "group": "OpenEVSE",
-    "description": "OpenEVSE auto configuration",
+    "description": "OpenEVSE / EmonEVSE auto configuration",
     "inputs": [
         {
             "name": "amp",
