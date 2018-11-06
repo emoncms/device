@@ -349,7 +349,8 @@ class Device
         }
         
         if (!$this->exists_nodeid($userid, $nodeid)) {
-            $devicekey = md5(uniqid(mt_rand(), true));
+            // device key disabled by default
+            $devicekey = ""; // md5(uniqid(mt_rand(), true));
             
             $stmt = $this->mysqli->prepare("INSERT INTO device (userid,nodeid,name,description,type,devicekey) VALUES (?,?,?,?,?,?)");
             $stmt->bind_param("isssss",$userid,$nodeid,$name,$description,$type,$devicekey);
