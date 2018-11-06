@@ -14,8 +14,18 @@
                 },
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "current" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_current" }
+                },
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 230 }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_power" }
                 }
+
+
             ]
         },
         {
@@ -28,7 +38,7 @@
                 },
                 {
                     "process": "wh_accumulator",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "energy" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_energy" }
                 }
             ]
         },
@@ -42,7 +52,7 @@
                 },
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "temperature" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_temperature" }
                 }
             ]
         },
@@ -52,7 +62,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "state" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_state" }
                 }
             ]
         },
@@ -62,7 +72,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "pilot" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_pilot" }
                 }
             ]
         },
@@ -72,7 +82,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "divertmode_state" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_divertmode_state" }
                 }
             ]
         }
@@ -80,42 +90,49 @@
 
     "feeds": [
         {
-            "name": "current",
+            "name": "ev_current",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "A"
         },
         {
-            "name": "energy",
+            "name": "ev_power",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "30",
+            "unit": "W"
+        },
+        {
+            "name": "ev_energy",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "kWh"
         },
         {
-            "name": "temperature",
+            "name": "ev_temperature",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "°C"
         },
         {
-            "name": "state",
+            "name": "ev_state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": ""
         },
         {
-            "name": "pilot",
+            "name": "ev_pilot",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "A"
         },
         {
-            "name": "divertmode_state",
+            "name": "ev_divertmode_state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
