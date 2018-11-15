@@ -15,7 +15,7 @@
         <div id="device-sidebar" class="modal-sidebar">
             <h3 style="padding-left:10px;">
                 <span><?php echo _('Devices'); ?></span>            
-                <span id="device-sidebar-close"><i class="icon-remove"></i></span>
+                <span id="device-sidebar-close" class="btn-sidebar-close"><i class="icon-remove"></i></span>
             </h3>
             <div id="select-device-alert" class="hidden" style="max-height: 3rem; overflow: hidden">
                 <div class="alert" style="border: 0; line-height: 1.1; margin-bottom: 0; padding-left: .8em; border-radius: 0;">
@@ -29,7 +29,7 @@
         
         <div id="device-content" class="modal-content">
             <h3>
-                <span id="device-sidebar-open" class="btn btn-sidebar"><i class="icon-th-list"></i></span>
+                <span id="device-sidebar-open" class="btn btn-sidebar-open"><i class="icon-th-list"></i></span>
                 <span><?php echo _('Configuration'); ?></span>
             </h3>
             
@@ -95,7 +95,7 @@
         <h3 id="device-init-modal-label"><?php echo _('Initialize device'); ?></h3>
     </div>
     <div id="device-init-body" class="modal-body">
-        <div class="content">
+        <div class="modal-content">
             <p style="margin-top: 10px;"><?php echo _('Initializing a device will automaticaly configure inputs and associated feeds as described.'); ?><br>
                 <b><?php echo _('Warning: '); ?></b><?php echo _('Process lists with dependencies to deselected feeds or inputs will be skipped as a whole'); ?>
             </p>
