@@ -536,15 +536,15 @@ class Device
         }
     }
 
-    public function get_template_list($userid) {
-        return $this->load_template_list($userid);
+    public function get_template_list() {
+        return $this->load_template_list();
     }
 
-    public function get_template_list_meta($userid) {
+    public function get_template_list_meta() {
         $templates = array();
         
         if ($this->redis) {
-            if (!$this->redis->exists("device:templates:meta")) $this->load_template_list($userid);
+            if (!$this->redis->exists("device:templates:meta")) $this->load_template_list();
             
             $ids = $this->redis->sMembers("device:templates:meta");
             foreach ($ids as $id) {
@@ -559,7 +559,7 @@ class Device
         }
         else {
             if (empty($this->templates)) { // Cache it now
-                $this->load_template_list($userid);
+                $this->load_template_list();
             }
             $templates = $this->templates;
         }
@@ -567,7 +567,7 @@ class Device
         return $templates;
     }
 
-    private function get_template_meta($userid, $id) {
+    private function get_template_meta($id) {
         if ($this->redis) {
             if ($this->redis->exists("device:template:$id")) {
                 $template = $this->redis->hGetAll("device:template:$id");
@@ -581,7 +581,7 @@ class Device
         }
         else {
             if (empty($this->templates)) { // Cache it now
-                $this->load_template_list($userid);
+                $this->load_template_list();
             }
             if(isset($this->templates[$id])) {
                 return $this->templates[$id];
@@ -590,20 +590,18 @@ class Device
         return array('success'=>false, 'message'=>'Device template does not exist');
     }
 
-    public function get_template($userid, $id) {
-        $userid = intval($userid);
-        
-        $class = $this->get_device_class($userid, $id, self::TEMPLATE);
+    public function get_template($id) {
+        $class = $this->get_device_class($id, self::TEMPLATE);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
-        return $class->get_template($userid, $id);
+        return $class->get_template($id);
     }
 
     public function get_template_options($userid, $id) {
         $userid = intval($userid);
         
-        $class = $this->get_device_class($userid, $id, self::TEMPLATE);
+        $class = $this->get_device_class($id, self::TEMPLATE);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
@@ -617,7 +615,7 @@ class Device
         if (empty($device['type'])) {
             return array('success'=>false, 'message'=>'Device type not specified');
         }
-        $class = $this->get_device_class($device['userid'], $device['type'], self::TEMPLATE);
+        $class = $this->get_device_class($device['type'], self::TEMPLATE);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
@@ -641,7 +639,7 @@ class Device
         if (empty($device['type'])) {
             return array('success'=>false, 'message'=>'Device type not specified');
         }
-        $class = $this->get_device_class($device['userid'], $device['type'], self::TEMPLATE);
+        $class = $this->get_device_class($device['type'], self::TEMPLATE);
         if (is_array($class) && isset($class['success']) && $class['success'] == false) {
             return $class;
         }
@@ -655,7 +653,7 @@ class Device
         }
         $options = json_decode($options, true);
         
-        $class = $this->get_device_class($userid, $type, self::SCAN, true);
+        $class = $this->get_device_class($type, self::SCAN, true);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
@@ -665,7 +663,7 @@ class Device
     public function scan_progress($userid, $type) {
         $userid = intval($userid);
         
-        $class = $this->get_device_class($userid, $type, self::SCAN, true);
+        $class = $this->get_device_class($type, self::SCAN, true);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
@@ -675,7 +673,7 @@ class Device
     public function scan_cancel($userid, $type) {
         $userid = intval($userid);
         
-        $class = $this->get_device_class($userid, $type, self::SCAN, true);
+        $class = $this->get_device_class($type, self::SCAN, true);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
@@ -689,7 +687,7 @@ class Device
         $devices = $this->get_list($userid);
         foreach ($devices as $device) {
             if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
-                $template = $this->get_template_meta($userid, $device['type']);
+                $template = $this->get_template_meta($device['type']);
                 if (isset($template['thing']) && $template['thing'] == true) {
                     $things[] = $this->get_thing_values($device);
                 }
@@ -787,7 +785,7 @@ class Device
         }
         else {
             if (empty($this->things)) { // Cache it now
-                $this->load_thing_list($device['userid']);
+                $this->cache_thing($device);
             }
             if (isset($this->things[$device['id']])) {
                 $items = $this->things[$device['id']];
@@ -799,7 +797,7 @@ class Device
             if (empty($device['type'])) {
                 return array('success'=>false, 'message'=>'Device type not specified');
             }
-            $class = $this->get_device_class($device['userid'], $device['type'], self::THING, true);
+            $class = $this->get_device_class($device['type'], self::THING, true);
             if (is_array($class) && isset($class['success'])) {
                 return $class;
             }
@@ -843,7 +841,7 @@ class Device
         if (empty($device['type'])) {
             return array('success'=>false, 'message'=>'Device type not specified');
         }
-        $class = $this->get_device_class($device['userid'], $device['type'], self::THING, true);
+        $class = $this->get_device_class($device['type'], self::THING, true);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
@@ -931,31 +929,28 @@ class Device
         if (empty($device['type'])) {
             return array('success'=>false, 'message'=>'Device type not specified');
         }
-        $class = $this->get_device_class($device['userid'], $device['type'], self::THING, true);
+        $class = $this->get_device_class($device['type'], self::THING, true);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
         return $class->set_item($itemid, $mapping);
     }
 
-    public function reload_template_list($userid) {
-        $userid = intval($userid);
-        
-        $result = $this->load_template_list($userid);
+    public function reload_template_list() {
+        $result = $this->load_template_list();
         if (isset($result['success']) && $result['success'] == false) {
             return $result;
         }
         if (isset($result) && count($result) > 0) {
-            $this->load_thing_list($userid);
+            $this->load_thing_list();
             
             return array('success'=>true, 'message'=>'Templates successfully reloaded');
         }
         return array('success'=>false, 'message'=>'Unknown error while reloading templates');
     }
 
-    private function load_template_list($userid) {
-        $userid = intval($userid);
-        
+    private function load_template_list() {
+
         if ($this->redis) {
             foreach ($this->redis->sMembers("device:templates:meta") as $id) {
                 $this->redis->del("device:template:$id");
@@ -972,7 +967,7 @@ class Device
             if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
                 $class = $this->get_module_class($dir[$i], self::TEMPLATE);
                 if ($class != null) {
-                    $result = $class->get_template_list($userid);
+                    $result = $class->get_template_list();
                     if (isset($result['success']) && $result['success'] == false) {
                         return $result;
                     }
@@ -1009,24 +1004,15 @@ class Device
         }
     }
 
-    private function load_thing_list($userid) {
-        $userid = intval($userid);
-        
-        if ($this->redis) {
-            $deviceids = $this->redis->sMembers("user:device:$userid");
-            foreach ($deviceids as $id) {
-                foreach ($this->redis->sMembers("device:thing:$id") as $key) {
-                    $this->redis->del("device:item:$id:$key");
-                    $this->redis->srem("device:thing:$id", $key);
+    private function load_thing_list() {
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`options`,`devicekey`,`time` FROM device");
+        while ($device = (array) $result->fetch_object()) {
+            if ($this->redis) {
+                foreach ($this->redis->sMembers("device:thing:".$device['id']) as $key) {
+                    $this->redis->del("device:item:".$device['id'].":".$key);
+                    $this->redis->srem("device:thing:".$device['id'], $key);
                 }
             }
-        }
-        else {
-            $this->things = array();
-        }
-        
-        $devices = $this->get_list($userid);
-        foreach ($devices as $device) {
             if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
                 $this->cache_thing($device);
             }
@@ -1034,7 +1020,7 @@ class Device
     }
 
     private function cache_thing($device) {
-        $class = $this->get_device_class($device['userid'], $device['type'], self::THING, true);
+        $class = $this->get_device_class($device['type'], self::THING, true);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
@@ -1066,13 +1052,11 @@ class Device
         return $items;
     }
 
-    private function get_device_class($userid, $id, $type, $check=false) {
-        $userid = intval($userid);
-        
+    private function get_device_class($id, $type, $check=false) {
         if (empty($id) || $id === 'null') {
             return array('success'=>false, 'message'=>"Device type not specified");
         }
-        $result = $this->get_template_meta($userid, $id);
+        $result = $this->get_template_meta($id);
         if (isset($result['success']) && $result['success'] == false) {
             return $result;
         }

@@ -69,16 +69,16 @@ function device_controller()
         }
         else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
             if ($route->subaction == "listshort") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta($session['userid']);
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta();
             }
             else if ($route->subaction == "list") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list($session['userid']);
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list();
             }
             else if ($route->subaction == "reload") {
-                if ($session['userid']==1 || $session['admin']) $result = $device->reload_template_list($session['userid']);
+                if ($session['userid']==1 || $session['admin']) $result = $device->reload_template_list();
             }
             else if ($route->subaction == "get") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template($session['userid'], get('type'));
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('type'));
             }
             else if ($route->subaction == "options") {
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template_options($session['userid'], get('type'));
