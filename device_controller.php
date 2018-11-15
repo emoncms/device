@@ -75,7 +75,7 @@ function device_controller()
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template_list($session['userid']);
             }
             else if ($route->subaction == "reload") {
-                if ($session['userid']>0 && $session['write']) $result = $device->reload_template_list($session['userid']);
+                if ($session['userid']==1 || $session['admin']) $result = $device->reload_template_list($session['userid']);
             }
             else if ($route->subaction == "get") {
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template($session['userid'], get('type'));
