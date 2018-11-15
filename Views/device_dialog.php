@@ -14,9 +14,14 @@
     <div id="device-config-body" class="modal-body">
         <div id="device-sidebar" class="modal-sidebar">
             <h3 style="padding-left:10px;">
-                <span><?php echo _('Devices'); ?></span>
-                <span id="device-sidebar-close" style="float:right; cursor:pointer;"><i class="icon-remove" style="margin:8px;"></i></span>
+                <span><?php echo _('Devices'); ?></span>            
+                <span id="device-sidebar-close"><i class="icon-remove"></i></span>
             </h3>
+            <div id="select-device-alert" class="hidden" style="max-height: 3rem; overflow: hidden">
+                <div class="alert" style="border: 0; line-height: 1.1; margin-bottom: 0; padding-left: .8em; border-radius: 0;">
+                <?php echo _('Please select the correct device template to setup your device:'); ?>
+                </div>
+            </div>
             <div style="overflow-x: hidden; width:100%">
                 <div id="template-list" class="accordion"></div>
             </div>
@@ -49,7 +54,7 @@
             
             <label><b><?php echo _('Device Key'); ?></b></label>
             <div class="input-append">
-                <input id="device-config-devicekey" class="input-large" type="text" style="width:260px">
+                <input id="device-config-devicekey" class="input-large key" type="text" style="width:245px;">
                 <button id="device-config-devicekey-new" class="btn"><?php echo _('New'); ?></button>
             </div>
             
@@ -74,11 +79,12 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button id="device-back" class="btn" style="display:none; float:left"><?php echo _('Back'); ?></button>
-        <button id="device-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="device-delete" class="btn btn-danger" style="cursor:pointer"><i class="icon-trash icon-white"></i> <?php echo _('Delete'); ?></button>
+        <button class="btn hidden-xs" style="display:none; float:left"><?php echo _('Back'); ?></button>
+        <button class="btn hidden-xs" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button class="btn visible-xs pull-left" data-dismiss="modal" aria-hidden="true" title="<?php echo _('Cancel'); ?>" type="button" style="margin-left:0;font-weight:bold">×</button>
+        <button id="device-delete" class="btn btn-danger" style="cursor:pointer"><i class="icon-trash icon-white hidden-xs"></i> <?php echo _('Delete'); ?></button>
         <button id="device-scan" class="btn btn-info" style="display:none"><i class="icon-search icon-white"></i> <?php echo _('Scan'); ?></button>
-        <button id="device-init" class="btn btn-primary"><i class="icon-refresh icon-white"></i> <?php echo _('Initialize'); ?></button>
+        <button id="device-init" class="btn btn-primary"><i class="icon-refresh icon-white hidden-xs"></i> <?php echo _('Initialize'); ?></button>
         <button id="device-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
 </div>

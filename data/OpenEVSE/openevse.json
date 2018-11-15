@@ -1,12 +1,12 @@
 {
-    "name": "OpenEVSE",
-    "category": "OpenEnergyMonitor",
+    "name": "Default",
+    "category": "EVSE",
     "group": "OpenEVSE",
-    "description": "OpenEVSE auto configuration",
+    "description": "OpenEVSE / EmonEVSE auto configuration",
     "inputs": [
         {
             "name": "amp",
-            "description": "Charge current",
+            "description": "Real-time charging current",
             "processList": [
                 {
                     "process": "scale",
@@ -14,23 +14,37 @@
                 },
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "amp" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_current" }
+                },
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 230 }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_power" }
                 }
+
+
             ]
         },
         {
             "name": "wh",
-            "description": "Cumulative Watt Hours",
+            "description": "Cumulative Energy",
             "processList": [
                 {
-                    "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "wh" }
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
+                    "process": "wh_accumulator",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_energy" }
                 }
             ]
         },
         {
             "name": "temp1",
-            "description": "Charger temperature",
+            "description": "EVSE internal temperature",
             "processList": [
                 {
                     "process": "scale",
@@ -38,7 +52,7 @@
                 },
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "temp1" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_temperature" }
                 }
             ]
         },
@@ -48,7 +62,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "state" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_state" }
                 }
             ]
         },
@@ -58,17 +72,17 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "pilot" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_pilot" }
                 }
             ]
         },
         {
             "name": "divertmode",
-            "description": "Divert Mode",
+            "description": "Divert Mode state",
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "divertmode" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_divertmode_state" }
                 }
             ]
         }
@@ -76,42 +90,49 @@
 
     "feeds": [
         {
-            "name": "amp",
+            "name": "ev_current",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "A"
         },
         {
-            "name": "wh",
+            "name": "ev_power",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
-            "unit": "Wh"
+            "unit": "W"
         },
         {
-            "name": "temp1",
+            "name": "ev_energy",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "30",
+            "unit": "kWh"
+        },
+        {
+            "name": "ev_temperature",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "°C"
         },
         {
-            "name": "state",
+            "name": "ev_state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": ""
         },
         {
-            "name": "pilot",
+            "name": "ev_pilot",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
-            "unit": ""
+            "unit": "A"
         },
         {
-            "name": "divertmode",
+            "name": "ev_divertmode_state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",

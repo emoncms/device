@@ -52,6 +52,7 @@
         "repeat": {"type":"weekly-scheduler","default":[1,1,1,1,1,0,0]},
         "interruptible": {"name":"Ok to interrupt schedule","type":"checkbox","default":0},
         "runonce": {"type":"","default":true},
-        "basic": {"type":"","default":0}
+        "basic": {"type":"","default":0},
+        "signal": {"name":"Signal","type":"select","default":"carbonintensity"}
     }
 }
