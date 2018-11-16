@@ -70,8 +70,8 @@ class DeviceTemplate
         return $result[$type];
     }
 
-    public function get_template_options($userid, $type) {
-        $result = $this->get_template($userid, $type);
+    public function get_template_options($type) {
+        $result = $this->get_template($type);
         if (!is_object($result)) {
             return $result;
         }

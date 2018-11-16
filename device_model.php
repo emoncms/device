@@ -598,14 +598,12 @@ class Device
         return $class->get_template($id);
     }
 
-    public function get_template_options($userid, $id) {
-        $userid = intval($userid);
-        
+    public function get_template_options($id) {
         $class = $this->get_device_class($id, self::TEMPLATE);
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
-        return $class->get_template_options($userid, $id);
+        return $class->get_template_options($id);
     }
 
     public function prepare_template($id) {
@@ -1007,6 +1005,8 @@ class Device
     private function load_thing_list() {
         $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`options`,`devicekey`,`time` FROM device");
         while ($device = (array) $result->fetch_object()) {
+            $device['options'] = (array) json_decode($device['options']);
+            
             if ($this->redis) {
                 foreach ($this->redis->sMembers("device:thing:".$device['id']) as $key) {
                     $this->redis->del("device:item:".$device['id'].":".$key);
