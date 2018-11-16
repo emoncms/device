@@ -81,7 +81,7 @@ function device_controller()
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('type'));
             }
             else if ($route->subaction == "options") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_options($session['userid'], get('type'));
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_options(get('type'));
             }
         }
         else if ($route->action == "scan") {
