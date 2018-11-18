@@ -574,7 +574,7 @@ var device_dialog =
             if (typeof option.scan !== 'undefined' && option.scan) {
                 comment = 'scannable';
             }
-            row.append("<td><span style='color:#888; font-size:12px'><em>"+comment+"</em></span></td>")
+            row.append("<td><span class='option-comment'><em>"+comment+"</em></span></td>")
             row.append("<td><a><i class='icon-trash' style='cursor:not-allowed;opacity:0.3'></i></a></td>");
             
 //            $("#device-config-option-"+option.id).prop("required", true);

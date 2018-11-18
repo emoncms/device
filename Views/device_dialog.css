@@ -67,8 +67,9 @@
     right: 0px;
     padding: 0 15px;
     height: 100%;
-    overflow-y: auto;
+    min-width: 345px;
     overflow-x: hidden;
+    overflow-y: auto;
     transition: width 0.5s ease-in-out;
 }
 .modal-content .btn-sidebar-open {
@@ -167,6 +168,9 @@
 
 .modal-adjust .tooltip-inner {
     max-width: 250px;
+    #color: #333;
+    #background-color: #f5f5f5;
+    #border: 1px solid #f0f0f0;
 }
 .modal-adjust .alert-comment {
     margin: 0px;
@@ -284,6 +288,15 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
 
 .table-options .option-input {
     margin: 0px;
+}
+.table-options .option-comment {
+    color:#888;
+    font-size:12px;
+}
+@media (max-width: 480px) {
+    .table-options .option-comment {
+        display: none;
+    }
 }
 
 .table-options tbody + tbody {
