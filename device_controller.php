@@ -15,20 +15,25 @@ function device_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "view" && $session['write']) {
-            $templates = $device->get_template_list_meta($session['userid']);
-            $result = view("Modules/device/Views/device_view.php", array('templates'=>$templates));
+            $templates = $device->get_template_list_meta();
+            $result = view("Modules/device/Views/device_view.php", 
+                array('templates'=>$templates));
         }
-        else if ($route->action == 'api') $result = view("Modules/device/Views/device_api.php", array());
+        else if ($route->action == 'api') {
+            $result = view("Modules/device/Views/device_api.php", array());
+        }
         else if ($route->action == "thing" && $session['write']) {
             if ($route->subaction == "view") {
-                $templates = $device->get_template_list($session['userid']);
-                $result = view("Modules/device/Views/thing_view.php", array('templates'=>$templates));
+                $templates = $device->get_template_list();
+                $result = view("Modules/device/Views/thing_view.php", 
+                    array('templates'=>$templates));
             }
-            else if ($route->subaction == 'api') $result = view("Modules/device/Views/thing_api.php", array());
+            else if ($route->subaction == 'api') {
+                $result = view("Modules/device/Views/thing_api.php", array());
+            }
         }
     }
-
-    if ($route->format == 'json')
+    else if ($route->format == 'json')
     {
         // ---------------------------------------------------------------
         // Method for sharing authentication details with a node
@@ -112,16 +117,16 @@ function device_controller()
                     else if ($route->action == "newdevicekey") $result = $device->set_new_devicekey($deviceid);
                     else if ($route->action == 'template') {
                         if (isset($_GET['type'])) {
-                            $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
+                            $device->set_fields($deviceid, json_encode(array("type"=>get('type'))));
                         }
                         if ($route->subaction == 'prepare') $result = $device->prepare_template($deviceid);
-                        else if ($route->subaction == 'init') $result = $device->init_template($deviceget, $_POST['template']);
+                        else if ($route->subaction == 'init') $result = $device->init_template($deviceget, prop('template'));
                     }
                     else if ($route->action == "thing") {
                         if ($route->subaction == "get")  $result = $device->get_thing($deviceid);
                         else if ($route->subaction == 'init') {
                             if (isset($_GET['type'])) {
-                                $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
+                                $device->set_fields($deviceid, json_encode(array("type"=>get('type'))));
                             }
                             $result = $device->init_thing($deviceget);
                         }
