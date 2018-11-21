@@ -588,7 +588,7 @@ class Device
             return $result;
         }
         if (isset($result) && count($result) > 0) {
-            $this->load_thing_list();
+            $result = $this->load_thing_list();
             if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
@@ -740,7 +740,11 @@ class Device
             if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
                 $template = $this->get_template_meta($device['type']);
                 if (isset($template['thing']) && $template['thing'] == true) {
-                    $things[] = $this->get_thing_values($device);
+                    $result = $this->get_thing_values($device);
+                    if (isset($result['success']) && $result['success'] == false) {
+                        continue;
+                    }
+                    $things[] = $result;
                 }
             }
         }
@@ -748,8 +752,8 @@ class Device
     }
 
     private function load_thing_list() {
-        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`options`,`devicekey`,`time` FROM device");
-        while ($device = (array) $result->fetch_object()) {
+        $devices = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`options` FROM device");
+        while ($device = (array) $devices->fetch_object()) {
             $device['options'] = (array) json_decode($device['options']);
             
             if ($this->redis) {
@@ -784,7 +788,9 @@ class Device
             }
             $thing['items'] = array();
             foreach ($result as $item) {
-                $thing['items'][] = $this->get_item_value($item);
+                if (!empty($item)) {
+                    $thing['items'][] = $this->get_item_value($item);
+                }
             }
         }
         return $thing;
@@ -826,7 +832,7 @@ class Device
             
             $result = $class->get_item_list($device);
             if (isset($result['success']) && $result['success'] == false) {
-                $result;
+                return $result;
             }
             return $this->cache_items($device['id'], $result);
         }
