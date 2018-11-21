@@ -138,5 +138,17 @@
             "interval": "30",
             "unit": ""
         }
-    ]
+    ],
+
+    "control": 
+    {
+        "active": {"name":"Active","type":"checkbox","default":1},
+        "period": {"name":"Run period", "type":"time","default":0,"resolution":0.5},
+        "end": {"name":"Complete by", "type":"time","default":0,"resolution":0.5},
+        "repeat": {"type":"weekly-scheduler","default":[1,1,1,1,1,0,0]},
+        "interruptible": {"name":"Ok to interrupt schedule","type":"checkbox","default":0},
+        "runonce": {"type":"","default":true},
+        "basic": {"type":"","default":0},
+        "signal": {"name":"Signal","type":"select","default":"carbonintensity"}
+    }
 }
