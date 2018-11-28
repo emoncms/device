@@ -116,20 +116,6 @@ class Device
         return $device_exist;
     }
 
-    public function exists_name($userid, $name) {
-        $userid = intval($userid);
-        $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$name);
-        
-        $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND name=?");
-        $stmt->bind_param("is", $userid, $name);
-        $stmt->execute();
-        $stmt->bind_result($id);
-        $result = $stmt->fetch();
-        $stmt->close();
-        
-        if ($result && $id > 0) return $id; else return false;
-    }
-
     public function exists_nodeid($userid, $nodeid) {
         $userid = intval($userid);
         $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$nodeid);
@@ -338,20 +324,12 @@ class Device
 
     public function create($userid, $nodeid, $name, $description, $type, $options) {
         $userid = intval($userid);
-        $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $nodeid);
         
-        if (isset($name)) {
-            $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $name);
-        } else {
-            $name = $nodeid;
+        if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\/\s]/u', '', $nodeid) != $nodeid) {
+            return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : / and space characters");
         }
-        
-        if (isset($description)) {
-            $description = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $description);
-        } else {
-            $description = '';
-        }
-        
+        if (!isset($name)) $name = '';
+        if (!isset($description)) $description = '';
         if (isset($type) && $type != 'null') {
             $type = preg_replace('/[^\/\|\,\w\s-:]/','', $type);
         } else {
@@ -440,9 +418,20 @@ class Device
         $success = true;
         
         $fields = json_decode(stripslashes($fields));
-
+        
+        if (isset($fields->nodeid)) {
+            if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\/\s]/u', '', $fields->nodeid) != $fields->nodeid) {
+                return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : / and space characters");
+            }
+            $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->nodeid,$id);
+            if ($stmt->execute()) {
+                $this->redis->hSet("device:".$id,"nodeid",$fields->nodeid);
+            } else $success = false;
+            $stmt->close();
+        }
+        
         if (isset($fields->name)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in device name');
             $stmt = $this->mysqli->prepare("UPDATE device SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
             if ($stmt->execute()) {
@@ -452,21 +441,10 @@ class Device
         }
         
         if (isset($fields->description)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->description)!=$fields->description) return array('success'=>false, 'message'=>'invalid characters in device description');
             $stmt = $this->mysqli->prepare("UPDATE device SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->description,$id);
             if ($stmt->execute()) {
                 $this->redis->hSet("device:".$id,"description",$fields->description);
-            } else $success = false;
-            $stmt->close();
-        }
-
-        if (isset($fields->nodeid)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->nodeid)!=$fields->nodeid) return array('success'=>false, 'message'=>'invalid characters in device nodeid');
-            $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");
-            $stmt->bind_param("si",$fields->nodeid,$id);
-            if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"nodeid",$fields->nodeid);
             } else $success = false;
             $stmt->close();
         }

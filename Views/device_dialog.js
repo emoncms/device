@@ -138,22 +138,25 @@ var device_dialog =
     'clearConfigModal':function() {
         $("#template-list").text('');
         
-        var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device.<br>" +
+        $('#template-tooltip').attr("title", "Defaults, like inputs and associated feeds will be automaticaly configured together with the device.<br>" +
                 "Initializing a device usualy should only be done once on installation. " +
-                "If the configuration was already applied, only missing inputs and feeds will be created.";
+                "If the configuration was already applied, only missing inputs and feeds will be created.").tooltip({html: true});
         
-        $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
+        $('#device-config-name-icon').attr("title", 
+                "The key will be used by associated inputs to be grouped and post values. " +
+                "Only unaccented alphabetical letters, A-Z a-z 0-9 - _ . : and spaces are allowed. " +
+                "Click here to add an optional name, allowing all characters.").tooltip({html: true});
         
         if (device_dialog.device != null) {
-        	if (typeof this.device.devicekey !== 'undefined') {
+            if (typeof this.device.devicekey !== 'undefined') {
                 $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
                 $("#device-config-devicekey-new").prop("disabled", false);
-        	}
-        	else {
+            }
+            else {
                 $('#device-config-devicekey').val('').prop("disabled", true);
                 $("#device-config-devicekey-new").prop("disabled", true);
-        	}
-        	
+            }
+            
             $("#device-save").html("Save");
             if (typeof this.device.scanned !== 'undefined' && this.device.scanned) {
                 $('#device-scan').hide();
@@ -163,6 +166,14 @@ var device_dialog =
             else {
                 $('#device-config-node').val(this.device.nodeid);
                 $('#device-config-name').val(this.device.name);
+                if (this.device.name.length > 0) {
+                    $("#device-config-name-icon span").removeClass('icon-plus-sign').addClass('icon-minus-sign');
+                    $("#device-config-name-container").show();
+                }
+                else {
+                    $("#device-config-name-icon span").removeClass('icon-minus-sign').addClass('icon-plus-sign');
+                    $("#device-config-name-container").hide();
+                }
                 $('#device-config-description').val(this.device.description);
                 
                 if (this.device.type != null && this.device.type != '') {
@@ -182,6 +193,8 @@ var device_dialog =
         else {
             $('#device-config-node').val('');
             $('#device-config-name').val('');
+            $("#device-config-name-icon span").removeClass('icon-minus-sign').addClass('icon-plus-sign');
+            $("#device-config-name-container").hide();
             $('#device-config-description').val('');
             $('#device-config-devicekey').val('').prop("disabled", true);
             $("#device-config-devicekey-new").prop("disabled", true);
@@ -192,6 +205,7 @@ var device_dialog =
             $('#device-back').hide();
             $('#device-delete').hide();
         }
+        
         this.drawTemplate();
     },
 
@@ -207,49 +221,11 @@ var device_dialog =
         if (width < 680) {
             $("#device-sidebar-open").show();
             $("#device-sidebar-close").show();
-            $("#device-sidebar").removeClass('show')
+            $("#device-sidebar").removeClass('show');
         } else {
             $("#device-sidebar-open").hide();
             $("#device-sidebar-close").hide();
-            $("#device-sidebar").addClass('show')
-        }
-        var foo = $("#device-content").width();
-        
-        var wide = false;
-        if (device_dialog.deviceType != null && device_dialog.deviceType != ''
-                && device_dialog.templates[device_dialog.deviceType]!=undefined) {
-            wide = device_dialog.templates[device_dialog.deviceType].options;
-        }
-        var node = $('#device-config-node').val();
-        var name = $('#device-config-name').val();
-        var desc = $('#device-config-description').val();
-        if ($("#device-content").width() > 512 && wide) {
-            $('#device-config-inputs').html(
-                  "<table class='device-input'>" +
-                      "<tr>" +
-                          "<th>Node</th>" +
-                          "<th>Name</th>" +
-                          "<th>Location</th>" +
-                      "</tr>" +
-                      "<tr>" +
-                          "<td><input id='device-config-node' class='input-small' type='text' value='"+node+"' required></td>" +
-                          "<td><input id='device-config-name' class='input-medium' type='text' value='"+name+"' required></td>" +
-                          "<td><input id='device-config-description' class='input-large' type='text' value='"+desc+"'></td>" +
-                      "</tr>" +
-                  "</table>"
-              );
-        }
-        else {
-            $('#device-config-inputs').html(
-                "<label><b>Node</b></label>" +
-                "<input id='device-config-node' class='input-medium' type='text' value='"+node+"' required>" +
-                
-                "<label><b>Name</b></label>" +
-                "<input id='device-config-name' class='input-large' type='text' value='"+name+"' required>" +
-                
-                "<label><b>Location</b></label>" +
-                "<input id='device-config-description' class='input-large' type='text' value='"+desc+"'>"
-            );
+            $("#device-sidebar").addClass('show');
         }
     },
 
@@ -286,21 +262,33 @@ var device_dialog =
             
             device_dialog.drawTemplate();
         });
-        
+
         $("#device-sidebar-open").off('click').on('click', function () {
-            $("#device-sidebar").addClass('show')
+            $("#device-sidebar").addClass('show');
         });
-        
+
         $("#device-sidebar-close").off('click').on('click', function () {
-            $("#device-sidebar").removeClass('show')
+            $("#device-sidebar").removeClass('show');
+        });
+
+        $("#device-config-name-icon").off('click').on('click', function () {
+            if (!$(this).data('show')) {
+                $("#device-config-name-icon span").removeClass('icon-plus-sign').addClass('icon-minus-sign');
+                $("#device-config-name-container").slideDown();
+                $(this).data('show', true);
+            }
+            else {
+                $("#device-config-name-icon span").removeClass('icon-minus-sign').addClass('icon-plus-sign');
+                $("#device-config-name-container").slideUp();
+                $(this).data('show', false);
+            }
         });
 
         $("#device-save").off('click').on('click', function () {
 
             var node = $('#device-config-node').val();
-            var name = $('#device-config-name').val();
-            
-            if (name && node) {
+            if (node) {
+                var name = $('#device-config-name').val();
                 var desc = $('#device-config-description').val();
                 var devicekey = $('#device-config-devicekey').val();
                 var options = null;
@@ -414,8 +402,8 @@ var device_dialog =
                     alert('Unable to generate new devicekey:\n'+result.message);
                     return false;
                 }
-            	device_dialog.device.devicekey = result;
-            	$('#device-config-devicekey').val(result);
+                device_dialog.device.devicekey = result;
+                $('#device-config-devicekey').val(result);
             });
         });
     },
@@ -459,8 +447,8 @@ var device_dialog =
     },
 
     'drawOptions':function() {
-    	$("#device-config-options-table").empty();
-    	
+        $("#device-config-options-table").empty();
+        
         // Show options, if at least one of them is defined or mandatory
         var select = $("#device-config-options-select");
         var show = false;
@@ -611,19 +599,19 @@ var device_dialog =
         });
 
         $("#device-config-options-body").off('hidden').on("hidden", function() {
-        	// Only hide the options collapse after the animation finished.
-        	// Otherwise, expanding it again may fail
+            // Only hide the options collapse after the animation finished.
+            // Otherwise, expanding it again may fail
             if (device_dialog.deviceType == null || device_dialog.deviceType == ""
                     || !device_dialog.deviceType in device_dialog.templates
                     || !device_dialog.templates[device_dialog.deviceType].options) {
-            	
+                
                 $("#device-config-options").hide();
             }
         });
 
         $('#device-config-options-table').off('click');
         $('#device-config-options-table').on('click', '.alert', function(e) {
-        	e.stopPropagation();
+            e.stopPropagation();
         });
         $('#device-config-options-table').on('click', '.option', function() {
             var id = $(this).closest('tr').data('id');
@@ -931,9 +919,9 @@ var device_dialog =
                 }
             }
             if (value !== null && value !== "") {
-            	if (!isNaN(value)) {
-            		value = Number(value);
-            	}
+                if (!isNaN(value)) {
+                    value = Number(value);
+                }
                 options[option.id] = value;
             }
             else if (option.mandatory && (scan && (typeof option.scan === 'undefined' || !option.scan))) {
@@ -959,7 +947,7 @@ var device_dialog =
             var row = $(this).data('row');
             var device = {};
             if (device_dialog.device != null) {
-            	device = device_dialog.device
+                device = device_dialog.device
             }
             device['options'] = device_dialog.scanDevices[row].options;
             device['scanned'] = true;
@@ -978,7 +966,7 @@ var device_dialog =
                 "<em style='color:#888'>"+template.description+"</em>");
         
         $('#device-scan-progress').html("<div id='device-scan-progress-bar' class='bar' style='width:100%;'></div>")
-        		.removeClass('progress-info progress-success progress-warning progress-danger').addClass('progress-default');;
+                .removeClass('progress-info progress-success progress-warning progress-danger').addClass('progress-default');;
         $('#device-scan-results').empty().hide();
         $('#device-scan-results-none').hide();
         
@@ -1073,7 +1061,7 @@ var device_dialog =
         if (progress.success && !progress.info.finished && !progress.info.interrupted) {
             
             device_dialog.scanUpdater = setTimeout(function() {
-            	device.scanProgress(device_dialog.deviceType, device_dialog.scanProgress);
+                device.scanProgress(device_dialog.deviceType, device_dialog.scanProgress);
             }, 1000);
         }
     },

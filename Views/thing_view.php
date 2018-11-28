@@ -96,7 +96,8 @@ function draw() {
         if (things.hasOwnProperty(id)) {
             var thing = things[id];
             var items = drawItems(thing);
-
+            var name = thing.name.length>0 ? thing.name : thing.nodeid;
+            
             if (typeof collapsed[thing.id] === 'undefined') {
                 collapsed[thing.id] = false;
             }
@@ -106,7 +107,7 @@ function draw() {
                         "<table>" +
                             "<tr data-thing='"+thing.id+"'>" +
                                 "<td>" +
-                                    "<span class='thing-name'>"+thing.name+(thing.description.length>0 ? ":" : "")+"</span>" +
+                                    "<span class='thing-name'>"+name+(thing.description.length>0 ? ":" : "")+"</span>" +
                                     "<span class='thing-description'>"+thing.description+"</span>" +
                                 "</td>" +
                                 "<td class='thing-config'><span class='icon-wrench icon-white' title='Configure'></span></td>" +

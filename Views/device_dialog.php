@@ -13,13 +13,13 @@
     </div>
     <div id="device-config-body" class="modal-body">
         <div id="device-sidebar" class="modal-sidebar">
-            <h3 style="padding-left:10px;">
-                <span><?php echo _('Devices'); ?></span>            
+            <h4 style="padding-left:10px;">
+                <span><?php echo _('Devices'); ?></span>
                 <span id="device-sidebar-close" class="btn-sidebar-close"><i class="icon-remove"></i></span>
-            </h3>
-            <div id="select-device-alert" class="hidden" style="max-height: 3rem; overflow: hidden">
-                <div class="alert" style="border: 0; line-height: 1.1; margin-bottom: 0; padding-left: .8em; border-radius: 0;">
-                <?php echo _('Please select the correct device template to setup your device:'); ?>
+            </h4>
+            <div id="select-device-alert" class="hidden" style="overflow: hidden">
+                <div class="alert">
+                    <?php echo _('Please select the correct device template to setup your device:'); ?>
                 </div>
             </div>
             <div style="overflow-x: hidden; width:100%">
@@ -36,25 +36,28 @@
             <span id="template-info" style="display:none;">
                 <span id="template-description"></span>
                 <span id="template-tooltip" data-toggle="tooltip" data-placement="bottom" data-container="#device-config-modal">
-                    <i class="icon-info-sign" style="cursor:pointer; padding-left:6px;"></i>
+                    <span class="icon-info-sign" style="cursor:pointer; padding-left:6px;"></span>
                 </span>
             </span>
             
             <div class="divider"></div>
-            <div id="device-config-inputs">
-                <label><b><?php echo _('Node'); ?></b></label>
-                <input id="device-config-node" class="input-medium" type="text" required>
-                
+            
+            <label><b><?php echo _('Key'); ?></b></label>
+            <input id="device-config-node" class="input-medium" type="text" pattern="[a-zA-Z0-9-_.:/ ]+" required>
+            <span id="device-config-name-icon" class="input-icon" data-show=false data-toggle="tooltip" data-placement="bottom" data-container="#device-config-modal">
+                <span class="icon-plus-sign" style="cursor:pointer;"></span>
+            </span>
+            <div id="device-config-name-container" class="hide">
                 <label><b><?php echo _('Name'); ?></b></label>
-                <input id="device-config-name" class="input-large" type="text" required>
-                
-                <label><b><?php echo _('Location'); ?></b></label>
-                <input id="device-config-description" class="input-large" type="text">
+                <input id="device-config-name" class="input-large" type="text">
             </div>
+            
+            <label><b><?php echo _('Description'); ?></b></label>
+            <input id="device-config-description" class="input-large" type="text">
             
             <label><b><?php echo _('Device Key'); ?></b></label>
             <div class="input-append">
-                <input id="device-config-devicekey" class="input-large key" type="text" style="width:245px;">
+                <input id="device-config-devicekey" class="input-large device-key" type="text" style="width:245px;">
                 <button id="device-config-devicekey-new" class="btn"><?php echo _('New'); ?></button>
             </div>
             
