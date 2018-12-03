@@ -941,7 +941,7 @@ class Device
         if (isset($result['success']) && $result['success'] == false) {
             return $result;
         }
-        $this->cache_items($device['id'], $items);
+        $this->cache_items($device['id'], $result);
         
         foreach ($result as $item) {
             if ($item['id'] == $itemid) {
