@@ -418,6 +418,9 @@ class Device
         $success = true;
         
         $fields = json_decode(stripslashes($fields));
+        if (json_last_error() != 0) {
+            return array('success'=>false, 'message'=>"Fields error: ".json_last_error_msg());
+        }
         
         if (isset($fields->nodeid)) {
             if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\/\s]/u', '', $fields->nodeid) != $fields->nodeid) {
@@ -426,7 +429,7 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->nodeid,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"nodeid",$fields->nodeid);
+                if ($this->redis) $this->redis->hSet("device:".$id,"nodeid",$fields->nodeid);
             } else $success = false;
             $stmt->close();
         }
@@ -435,7 +438,7 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"name",$fields->name);
+                if ($this->redis) $this->redis->hSet("device:".$id,"name",$fields->name);
             } else $success = false;
             $stmt->close();
         }
@@ -444,7 +447,7 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->description,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"description",$fields->description);
+                if ($this->redis) $this->redis->hSet("device:".$id,"description",$fields->description);
             } else $success = false;
             $stmt->close();
         }
@@ -454,7 +457,7 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET type = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->type,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"type",$fields->type);
+                if ($this->redis) $this->redis->hSet("device:".$id,"type",$fields->type);
             } else $success = false;
             $stmt->close();
         }
@@ -464,7 +467,7 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET options = ? WHERE id = ?");
             $stmt->bind_param("si",$options,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"options",$options);
+                if ($this->redis) $this->redis->hSet("device:".$id,"options",$options);
             } else $success = false;
             $stmt->close();
         }
@@ -479,7 +482,7 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET devicekey = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->devicekey,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"devicekey",$fields->devicekey);
+                if ($this->redis) $this->redis->hSet("device:".$id,"devicekey",$fields->devicekey);
             } else $success = false;
             $stmt->close();
         }

@@ -29,7 +29,6 @@ class DeviceThing
         if (is_array($result) && !empty($result['success'])) {
             return $result;
         }
-        $prefix = $this->parse_prefix($device['nodeid'], $device['name'], $result);
         
         $items = array();
         for ($i=0; $i<count($result->items); $i++) {
@@ -38,7 +37,7 @@ class DeviceThing
             if (isset($item['mapping'])) {
                 foreach($item['mapping'] as &$mapping) {
                     if (isset($mapping->input)) {
-                        $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $mapping->input, $result->inputs);
+                        $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $mapping->input, $result->inputs);
                         if ($inputid == false) {
                             $this->log->error("get_item_list() failed to find input of item '".$item['id']."' in template: ".$device['type']);
                             continue;
@@ -49,7 +48,7 @@ class DeviceThing
                 }
             }
             if (isset($item['input'])) {
-                $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $prefix, $item['input'], $result->inputs);
+                $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $item['input'], $result->inputs);
                 if ($inputid == false) {
                     $this->log->error("get_item_list() failed to find input of item '".$item['id']."' in template: ".$device['type']);
                     continue;
@@ -58,7 +57,7 @@ class DeviceThing
                 $item = array_merge($item, array('inputid'=>$inputid));
             }
             if (isset($item['feed'])) {
-                $feedid = $this->get_feed_id($device['userid'], $prefix, $item['feed']);
+                $feedid = $this->get_feed_id($device['userid'], $device['nodeid'], $item['feed']);
                 if ($feedid == false) {
                     $this->log->error("get_item_list() failed to find feed of item '".$item['id']."' in template: ".$device['type']);
                     continue;
@@ -106,20 +105,7 @@ class DeviceThing
         return $list[$type];
     }
 
-    protected function parse_prefix($nodeid, $name, $template) {
-        if (isset($template->prefix)) {
-            $prefix = $template->prefix;
-            if ($prefix === "node") {
-                return strtolower($nodeid)."_";
-            }
-            else if ($prefix === "name") {
-                return strtolower($name)."_";
-            }
-        }
-        return "";
-    }
-
-    protected function get_input_id($userid, $nodeid, $prefix, $name, $inputs) {
+    protected function get_input_id($userid, $nodeid, $name, $inputs) {
         require_once "Modules/input/input_model.php";
         $input = new Input($this->mysqli, $this->redis, null);
         
@@ -131,17 +117,22 @@ class DeviceThing
                     $node = $nodeid;
                 }
                 
-                return $input->exists_nodeid_name($userid, $node, $prefix.$name);
+                return $input->exists_nodeid_name($userid, $node, 
+                    $this->parse_name($node, $name));
             }
         }
         return false;
     }
 
-    protected function get_feed_id($userid, $prefix, $name) {
+    protected function get_feed_id($userid, $nodeid, $name) {
         require_once "Modules/feed/feed_model.php";
         $feed = new Feed($this->mysqli, $this->redis, null);
         
-        return $feed->get_id($userid, $prefix.$name);
+        return $feed->get_id($userid, $this->parse_name($nodeid, $name));
+    }
+
+    protected function parse_name($nodeid, $name) {
+        return str_replace("<node>", $nodeid, $name);
     }
 
 }
