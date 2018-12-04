@@ -6,12 +6,11 @@
 <link href="<?php echo $path; ?>Modules/device/Views/thing.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/thing.js"></script>
 
-<div>
-    <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Things Help'); ?></a></div>
-    <div id="thing-header"><h2><?php echo _('Things'); ?></h2></div>
-
-    <div id="thing-list"></div>
-
+<div class="view-container">
+    <div id="thing-header" class="hide">
+        <span id="api-help" style="float:right"><a href="api"><?php echo _('Things API Help'); ?></a></span>
+        <h2><?php echo _('Device things'); ?></h2>
+    </div>
     <div id="thing-none" class="alert alert-block hide" style="margin-top: 20px">
         <h4 class="alert-heading"><?php echo _('No Device Things configured'); ?></h4>
         <p>
@@ -19,248 +18,267 @@
             <br>
             <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Device Thing API helper'); ?></a>
         </p>
-       </div>
+    </div>
+    <div id="thing-actions" class="hide"></div>
+
+    <div id="thing-list"></div>
+
     <div id="thing-loader" class="ajax-loader"></div>
 </div>
 
-<?php require "Modules/device/Views/device_dialog.php"; ?>
-
 <script>
 
-const INTERVAL = 5000;
+const INTERVAL_ITEMS = 5000;
+const INTERVAL_REDRAW = 60000;
+var redrawTime = new Date().getTime();
+var redraw = true;
+var updater;
+var timeout;
 var path = "<?php echo $path; ?>";
 var templates = <?php echo json_encode($templates); ?>;
 
 var things = {};
+var items = {};
+
 var collapsed = {};
 
-var redraw = true;
+setTimeout(function() {
+    thing.list(function(result) {
+        draw(result);
+        
+        updaterStart();
+    });
+}, 100);
 
 function update() {
-    thing.list(function(result) {
-        if (result.length != 0) {
-            $("#thing-none").hide();
-            $("#thing-header").show();
-            $("#api-help-header").show();
-            if (redraw) {
-                redraw = Object.keys(things).length == 0 ? true : false;
+    thing.list(draw);
+}
+
+function updateView() {
+    if (redraw) {
+        thing.list(function(result) {
+            var time = new Date().getTime();
+            if (time - redrawTime >= INTERVAL_REDRAW) {
+                redrawTime = time;
+                draw(result);
             }
-            things = {};
-            for (var i=0; i<result.length; i++) {
-                var thing = result[i];
-                var items = {};
-                if (typeof thing.items !== 'undefined' && thing.items.length > 0) {
-                    for (var j=0; j<thing.items.length; j++) {
-                        var item = thing.items[j];
-                        items[item.id] = item;
-                    }
+            else if ((time - redrawTime) % INTERVAL_ITEMS < 1000) {
+                updateItems(result);
+            }
+        });
+    }
+}
+
+function updateItems(result) {
+    if (typeof result.success !== 'undefined' && !result.success) {
+        alert("Error:\n" + result.message);
+        return;
+    }
+
+    for (var t in result) {
+        var thing = result[t];
+        if (typeof thing.items === 'undefined' || thing.items.length == 0) {
+            continue;
+        }
+        var thingid = 'thing-'+thing.nodeid.toLowerCase().replace(/[_.:/ ]/g, '-');
+        
+        for (var i in thing.items) {
+            var item = thing.items[i];
+            var itemid = thingid+'-'+item.id.toLowerCase().replace(/[_.:/ ]/g, '-');
+            if (typeof items[itemid] !== 'undefined' && items[itemid].value != item.value) {
+                if (typeof item.header !== 'undefined' && item.header) {
+                    $("#"+itemid+"-header").html(drawItemValue(item));
                 }
-                thing['items'] = items;
-                things[thing.id] = thing;
+                $("#"+itemid+"-item").html(drawItemValue(item));
+                
+                item['thingid'] = thing.id;
+                items[itemid] = item;
             }
-            if (redraw && updater) {
-                draw();
-            }
-            updateItems();
         }
-        else {
-            $("#thing-none").show();
-            $("#thing-header").hide();
-            $("#api-help-header").hide();
-        }
-        $('#thing-loader').hide();
-    });
+    }
 }
 
-update();
-
-var updater;
 function updaterStart() {
-    clearInterval(updater);
-    updater = null;
-    if (INTERVAL > 0) updater = setInterval(update, INTERVAL);
+    if (updater != null) {
+        clearInterval(updater);
+    }
+    updater = setInterval(updateView, 1000);
 }
+
 function updaterStop() {
     clearInterval(updater);
     updater = null;
 }
-updaterStart();
 
 //---------------------------------------------------------------------------------------------
 // Draw things
 //---------------------------------------------------------------------------------------------
-function draw() {
-    var list = "";
+function draw(result) {
+    $('#thing-loader').hide();
+    $("#thing-list").empty();
     
-    for (var id in things) {
-        if (things.hasOwnProperty(id)) {
-            var thing = things[id];
-            var items = drawItems(thing);
-            var name = thing.name.length>0 ? thing.name : thing.nodeid;
-            
-            if (typeof collapsed[thing.id] === 'undefined') {
-                collapsed[thing.id] = false;
-            }
-            list += 
-                "<div class='thing'>" +
-                    "<div id='thing-"+thing.id+"-header' class='thing-header' data-toggle='collapse' data-target='#thing-"+thing.id+"-body'>" +
-                        "<table>" +
-                            "<tr data-thing='"+thing.id+"'>" +
-                                "<td>" +
-                                    "<span class='thing-name'>"+name+(thing.description.length>0 ? ":" : "")+"</span>" +
-                                    "<span class='thing-description'>"+thing.description+"</span>" +
-                                "</td>" +
-                                "<td class='thing-config'><span class='icon-wrench icon-white' title='Configure'></span></td>" +
-                            "</tr>" +
-                        "</table>" +
-                    "</div>" +
-                    "<div id='thing-"+thing.id+"-body' class='collapse "+(collapsed[thing.id] ? '' : 'in')+"' data-thing='"+thing.id+"'>" +
-                        "<div class='items'><table>"+items+"</table></div>" +
-                    "</div>" +
-                "</div>";
-        }
+    if (typeof result.success !== 'undefined' && !result.success) {
+        alert("Error:\n" + result.message);
+        return;
     }
-    $("#thing-list").html(list);
+    else if (result.length == 0) {
+        $("#thing-header").hide();
+        $("#thing-actions").hide();
+        $("#thing-none").show();
+
+        return;
+    }
+    things = {};
+    items = {};
+    
+    $("#thing-header").show();
+    $("#thing-actions").show();
+    $("#thing-none").hide();
+    
+    for (var i in result) {
+        drawThing(result[i]);
+    }
+    registerEvents();
 }
 
-function drawItems(thing) {
-    var items = "";
-    for (var id in thing.items) {
-        if (thing.items.hasOwnProperty(id)) {
-            var item = thing.items[id];
-            var type = item.type.toLowerCase();
-            var value = parseItemValue(item, type, item.value);
-            
-            var left = "";
-            if (typeof item.left !== 'undefined') {
-                left = item.left;
-            }
-            var right = "";
-            if (typeof item.right !== 'undefined') {
-                right = item.right;
-            }
-            var row = "<td><span>"+item.label+"</span></td>";
-            
-            if (type === "switch") {
-                var checked = "";
-                if (value) {
-                    checked = "checked";
-                }
-                row += 
-                    "<td><span class='item-left'>"+left+"</span></td>" +
-                    "<td class='item-checkbox'>" +
-                        "<div class='checkbox checkbox-slider--b-flat checkbox-slider-info'>" +
-                            "<label>" +
-                                "<input id='thing-"+thing.id+"-"+id+"' class='item item-content', type='checkbox' "+value+"><span></span>" +
-                            "</label>" +
-                        "</div>" +
-                    "</td>" +
-                    "<td><span class='item-right'>"+right+"</span></td>";
+function drawThing(thing) {
+    if (typeof thing.items === 'undefined' || thing.items.length == 0) {
+        return;
+    }
+    var thingid = 'thing-'+thing.nodeid.toLowerCase().replace(/[_.:/ ]/g, '-');
+    
+    if (typeof collapsed[thingid] === 'undefined') {
+        collapsed[thingid] = true;
+    }
+    
+    var name = thing.name.length>0 ? thing.name : thing.nodeid;
+    var description;
+    if (typeof thing.description !== 'undefined') {
+        description = thing.description;
+    }
+    else description = "";
+
+    var header = "";
+    var list = "";
+    for (var i in thing.items) {
+        var item = thing.items[i];
+        var itemid = thingid+'-'+item.id.toLowerCase().replace(/[_.:/ ]/g, '-');
+        
+        if (typeof item.header !== 'undefined' && item.header) {
+            header += drawItem("header", itemid, item, collapsed[thingid]);
+        }
+        list += "<div class='group-item'>" +
+                "<div class='group-grow'></div>" +
+                "<div class='item-name'><span>"+thing.items[i].label+"</span></div>" +
+                drawItem("item", itemid, item, true) +
+            "</div>";
+
+        item['thingid'] = thing.id;
+        items[itemid] = item;
+    }
+    things[thingid] = thing;
+    
+    $("#thing-list").append(
+        "<div class='device group'>" +
+            "<div id='"+thingid+"-header' class='group-header' data-toggle='collapse' data-target='#"+thingid+"-body'>" +
+                "<div class='group-item' data-id='"+thingid+"'>" +
+                    "<div class='group-collapse'>" +
+                        "<span id='"+thingid+"-icon' class='icon-chevron-"+(collapsed[thingid] ? 'right' : 'down')+" icon-collapse'></span>" +
+                    "</div>" +
+                    "<div class='name'><span>"+name+(description.length>0 ? ":" : "")+"</span></div>" +
+                    "<div class='description'><span>"+description+"</span></div>" +
+                    "<div class='group-grow'></div>" +
+                    header +
+                "</div>" +
+            "</div>" +
+            "<div id='"+thingid+"-body' class='group-body collapse "+(collapsed[thingid] ? '' : 'in')+"'>" +
+            list +
+            "</div>" +
+        "</div>"
+    );
+}
+
+function drawItem(suffix, id, item, show) {
+    
+    var left = "";
+    if (typeof item.left !== 'undefined') {
+        left = item.left;
+    }
+    var right = "";
+    if (typeof item.format !== 'undefined') {
+        var format = item.format;
+        if (format.startsWith('%s') || format.startsWith('%i')) {
+            right = format.substr(2).trim();
+        }
+        else if (format.startsWith('%.') && format.charAt(3) == 'f') {
+            right = format.substr(4).trim();
+        }
+    }
+    if (typeof item.right !== 'undefined') {
+        right += item.right;
+    }
+    var hide = (show ? "" : " style='display:none;'");
+    
+    return "<div class='item' data-id='"+id+"' data-type='"+item.type.toLowerCase()+"'>" +
+            "<span class='item-left'"+hide+">"+left+"</span>" +
+            "<span class='item-value'"+hide +
+                " id='"+id+"-"+suffix+"'>"+drawItemValue(item)+"</span>" +
+        "</div>" +
+        "<div class='item item-right'><span"+hide+">"+right+"</span></div>";
+}
+
+function drawItemValue(item) {
+    var type = item.type.toLowerCase();
+    var value = parseItemValue(item, type, item.value);
+    
+    if (type === "switch") {
+        var checked = "";
+        if (value) {
+            checked = "checked";
+        }
+        return "<div class='checkbox checkbox-slider--b-flat checkbox-slider-info'>" +
+                "<label><input class='item-value' type='checkbox' "+checked+"><span></span></input></label>" +
+            "</div>";
+    }
+    else {
+        if (type == "slider" && typeof item.max !== 'undefined' && typeof item.min !== 'undefined' && typeof item.step !== 'undefined') {
+        	return "<input class='item-value slider' type='range' min='"+item.min+"' max='"+item.max+"' step='"+item.step+"' value='"+value+"' />" +
+                "<span class='slider-text'>"+formatItemValue(item, value)+"</span>";
+        }
+        else {
+            if (typeof item.write !== 'undefined' && item.write) {
+            	return "<input class='item-value item-center input-small' type='"+type+"' value='"+formatItemValue(item, value)+"' />";
             }
             else {
-                var scale = 1;
-                if (typeof item.scale !== 'undefined') {
-                    scale = item.scale;
-                }
-                if (typeof item.format !== 'undefined' && right.length == 0) {
-                    var format = item.format;
-                    if (format.startsWith('%s') || format.startsWith('%i')) {
-                        right = format.substr(2).trim();
-                    }
-                    else if (format.startsWith('%.') && format.charAt(3) == 'f') {
-                        right = format.substr(4).trim();
-                    }
-                }
-                
-                if (type === "text" || type === "number") {
-                    var content;
-                    if (typeof item.write !== 'undefined' && item.write) {
-                        content = "<input id='thing-"+thing.id+"-"+id+"' class='item item-content input-small' type='"+type+"' value='"+formatItemValue(item, value*scale)+"' />";
-                    }
-                    else {
-                        content = "<span id='thing-"+thing.id+"-"+id+"' class='item-content'>"+formatItemValue(item, value*scale)+"</span>";
-                    }
-                    row += "<td colspan='2'>"+content+"</td><td><span class='item-right'>"+right+"</span></td>";
-                }
-                else if (type == "slider" && typeof item.max !== 'undefined' && typeof item.min !== 'undefined' && typeof item.step !== 'undefined') {
-                    row += 
-                        "<td colspan='2'><input id='thing-"+thing.id+"-"+id+"' class='item item-content slider' type='range' min='"+item.min+"' max='"+item.max+"' step='"+item.step+"' value='"+formatItemValue(item, value)+"' /></td>" +
-                        "<td><span id='thing-"+thing.id+"-"+id+"-value' class='item-content'>"+formatItemValue(item, value*scale)+"</span><span class='item-right'>"+right+"</span></td>";
-                }
-            }
-            items += 
-                "<tr data-thing='"+thing.id+"' data-item='"+id+"'>" + row + "</tr>";
-        }
-    }
-    return items;
-}
-
-function updateItems() {
-    for (var thing in things) {
-        if (things.hasOwnProperty(thing)) {
-            var items = things[thing].items;
-            for (var id in items) {
-                if (items.hasOwnProperty(id)) {
-                    var item = items[id];
-                    var input = $("#thing-"+thing+"-"+id);
-                    
-                    var type = item.type.toLowerCase();
-                    var value = parseItemValue(item, type, item.value);
-                    if (type == "switch") {
-                        input.prop("checked", value);
-                    }
-                    else {
-                        var scale = 1;
-                        if (typeof item.scale !== 'undefined') {
-                            scale = item.scale;
-                        }
-                        
-                        if (type === "text" || type === "number") {
-                            if (!isNaN(value)) {
-                                value *= scale;
-                            }
-                            if (typeof item.write !== 'undefined' && item.write) {
-                                input.val(formatItemValue(item, value));
-                            }
-                            else {
-                                input.text(formatItemValue(item, value));
-                            }
-                        }
-                        else if (type == "slider") {
-                            input.val(formatItemValue(item, value));
-                            $("#thing-"+thing+"-"+id+"-value").text(formatItemValue(item, value*scale));
-                        }
-                    }
-                }
+            	return "<span>"+formatItemValue(item, value)+"</span>";
             }
         }
     }
 }
 
 function parseItemValue(item, type, value) {
-    if (type === "switch") {
-        return (value && Number(value) == 1) ? true : false;
-    }
-    else if (type === "text") {
-        if (!value) value = "";
-        
-        if (typeof item['select'] !== 'undefined' && item.select.hasOwnProperty(value)) {
-            value = item.select[value];
-        }
-    }
     if (!isNaN(value)) {
         if (value) {
             value = Number(value);
         }
         else {
-            value = Number(typeof item['default'] !== 'undefined' ? item['default'] : 0);
+            value = Number(typeof item['default'] !== 'undefined' ? item['default'] : '');
         }
+    }
+    if (type === "switch") {
+        return (value !== 0) ? true : false;
+    }
+    else if (type === "text" && (typeof item['select'] !== 'undefined' && item.select.hasOwnProperty(value))) {
+        value = item.select[value];
     }
     return value;
 }
 
 function formatItemValue(item, value) {
     if (!isNaN(value)) {
+        if (typeof item.scale !== 'undefined') {
+        	value = value*item.scale;
+        }
         if (typeof item.format !== 'undefined') {
             var format = item.format;
             if (format.startsWith('%i')) {
@@ -275,126 +293,124 @@ function formatItemValue(item, value) {
     return value;
 }
 
-function itemClick(id, itemid) {
-    // Disable redrawing while stopping the updater, to avoid toggle buttons to be
-    // switched back again, caused by badly timed asynchronous draw() calls
-    redraw = false;
-    updaterStop();
-    
-    var item = things[id].items[itemid];
-    var input = $("#thing-"+id+"-"+itemid);
-    
-    var type = item.type.toLowerCase();
-    if (type == "switch") {
-        // The click event toggled the check already
-        // Set the item value to the current state
-        updateResume = function() {
-            redraw = true;
-            updaterStart();
-        };
-        if (input.is(":checked")) {
-            thing.setItemOn(id, itemid, updateResume);
-            input.prop("checked", true);
+//-------------------------------------------------------------------------------
+// Events
+//-------------------------------------------------------------------------------
+function registerEvents() {
+
+    $(".collapse").off('show hide').on('show hide', function(e) {
+        // Remember if the device block is collapsed, to redraw it correctly
+        var id = $(this).attr('id').replace('-body', '');
+        var collapse = $(this).hasClass('in');
+
+        collapsed[id] = collapse;
+        if (collapse) {
+            $("#"+id+"-icon").removeClass('icon-chevron-down').addClass('icon-chevron-right');
+            $("#"+id+"-header .item > span").slideDown(200);
         }
         else {
-            thing.setItemOff(id, itemid, updateResume);
-            input.prop("checked", false);
+            $("#"+id+"-icon").removeClass('icon-chevron-right').addClass('icon-chevron-down');
+            $("#"+id+"-header .item > span").slideUp(200);
         }
-    }
+    });
+
+    $("#thing-list").off();
+    $("#thing-list").on('click', '.item', function(e) {
+        e.stopPropagation();
+        
+        var type = $(this).data('type');
+        if (type == "switch") {
+            var self = $(this);
+            
+            if (timeout != null) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(function() {
+                timeout = null;
+                
+                // Disable redrawing while stopping the updater, to avoid toggle buttons to be
+                // switched back again, caused by badly timed asynchronous draw() calls
+                redraw = false;
+                updaterStop();
+                
+                var id = self.data('id');
+                var item = items[id];
+                // The click event toggled the check already
+                // Set the item value to the current state
+                updateResume = function() {
+                    redraw = true;
+                    updaterStart();
+                };
+                
+                var input = self.find('input');
+                if (input.is(":checked")) {
+                    thing.setItemOn(item.thingid, item.id, updateResume);
+                    input.prop("checked", true);
+                }
+                else {
+                    thing.setItemOff(item.thingid, item.id, updateResume);
+                    input.prop("checked", false);
+                }
+            }, 250);
+        }
+    });
+
+    $('#thing-list').on('change', '.item', function (e) {
+        e.stopPropagation();
+        
+        var type = $(this).data('type');
+        if (type != "switch") {
+            var id = $(this).data('id');
+            var item = items[id];
+            var input = $(this).find('input');
+            
+            var value = parseItemValue(item, type, input.val());
+            if (type == "number") {
+                var scale = 1;
+                if (typeof item.scale !== 'undefined' && item.scale != 0) {
+                    scale = item.scale;
+                }
+                input.val(formatItemValue(item, value));
+                
+                value = value/scale;
+            }
+            
+            var self = $(this);
+            thing.setItemValue(item.thingid, item.id, value, function() {
+                self.trigger('focusout');
+            });
+        }
+    });
+
+    $('#thing-list').on('input', '.item', function(e) {
+        e.stopPropagation();
+        
+        var type = $(this).data('type');
+        if (type == "slider") {
+            var id = $(this).data('id');
+            var item = items[id];
+            var input = $(this).find('input');
+            
+            var scale = 1;
+            if (typeof item.scale !== 'undefined') {
+                scale = item.scale;
+            }
+            var value = formatItemValue(item, input.val());
+            $(this).find('.slider-text').text(value);
+        }
+    });
+
+    $('#thing-list').on('focus', '.item', function () {
+        // Disable redrawing while stopping the updater, to avoid toggle buttons to be
+        // switched back again, caused by badly timed asynchronous draw() calls
+        redraw = false;
+        updaterStop();
+    });
+
+    $('#thing-list').on('focusout', '.item', function () {
+        redraw = true;
+        updaterStart();
+    });
 }
-
-// -------------------------------------------------------------------------------
-// Events
-// -------------------------------------------------------------------------------
-$("#thing-list .collapse").off('show hide').on('show hide', function(e) {
-    // Remember if the device block is collapsed, to redraw it correctly
-    var id = $(this).data('thing');
-    var collapse = $(this).hasClass('in');
-
-    collapsed[id] = collapse;
-});
-
-$("#thing-list").on('click', '.item', function() {
-    var self = $(this);
-    var row = self.closest('tr');
-    var thing = row.data('thing');
-    var id = row.data('item');
-    
-    clearTimeout(self.data('itemClickTimeout'));
-    var itemClickTimeout = setTimeout(function() {
-        itemClick(thing, id);
-        
-    }, 250);
-    self.data('itemClickTimeout', itemClickTimeout);
-});
-
-$('#thing-list').on('change', '.item', function () {
-    var row = $(this).closest('tr');
-    var id = row.data('thing');
-    var itemid = row.data('item');
-    
-    var item = things[id].items[itemid];
-    
-    var type = item.type.toLowerCase();
-    var value = parseItemValue(item, type, $(this).val());
-    if (type == "number") {
-        var scale = 1;
-        if (typeof item.scale !== 'undefined' && item.scale != 0) {
-            scale = item.scale;
-        }
-        $("#thing-"+id+"-"+itemid).val(formatItemValue(item, value));
-       
-        value = value/scale;
-    }
-    
-    var self = $(this);
-    thing.setItemValue(id, itemid, value, function() {
-        self.trigger('focusout');
-    });
-});
-
-$('#thing-list').on('input', '.item', function () {
-    var row = $(this).closest('tr');
-    var id = row.data('thing');
-    var itemid = row.data('item');
-    
-    var item = things[id].items[itemid];
-    
-    var type = item.type.toLowerCase();
-    if (type == "slider") {
-        var scale = 1;
-        if (typeof item.scale !== 'undefined') {
-            scale = item.scale;
-        }
-        var value = formatItemValue(item, $(this).val()*scale);
-        
-        $("#thing-"+id+"-"+itemid+"-value").text(value);
-    }
-});
-
-$('#thing-list').on('focus', '.item', function () {
-    // Disable redrawing while stopping the updater, to avoid toggle buttons to be
-    // switched back again, caused by badly timed asynchronous draw() calls
-    redraw = false;
-    updaterStop();
-});
-
-$('#thing-list').on('focusout', '.item', function () {
-    redraw = true;
-    updaterStart();
-});
-
-$("#thing-list").on("click", ".thing-config", function(e) {
-    e.stopPropagation();
-    
-    // Get device of clicked thing
-    thing.get($(this).closest('tr').data('thing'), function(result) {
-        if (typeof result.success !== 'undefined' && !result.success) {
-            alert('Unable to retrieve thing:\n'+result.message);
-            return false;
-        }
-        device_dialog.loadConfig(templates, result);
-    });
-});
 
 </script>

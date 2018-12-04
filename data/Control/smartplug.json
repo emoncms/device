@@ -9,6 +9,7 @@
             "id": "status",
             "type": "Switch",
             "label": "Status",
+            "header": true,
             "left": "Off",
             "right": "On",
             "mapping": {

@@ -821,21 +821,13 @@ class Device
     }
 
     private function get_item_value($item) {
-        $itemval = array(
-            'id' => $item['id'],
-            'type' => $item['type'],
-            'label' => $item['label']
-        );
-        if (isset($item['left'])) $itemval['left'] = $item['left'];
-        if (isset($item['right'])) $itemval['right'] = $item['right'];
-        if (isset($item['format'])) $itemval['format'] = $item['format'];
-        if (isset($item['scale'])) $itemval['scale'] = $item['scale'];
-        if (isset($item['min'])) $itemval['min'] = $item['min'];
-        if (isset($item['max'])) $itemval['max'] = $item['max'];
-        if (isset($item['step'])) $itemval['step'] = $item['step'];
-        if (isset($item['default'])) $itemval['default'] = $item['default'];
-        if (isset($item['select'])) $itemval['select'] = $item['select'];
-        if (isset($item['write'])) $itemval['write'] = $item['write'];
+        $itemval = array();
+        $keys = array('id', 'type', 'label', 'header', 'write',
+            'left', 'right', 'format', 'scale', 'min', 'max', 'step',
+            'select', 'default');
+        foreach ($item as $key=>$val) {
+            if (in_array($key, $keys)) $itemval[$key] = $val;
+        }
         
         $value = null;
         if (isset($item['inputid'])) {
