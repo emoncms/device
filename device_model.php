@@ -118,7 +118,7 @@ class Device
 
     public function exists_nodeid($userid, $nodeid) {
         $userid = intval($userid);
-        $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$nodeid);
+        $nodeid = preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $nodeid);
 
         $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND nodeid=?");
         $stmt->bind_param("is", $userid, $nodeid);
@@ -299,7 +299,7 @@ class Device
     public function autocreate($userid, $_nodeid, $_type) {
         $userid = intval($userid);
         
-        $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$_nodeid);
+        $nodeid = preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $nodeid);
         if ($_nodeid != $nodeid) return array("success"=>false, "message"=>"Invalid nodeid");
         $type = preg_replace('/[^\/\|\,\w\s-:]/','',$_type);
         if ($_type != $type) return array("success"=>false, "message"=>"Invalid type");
@@ -325,7 +325,7 @@ class Device
     public function create($userid, $nodeid, $name, $description, $type, $options) {
         $userid = intval($userid);
         
-        if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\/\s]/u', '', $nodeid) != $nodeid) {
+        if (preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $nodeid) != $nodeid) {
             return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : / and space characters");
         }
         if (!isset($name)) $name = '';
@@ -423,7 +423,7 @@ class Device
         }
         
         if (isset($fields->nodeid)) {
-            if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\/\s]/u', '', $fields->nodeid) != $fields->nodeid) {
+            if (preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $fields->nodeid) != $fields->nodeid) {
                 return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : / and space characters");
             }
             $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");

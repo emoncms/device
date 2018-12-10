@@ -144,7 +144,7 @@ var device_dialog =
         
         $('#device-config-name-icon').attr("title", 
                 "The key will be used by associated inputs to be grouped and post values. " +
-                "Only unaccented alphabetical letters, A-Z a-z 0-9 - _ . : and spaces are allowed. " +
+                "Only unaccented alphabetical letters, A-Z a-z 0-9 - _ . and spaces are allowed. " +
                 "Click here to add an optional name, allowing all characters.").tooltip({html: true});
         
         if (device_dialog.device != null) {
