@@ -997,9 +997,10 @@ class Device
         if (isset($item) && isset($item['mapping'])) {
             $mapping = (array) $item['mapping'];
             if (isset($mapping['SET'])) {
-                $mapping['SET']['value'] = $value;
+                $mapping = (array) $mapping['SET'];
+                $mapping['value'] = $value;
                 
-                return $this->set_item($id, $itemid, (array) $mapping['SET']);
+                return $this->set_item($id, $itemid, $mapping);
             }
         }
         return array('success'=>false, 'message'=>'Unknown item or incomplete device template mappings "SET"');

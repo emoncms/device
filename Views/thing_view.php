@@ -242,28 +242,34 @@ function drawItemValue(item) {
     }
     else {
         if (type == "slider" && typeof item.max !== 'undefined' && typeof item.min !== 'undefined' && typeof item.step !== 'undefined') {
-        	return "<input class='item-value slider' type='range' min='"+item.min+"' max='"+item.max+"' step='"+item.step+"' value='"+value+"' />" +
+            return "<input class='item-value slider' type='range' min='"+item.min+"' max='"+item.max+"' step='"+item.step+"' value='"+value+"' />" +
                 "<span class='slider-text'>"+formatItemValue(item, value)+"</span>";
         }
         else {
             if (typeof item.write !== 'undefined' && item.write) {
-            	return "<input class='item-value item-center input-small' type='"+type+"' value='"+formatItemValue(item, value)+"' />";
+                return "<input class='item-value item-center input-small' type='"+type+"' value='"+formatItemValue(item, value)+"' />";
             }
             else {
-            	return "<span>"+formatItemValue(item, value)+"</span>";
+                return "<span>"+formatItemValue(item, value)+"</span>";
             }
         }
     }
 }
 
 function parseItemValue(item, type, value) {
-    if (!isNaN(value)) {
-        if (value) {
-            value = Number(value);
+    if (typeof value == 'undefined' || value == null) {
+        if (typeof item['default'] !== 'undefined') {
+            value =  item['default'];
         }
         else {
-            value = Number(typeof item['default'] !== 'undefined' ? item['default'] : '');
+            value = '';
         }
+    }
+    if (!isNaN(value)) {
+        value = Number(value);
+    }
+    else if (typeof item['default'] !== 'undefined') {
+        value =  item['default'];
     }
     if (type === "switch") {
         return (value !== 0) ? true : false;
@@ -275,9 +281,14 @@ function parseItemValue(item, type, value) {
 }
 
 function formatItemValue(item, value) {
-    if (!isNaN(value)) {
+    if (typeof value == 'undefined' || value == null) {
+        value = '';
+    }
+    else if (!isNaN(value)) {
+        value = Number(value);
+        
         if (typeof item.scale !== 'undefined') {
-        	value = value*item.scale;
+            value = value*item.scale;
         }
         if (typeof item.format !== 'undefined') {
             var format = item.format;

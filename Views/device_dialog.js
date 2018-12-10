@@ -909,7 +909,7 @@ var device_dialog =
             if (input.val() != undefined) {
                 var type = option.type;
                 if (type === 'text') {
-                    value = input.val();
+                    value = String(input.val());
                 }
                 else if (type === 'selection') {
                     value = $('#device-config-option-'+option.id+' option:selected').val();
@@ -917,11 +917,11 @@ var device_dialog =
                 else if (type === 'switch') {
                     value = input.is(':checked');
                 }
-            }
-            if (value !== null && value !== "") {
-                if (!isNaN(value)) {
+                else if (!isNaN(value)) {
                     value = Number(value);
                 }
+            }
+            if (value !== null && value !== "") {
                 options[option.id] = value;
             }
             else if (option.mandatory && (scan && (typeof option.scan === 'undefined' || !option.scan))) {
