@@ -41,7 +41,7 @@ function device_controller()
                 }
                 $route->format = "text";
             }
-            else if ($route->subaction=="check" && $session['write']) {
+            else if ($route->subaction=="check" && $session['read']) {
                 // 2. User checks for device waiting for authentication
                 $result = $device->get_auth_request();
             }
