@@ -744,9 +744,12 @@ class Device
                 }
             }
             if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
-                $result = $this->cache_thing($device);
-                if (isset($result['success']) && $result['success'] == false) {
-                    return $result;
+                $template = $this->get_template_meta($device['type']);
+                if ($template['thing']) {
+                    $result = $this->cache_thing($device);
+                    if (isset($result['success']) && $result['success'] == false) {
+                        return $result;
+                    }
                 }
             }
         }
@@ -1056,20 +1059,20 @@ class Device
 
     private function get_device_class($id, $type, $check=false) {
         if (empty($id) || $id === 'null') {
-            return array('success'=>false, 'message'=>"Device type not specified");
+            return array('success'=>false, 'message'=>"Device type not specified: $id");
         }
         $result = $this->get_template_meta($id);
         if (isset($result['success']) && $result['success'] == false) {
             return $result;
         }
         if ($check && (empty($result[$type]) || !$result[$type])) {
-            return array('success'=>false, 'message'=>"Device $type not specified");
+            return array('success'=>false, 'message'=>"Device $type not specified for type: $id");
         }
         
         $module = $result['module'];
         $class = $this->get_module_class($module, $type);
         if (empty($class)) {
-            return array('success'=>false, 'message'=>"Device $type class is not defined");
+            return array('success'=>false, 'message'=>"Device $type class is not defined for type: $id");
         }
         return $class;
     }
