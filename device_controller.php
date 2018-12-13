@@ -53,7 +53,7 @@ function device_controller()
                 }
                 $route->format = "text";
             }
-            else if ($route->subaction=="check" && $session['write']) {
+            else if ($route->subaction=="check" && $session['read']) {
                 // 2. User checks for device waiting for authentication
                 $result = $device->get_auth_request();
             }
@@ -63,7 +63,7 @@ function device_controller()
             }
         }
         else if ($route->action == 'list') {
-            if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
+            if ($session['userid']>0 && $session['read']) $result = $device->get_list($session['userid']);
         }
         else if ($route->action == "create") {
             if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"),get("options"));
@@ -74,19 +74,19 @@ function device_controller()
         }
         else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
             if ($route->subaction == "listshort") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta();
+                if ($session['userid']>0 && $session['read']) $result = $device->get_template_list_meta();
             }
             else if ($route->subaction == "list") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list();
+                if ($session['userid']>0 && $session['read']) $result = $device->get_template_list();
             }
             else if ($route->subaction == "reload") {
                 if ($session['userid']==1 || $session['admin']) $result = $device->reload_template_list();
             }
             else if ($route->subaction == "get") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('type'));
+                if ($session['userid']>0 && $session['read']) $result = $device->get_template(get('type'));
             }
             else if ($route->subaction == "options") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_options(get('type'));
+                if ($session['userid']>0 && $session['read']) $result = $device->get_template_options(get('type'));
             }
         }
         else if ($route->action == "scan") {
