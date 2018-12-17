@@ -680,6 +680,8 @@ var device_dialog =
             
             var id = value.val();
             if (id != "" && $("#device-config-option-"+id+"-row").val() === undefined) {
+                $("#device-config-options-table").show();
+                $("#device-config-options-none").hide();
                 value.remove();
                 
                 var option = device_dialog.deviceOptions.find(function(opt) {

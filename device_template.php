@@ -13,6 +13,8 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class DeviceTemplate
 {
+    const SEPARATOR = '_';
+
     protected $mysqli;
     protected $redis;
     protected $feed;
@@ -38,29 +40,59 @@ class DeviceTemplate
         $this->process = new Process($this->mysqli, $this->input, $this->feed,"UTC");
     }
 
-    public function get_template_list() {
-        return $this->load_template_list();
+    public function get_list() {
+        return $this->load_list();
     }
 
-    protected function load_template_list() {
+    protected function load_list() {
         $list = array();        
         
         $iti = new RecursiveDirectoryIterator("Modules/device/data");
-        foreach(new RecursiveIteratorIterator($iti) as $file){
-            if(strpos($file ,".json") !== false){
-                $content = json_decode(file_get_contents($file));
-                if (json_last_error() != 0) {
-                    return array('success'=>false, 'message'=>"Error reading file $file: ".json_last_error_msg());
+        foreach(new RecursiveIteratorIterator($iti) as $file) {
+            if(strpos($file ,".json") !== false) {
+                $template = $this->parse($file);
+                if (!is_object($template)) {
+                    return $template;
                 }
-                $list[basename($file, ".json")] = $content;
+                $list[basename($file, ".json")] = $template;
             }
         }
         return $list;
     }
 
-    public function get_template($type) {
+    protected function parse($file) {
+        $content = file_get_contents($file);
+        $template = json_decode($content);
+        if (json_last_error() != 0) {
+            return array('success'=>false, 'message'=>"Error reading file $file: ".json_last_error_msg());
+        }
+        if (strpos($content, '*') !== false) {
+            if (empty($template->options)) {
+                $template->options = array();
+            }
+            
+            $options = array();
+            $options[] = array('id'=>'sep',
+                'name'=>'Separator',
+                'description'=>'The separator to use in the names of automatically created elements.',
+                'type'=>'selection',
+                'select'=>array(
+                    array('name'=>'Dot', 'value'=>'.'),
+                    array('name'=>'Hyphen', 'value'=>'-'),
+                    array('name'=>'Underscore', 'value'=>'_'),
+                    array('name'=>'Space', 'value'=>' ')
+                ),
+                'default'=>self::SEPARATOR,
+                'mandatory'=>false,
+            );
+            $template->options = array_merge($options, $template->options);
+        }
+        return $template;
+    }
+
+    public function get($type) {
         $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
-        $result = $this->load_template_list();
+        $result = $this->load_list();
         if (isset($result['success']) && $result['success'] == false) {
             return $result;
         }
@@ -70,8 +102,8 @@ class DeviceTemplate
         return $result[$type];
     }
 
-    public function get_template_options($type) {
-        $result = $this->get_template($type);
+    public function get_options($type) {
+        $result = $this->get($type);
         if (!is_object($result)) {
             return $result;
         }
@@ -82,25 +114,60 @@ class DeviceTemplate
         return array();
     }
 
-    public function prepare_template($device) {
+    public function set_fields($device, $fields) {
         $userid = intval($device['userid']);
         $nodeid = $device['nodeid'];
         
-        $result = $this->get_template($device['type']);
-        if (!is_object($result)) {
-            return $result;
+        $template = $this->get($device['type']);
+        if (!is_object($template)) {
+            return $template;
         }
         
-        if (isset($result->feeds)) {
-            $feeds = $result->feeds;
+        if (isset($fields->nodeid)) {
+            if (isset($template->inputs)) {
+                $inputs = $template->inputs;
+                $this->prepare_inputs($userid, $nodeid, $inputs);
+                
+                foreach ($inputs as $input) {
+                    if ($input->id > 0) {
+                        $stmt = $this->mysqli->prepare("UPDATE input SET nodeid = ? WHERE id = ?");
+                        $stmt->bind_param("si",$fields->nodeid,$input->id);
+                        $success = $stmt->execute();
+                        $stmt->close();
+                        if (!$success) {
+                            return array('success'=>true, 'message'=>"Unable to updated device input: $input->id");
+                        }
+                        if ($this->redis) $this->redis->hset("input:$input->id","nodeid",$fields->nodeid);
+                    }
+                }
+            }
+        }
+        return array('success'=>true, 'message'=>"Device updated");
+    }
+
+    public function prepare($device) {
+        $userid = intval($device['userid']);
+        $nodeid = $device['nodeid'];
+        
+        $template = $this->get($device['type']);
+        if (!is_object($template)) {
+            return $template;
+        }
+        if (empty($device['options'])) {
+            $device['options'] = array();
+        }
+        $options = (array) $device['options'];
+        
+        if (isset($template->feeds)) {
+            $feeds = $this->prepare_names($nodeid, $options, $template->feeds);
             $this->prepare_feeds($userid, $nodeid, $feeds);
         }
         else {
             $feeds = array();
         }
         
-        if (isset($result->inputs)) {
-            $inputs = $result->inputs;
+        if (isset($template->inputs)) {
+            $inputs = $this->prepare_names($nodeid, $options, $template->inputs);
             $this->prepare_inputs($userid, $nodeid, $inputs);
         }
         else {
@@ -108,20 +175,209 @@ class DeviceTemplate
         }
         
         if (!empty($feeds)) {
-            $this->prepare_feed_processes($userid, $nodeid, $feeds, $inputs);
+            $this->prepare_feed_processes($userid, $feeds, $inputs);
         }
         if (!empty($inputs)) {
-            $this->prepare_input_processes($userid, $nodeid, $feeds, $inputs);
+            $this->prepare_input_processes($userid, $feeds, $inputs);
         }
         
         return array('success'=>true, 'feeds'=>$feeds, 'inputs'=>$inputs);
     }
 
-    public function init_template($device, $template) {
+    protected function prepare_names($nodeid, $options, $list) {
+        $sep = isset($options['sep']) ? $options['sep'] : self::SEPARATOR;
+        foreach ($list as $i) {
+            $i->name = $this->parse_name($sep, $nodeid, $i->name);
+            
+            if (isset($i->processList) || isset($i->processlist)) {
+                $processes = isset($i->processList) ? 'processList' : 'processlist';
+                if (empty($i->$processes)) {
+                    continue;
+                }
+                foreach ($i->$processes as $p) {
+                    if(isset($p->arguments) && isset($p->arguments->type)) {
+                        $p->arguments->type = @constant($p->arguments->type); // ProcessArg::
+                        if ($p->arguments->type == ProcessArg::INPUTID || $p->arguments->type == ProcessArg::FEEDID) {
+                            $p->arguments->value = $this->parse_name($sep, $nodeid, $p->arguments->value);
+                        }
+                    }
+                }
+            }
+        }
+        return $list;
+    }
+
+    protected function prepare_feeds($userid, $nodeid, &$feeds) {
+
+        foreach($feeds as $f) {
+            if (!isset($f->tag)) {
+                $f->tag = $nodeid;
+            }
+            
+            $feedid = $this->feed->exists_tag_name($userid, $f->tag, $f->name);
+            if ($feedid == false) {
+                $f->action = 'create';
+                $f->id = -1;
+            }
+            else {
+                $f->action = 'none';
+                $f->id = $feedid;
+            }
+        }
+    }
+
+    protected function prepare_inputs($userid, $nodeid, &$inputs) {
+        
+        foreach($inputs as $i) {
+            if(!isset($i->node)) {
+                $i->node = $nodeid;
+            }
+            
+            $inputid = $this->input->exists_nodeid_name($userid, $i->node, $i->name);
+            if ($inputid == false) {
+                $i->action = 'create';
+                $i->id = -1;
+            }
+            else {
+                $i->action = 'none';
+                $i->id = $inputid;
+            }
+        }
+    }
+
+    // Prepare the feed process lists
+    protected function prepare_feed_processes($userid, &$feeds, $inputs) {
+        
+        $process_list = $this->process->get_process_list(); // emoncms supported processes
+        
+        foreach($feeds as $f) {
+            // for each feed
+            if ($f->engine == Engine::VIRTUALFEED && isset($f->id) && (isset($f->processList) || isset($f->processlist))) {
+                $processes = isset($f->processList) ? $f->processList : $f->processlist;
+                if (!empty($processes)) {
+                    $processes = $this->prepare_processes($feeds, $inputs, $processes, $process_list);
+                    if (isset($f->action) && $f->action != 'create') {
+                        $processes_input = $this->feed->get_processlist($f->id);
+                        if (!isset($processes['success'])) {
+                            if ($processes_input == '' && $processes != '') {
+                                $f->action = 'set';
+                            }
+                            else if ($processes_input != $processes) {
+                                $f->action = 'override';
+                            }
+                        }
+                        else {
+                            if ($processes_input == '') {
+                                $f->action = 'set';
+                            }
+                            else {
+                                $f->action = 'override';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Prepare the input process lists
+    protected function prepare_input_processes($userid, $feeds, &$inputs) {
+
+        $process_list = $this->process->get_process_list(); // emoncms supported processes
+        
+        foreach($inputs as $i) {
+            // for each input
+            if (isset($i->id) && (isset($i->processList) || isset($i->processlist))) {
+                $processes = isset($i->processList) ? $i->processList : $i->processlist;
+                if (!empty($processes)) {
+                    $processes = $this->prepare_processes($feeds, $inputs, $processes, $process_list);
+                    if (isset($i->action) && $i->action != 'create') {
+                        $processes_input = $this->input->get_processlist($i->id);
+                        if (!isset($processes['success'])) {
+                            if ($processes_input == '' && $processes != '') {
+                                $i->action = 'set';
+                            }
+                            else if ($processes_input != $processes) {
+                                $i->action = 'override';
+                            }
+                        }
+                        else {
+                            if ($processes_input == '') {
+                                $i->action = 'set';
+                            }
+                            else {
+                                $i->action = 'override';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Prepare template processes
+    protected function prepare_processes($feeds, $inputs, &$processes, $process_list) {
+        $process_list_by_func = array();
+        foreach ($process_list as $process_id => $process_item) {
+            $func = $process_item['function'];
+            $process_list_by_func[$func] = $process_id;
+        }
+        $processes_converted = array();
+        
+        $failed = false;
+        foreach($processes as &$process) {
+            // If process names are used map to process id
+            if (isset($process_list_by_func[$process->process])) $process->process = $process_list_by_func[$process->process];
+            
+            if (!isset($process_list[$process->process])) {
+                $this->log->error("prepare_processes() Process '$process->process' not supported. Module missing?");
+                return array('success'=>false, 'message'=>"Process '$process->process' not supported. Module missing?");
+            }
+            $process->name = $process_list[$process->process]['name'];
+            $process->short = $process_list[$process->process]['short'];
+            
+            // Arguments
+            if(isset($process->arguments)) {
+                if(isset($process->arguments->type)) {
+                    if (!is_int($process->arguments->type)) {
+                        $process->arguments->type = @constant($process->arguments->type); // ProcessArg::
+                    }
+                    $process_type = $process_list[$process->process]['argtype']; // get emoncms process ProcessArg
+                    
+                    if ($process_type != $process->arguments->type) {
+                        $this->log->error("prepare_processes() Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process->process'");
+                        return array('success'=>false, 'message'=>"Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process->process'");
+                    }
+                    
+                    $result = $this->convert_process($feeds, $inputs, $process, $process_list);
+                    if (isset($result['success'])) {
+                        $failed = true;
+                    }
+                    else {
+                        $processes_converted[] = $result;
+                    }
+                }
+                else {
+                    $this->log->error("prepare_processes() Bad device template. Argument type is missing, set to NONE if not required. process='$process->process' type='".$process->arguments->type."'");
+                    return array('success'=>false, 'message'=>"Bad device template. Argument type is missing, set to NONE if not required. process='$process->process' type='".$process->arguments->type."'");
+                }
+            }
+            else {
+                $this->log->error("prepare_processes() Bad device template. Missing processList arguments. process='$process->process'");
+                return array('success'=>false, 'message'=>"Bad device template. Missing processList arguments. process='$process->process'");
+            }
+        }
+        if (!$failed) {
+            return implode(",", $processes_converted);
+        }
+        return array('success'=>false, 'message'=>"Unable to convert all prepared processes");
+    }
+
+    public function init($device, $template) {
         $userid = intval($device['userid']);
         
         if (empty($template)) {
-            $result = $this->prepare_template($device);
+            $result = $this->prepare($device);
             if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
@@ -153,175 +409,6 @@ class DeviceTemplate
         }
         
         return array('success'=>true, 'message'=>'Device initialized');
-    }
-
-    protected function prepare_feeds($userid, $nodeid, &$feeds) {
-
-        foreach($feeds as $f) {
-            $f->name = $this->parse_name($nodeid, $f->name);
-            if (!isset($f->tag)) {
-                $f->tag = $nodeid;
-            }
-            
-            $feedid = $this->feed->exists_tag_name($userid, $f->tag, $f->name);
-            if ($feedid == false) {
-                $f->action = 'create';
-                $f->id = -1;
-            }
-            else {
-                $f->action = 'none';
-                $f->id = $feedid;
-            }
-        }
-    }
-
-    protected function prepare_inputs($userid, $nodeid, &$inputs) {
-        
-        foreach($inputs as $i) {
-            $i->name = $this->parse_name($nodeid, $i->name);
-            if(!isset($i->node)) {
-                $i->node = $nodeid;
-            }
-            
-            $inputid = $this->input->exists_nodeid_name($userid, $i->node, $i->name);
-            if ($inputid == false) {
-                $i->action = 'create';
-                $i->id = -1;
-            }
-            else {
-                $i->action = 'none';
-                $i->id = $inputid;
-            }
-        }
-    }
-
-    // Prepare the input process lists
-    protected function prepare_input_processes($userid, $nodeid, $feeds, &$inputs) {
-
-        $process_list = $this->process->get_process_list(); // emoncms supported processes
-        
-        foreach($inputs as $i) {
-            // for each input
-            if (isset($i->id) && (isset($i->processList) || isset($i->processlist))) {
-                $processes = isset($i->processList) ? $i->processList : $i->processlist;
-                if (!empty($processes)) {
-                    $processes = $this->prepare_processes($nodeid, $feeds, $inputs, $processes, $process_list);
-                    if (isset($i->action) && $i->action != 'create') {
-                        $processes_input = $this->input->get_processlist($i->id);
-                        if (!isset($processes['success'])) {
-                            if ($processes_input == '' && $processes != '') {
-                                $i->action = 'set';
-                            }
-                            else if ($processes_input != $processes) {
-                                $i->action = 'override';
-                            }
-                        }
-                        else {
-                            if ($processes_input == '') {
-                                $i->action = 'set';
-                            }
-                            else {
-                                $i->action = 'override';
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Prepare the feed process lists
-    protected function prepare_feed_processes($userid, $nodeid, &$feeds, $inputs) {
-                
-        $process_list = $this->process->get_process_list(); // emoncms supported processes
-        
-        foreach($feeds as $f) {
-            // for each feed
-            if ($f->engine == Engine::VIRTUALFEED && isset($f->id) && (isset($f->processList) || isset($f->processlist))) {
-                $processes = isset($f->processList) ? $f->processList : $f->processlist;
-                if (!empty($processes)) {
-                    $processes = $this->prepare_processes($nodeid, $feeds, $inputs, $processes, $process_list);
-                    if (isset($f->action) && $f->action != 'create') {
-                        $processes_input = $this->feed->get_processlist($f->id);
-                        if (!isset($processes['success'])) {
-                            if ($processes_input == '' && $processes != '') {
-                                $f->action = 'set';
-                            }
-                            else if ($processes_input != $processes) {
-                                $f->action = 'override';
-                            }
-                        }
-                        else {
-                            if ($processes_input == '') {
-                                $f->action = 'set';
-                            }
-                            else {
-                                $f->action = 'override';
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Prepare template processes
-    protected function prepare_processes($nodeid, $feeds, $inputs, &$processes, $process_list) {
-        $process_list_by_func = array();
-        foreach ($process_list as $process_id => $process_item) {
-            $func = $process_item['function'];
-            $process_list_by_func[$func] = $process_id;
-        }
-        $processes_converted = array();
-        
-        $failed = false;
-        foreach($processes as &$process) {
-            // If process names are used map to process id
-            if (isset($process_list_by_func[$process->process])) $process->process = $process_list_by_func[$process->process];
-            
-            if (!isset($process_list[$process->process])) {
-                $this->log->error("prepare_processes() Process '$process->process' not supported. Module missing?");
-                return array('success'=>false, 'message'=>"Process '$process->process' not supported. Module missing?");
-            }
-            $process->name = $process_list[$process->process]['name'];
-            $process->short = $process_list[$process->process]['short'];
-            
-            // Arguments
-            if(isset($process->arguments)) {
-                if(isset($process->arguments->type)) {
-                    $process->arguments->type = @constant($process->arguments->type); // ProcessArg::
-                    $process_type = $process_list[$process->process]['argtype']; // get emoncms process ProcessArg
-                    
-                    if ($process_type != $process->arguments->type) {
-                        $this->log->error("prepare_processes() Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process->process'");
-                        return array('success'=>false, 'message'=>"Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process->process'");
-                    }
-                    else if ($process->arguments->type === ProcessArg::INPUTID || $process->arguments->type === ProcessArg::FEEDID) {
-                        $process->arguments->value = $this->parse_name($nodeid, $process->arguments->value);
-                    }
-                    
-                    $result = $this->convert_process($feeds, $inputs, $process, $process_list);
-                    if (isset($result['success'])) {
-                        $failed = true;
-                    }
-                    else {
-                        $processes_converted[] = $result;
-                    }
-                }
-                else {
-                    $this->log->error("prepare_processes() Bad device template. Argument type is missing, set to NONE if not required. process='$process->process' type='".$process->arguments->type."'");
-                    return array('success'=>false, 'message'=>"Bad device template. Argument type is missing, set to NONE if not required. process='$process->process' type='".$process->arguments->type."'");
-                }
-            }
-            else {
-                $this->log->error("prepare_processes() Bad device template. Missing processList arguments. process='$process->process'");
-                return array('success'=>false, 'message'=>"Bad device template. Missing processList arguments. process='$process->process'");
-            }
-        }
-        if (!$failed) {
-            return implode(",", $processes_converted);
-        }
-        return array('success'=>false, 'message'=>"Unable to convert all prepared processes");
     }
 
     // Create the feeds
@@ -497,10 +584,6 @@ class DeviceTemplate
         return $id.":".$value;
     }
 
-    protected function parse_name($nodeid, $name) {
-        return str_replace("<node>", $nodeid, $name);
-    }
-
     protected function search_input($inputs, $name) {
         foreach ($inputs as $input) {
             if (isset($input->name) && $input->name == $name) {
@@ -519,4 +602,19 @@ class DeviceTemplate
         }
         return null;
     }
+
+    protected function parse_name($separator, $nodeid, $name) {
+        $name = str_replace("<node>", $nodeid, $name);
+        $name = str_replace("*", $separator, $name);
+        return $name;
+    }
+
+    public function delete($device) {
+//         $userid = intval($device['userid']);
+//         $nodeid = $device['nodeid'];
+        
+        // TODO: Delete all inputs of device node here, instead of separate requests in input/Views/device_view.php
+        return array('success'=>true, 'message'=>'Device deleted');
+    }
+
 }

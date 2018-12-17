@@ -387,6 +387,10 @@ class Device
                 return array('success'=>false, 'message'=>'Device does not exist');
             }
         }
+        $result = $this->delete_template($id);
+        if (isset($result['success']) && $result['success'] == false) {
+            return $result;
+        }
         
         $this->mysqli->query("DELETE FROM device WHERE `id` = '$id'");
         if (isset($device_exists_cache[$id])) { unset($device_exists_cache[$id]); } // Clear static cache
@@ -415,6 +419,7 @@ class Device
                 return array('success'=>false, 'message'=>'Device does not exist');
             }
         }
+        $device = $this->get($id);
         $success = true;
         
         $fields = json_decode(stripslashes($fields));
@@ -486,12 +491,15 @@ class Device
             } else $success = false;
             $stmt->close();
         }
-
+        
         if ($success) {
-            return array('success'=>true, 'message'=>'Field updated');
-        } else {
-            return array('success'=>false, 'message'=>'Field could not be updated');
+            $result = $this->set_template_fields($device, $fields);
+            if (isset($result['success']) && $result['success'] == false) {
+                return $result;
+            }
+            return array('success'=>true, 'message'=>'Fields updated');
         }
+        return array('success'=>false, 'message'=>'Fields could not be updated');
     }
     
     public function set_new_devicekey($id) {
@@ -525,7 +533,7 @@ class Device
             if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
                 $class = $this->get_module_class($dir[$i], self::TEMPLATE);
                 if ($class != null) {
-                    $result = $class->get_template_list();
+                    $result = $class->get_list();
                     if (isset($result['success']) && $result['success'] == false) {
                         return $result;
                     }
@@ -594,7 +602,7 @@ class Device
             if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
                 $class = $this->get_module_class($dir[$i], self::TEMPLATE);
                 if ($class != null) {
-                    $result = $class->get_template_list();
+                    $result = $class->get_list();
                     if (isset($result['success']) && $result['success'] == false) {
                         return $result;
                     }
@@ -613,7 +621,7 @@ class Device
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
-        return $class->get_template($id);
+        return $class->get($id);
     }
 
     public function get_template_options($id) {
@@ -621,7 +629,7 @@ class Device
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
-        return $class->get_template_options($id);
+        return $class->get_options($id);
     }
 
     private function get_template_meta($id) {
@@ -674,6 +682,17 @@ class Device
         }
     }
 
+    private function set_template_fields($device, $fields) {
+        if (empty($device['type'])) {
+            return array('success'=>true, 'message'=>'Device type not specified');
+        }
+        $class = $this->get_device_class($device['type'], self::TEMPLATE);
+        if (is_array($class) && isset($class['success'])) {
+            return $class;
+        }
+        return $class->set_fields($device, $fields);
+    }
+
     public function prepare_template($id) {
         $id = intval($id);
         
@@ -685,7 +704,7 @@ class Device
         if (is_array($class) && isset($class['success'])) {
             return $class;
         }
-        return $class->prepare_template($device);
+        return $class->prepare($device);
     }
 
     public function init($id, $template) {
@@ -709,7 +728,21 @@ class Device
         if (is_array($class) && isset($class['success']) && $class['success'] == false) {
             return $class;
         }
-        return $class->init_template($device, $template);
+        return $class->init($device, $template);
+    }
+
+    public function delete_template($id) {
+        $id = intval($id);
+        
+        $device = $this->get($id);
+        if (empty($device['type'])) {
+            return array('success'=>false, 'message'=>'Device type not specified');
+        }
+        $class = $this->get_device_class($device['type'], self::TEMPLATE);
+        if (is_array($class) && isset($class['success'])) {
+            return $class;
+        }
+        return $class->delete($device);
     }
 
     public function get_thing_list($userid) {
