@@ -736,7 +736,7 @@ class Device
         
         $device = $this->get($id);
         if (empty($device['type'])) {
-            return array('success'=>false, 'message'=>'Device type not specified');
+            return array('success'=>true, 'message'=>'Device type not specified');
         }
         $class = $this->get_device_class($device['type'], self::TEMPLATE);
         if (is_array($class) && isset($class['success'])) {

@@ -118,7 +118,7 @@ class DeviceTemplate
         $userid = intval($device['userid']);
         $nodeid = $device['nodeid'];
         
-        $template = $this->get($device['type']);
+        $template = $this->prepare_template($device);
         if (!is_object($template)) {
             return $template;
         }
@@ -149,17 +149,13 @@ class DeviceTemplate
         $userid = intval($device['userid']);
         $nodeid = $device['nodeid'];
         
-        $template = $this->get($device['type']);
+        $template = $this->prepare_template($device);
         if (!is_object($template)) {
             return $template;
         }
-        if (empty($device['options'])) {
-            $device['options'] = array();
-        }
-        $options = (array) $device['options'];
         
         if (isset($template->feeds)) {
-            $feeds = $this->prepare_names($nodeid, $options, $template->feeds);
+            $feeds = $template->feeds;
             $this->prepare_feeds($userid, $nodeid, $feeds);
         }
         else {
@@ -167,7 +163,7 @@ class DeviceTemplate
         }
         
         if (isset($template->inputs)) {
-            $inputs = $this->prepare_names($nodeid, $options, $template->inputs);
+            $inputs = $template->inputs;
             $this->prepare_inputs($userid, $nodeid, $inputs);
         }
         else {
@@ -184,27 +180,26 @@ class DeviceTemplate
         return array('success'=>true, 'feeds'=>$feeds, 'inputs'=>$inputs);
     }
 
-    protected function prepare_names($nodeid, $options, $list) {
-        $sep = isset($options['sep']) ? $options['sep'] : self::SEPARATOR;
-        foreach ($list as $i) {
-            $i->name = $this->parse_name($sep, $nodeid, $i->name);
-            
-            if (isset($i->processList) || isset($i->processlist)) {
-                $processes = isset($i->processList) ? 'processList' : 'processlist';
-                if (empty($i->$processes)) {
-                    continue;
-                }
-                foreach ($i->$processes as $p) {
-                    if(isset($p->arguments) && isset($p->arguments->type)) {
-                        $p->arguments->type = @constant($p->arguments->type); // ProcessArg::
-                        if ($p->arguments->type == ProcessArg::INPUTID || $p->arguments->type == ProcessArg::FEEDID) {
-                            $p->arguments->value = $this->parse_name($sep, $nodeid, $p->arguments->value);
-                        }
-                    }
-                }
-            }
+    protected function prepare_template($device) {
+        $template = $this->get($device['type']);
+        if (!is_object($template)) {
+            return $template;
         }
-        return $list;
+        $options = isset($device['options']) ? (array) $device['options'] : array();
+        $content = json_encode($template);
+        
+        if (strpos($content, '*') !== false) {
+            $separator = isset($options['sep']) ? $options['sep'] : self::SEPARATOR;
+            $content = str_replace("*", $separator, $content);
+        }
+        if (strpos($content, '<node>') !== false) {
+            $content = str_replace("<node>", $device['nodeid'], $content);
+        }
+        $template = json_decode($content);
+        if (json_last_error() != 0) {
+            return array('success'=>false, 'message'=>"Error preparing type ".$device['type'].": ".json_last_error_msg());
+        }
+        return $template;
     }
 
     protected function prepare_feeds($userid, $nodeid, &$feeds) {
@@ -222,25 +217,6 @@ class DeviceTemplate
             else {
                 $f->action = 'none';
                 $f->id = $feedid;
-            }
-        }
-    }
-
-    protected function prepare_inputs($userid, $nodeid, &$inputs) {
-        
-        foreach($inputs as $i) {
-            if(!isset($i->node)) {
-                $i->node = $nodeid;
-            }
-            
-            $inputid = $this->input->exists_nodeid_name($userid, $i->node, $i->name);
-            if ($inputid == false) {
-                $i->action = 'create';
-                $i->id = -1;
-            }
-            else {
-                $i->action = 'none';
-                $i->id = $inputid;
             }
         }
     }
@@ -276,6 +252,25 @@ class DeviceTemplate
                         }
                     }
                 }
+            }
+        }
+    }
+
+    protected function prepare_inputs($userid, $nodeid, &$inputs) {
+        
+        foreach($inputs as $i) {
+            if(!isset($i->node)) {
+                $i->node = $nodeid;
+            }
+            
+            $inputid = $this->input->exists_nodeid_name($userid, $i->node, $i->name);
+            if ($inputid == false) {
+                $i->action = 'create';
+                $i->id = -1;
+            }
+            else {
+                $i->action = 'none';
+                $i->id = $inputid;
             }
         }
     }
@@ -601,12 +596,6 @@ class DeviceTemplate
             }
         }
         return null;
-    }
-
-    protected function parse_name($separator, $nodeid, $name) {
-        $name = str_replace("<node>", $nodeid, $name);
-        $name = str_replace("*", $separator, $name);
-        return $name;
     }
 
     public function delete($device) {
