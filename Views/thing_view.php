@@ -30,10 +30,10 @@
 
 const INTERVAL_ITEMS = 5000;
 const INTERVAL_REDRAW = 60000;
-var redrawTime = new Date().getTime();
 var redraw = true;
-var updater;
+var redrawTime;
 var timeout;
+var updater;
 var path = "<?php echo $path; ?>";
 var templates = <?php echo json_encode($templates); ?>;
 
@@ -102,6 +102,7 @@ function updaterStart() {
     if (updater != null) {
         clearInterval(updater);
     }
+    redrawTime = new Date().getTime();
     updater = setInterval(updateView, 1000);
 }
 

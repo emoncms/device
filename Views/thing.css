@@ -203,9 +203,9 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
 
 .item-name {
     padding-right: 40px;
+    text-align: right;
 }
 .item-name > span {
-    text-align: right;
     font-weight: bold;
     color: #666;
 }
@@ -226,6 +226,7 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
     color: #666;
 }
 .item.item-right {
+	min-width: 22px;
     text-align: left;
 }
 .item.item-right > span {
@@ -266,6 +267,11 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
     border-radius: 5px;
     background: #999;
     outline: none;
+}
+@media(max-width: 600px) {
+    .item .slider {
+        width: 100px;
+    }
 }
 .item .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
