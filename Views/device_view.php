@@ -44,9 +44,9 @@
 
     <div id="toolbar_bottom"><hr>
         <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
-        <?php if ($redis_enabled && $session["admin"]) { ?>
+    <?php if ($redis_enabled && $session["admin"]) { ?>
         <button id="device-reload" class="btn btn-small" >&nbsp;<i class="icon-refresh" ></i>&nbsp;<?php echo _('Reload device templates'); ?></button>
-        <?php } ?>
+    <?php } ?>
     </div>
 	
 	<div id="device-loader" class="ajax-loader"></div>
@@ -163,10 +163,8 @@
   });
 
   $("#device-reload").click(function() {
-    $.ajax({ url: path+"device/template/reload.json", async: true, dataType: "json", success: function(result)
-      {
-        alert(result.message);
-      }
+    device.reload(function(result) {
+      alert(result.message);
     });
   });
 

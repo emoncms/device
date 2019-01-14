@@ -41,6 +41,10 @@ var device = {
         return device.request(callback, "device/scan/cancel.json", "type="+type);
     },
 
+    'reload':function(callback) {
+        return device.request(callback, "device/template/reload.json");
+    },
+
     'prepare':function(id, callback) {
         return device.request(callback, "device/template/prepare.json", "id="+id);
     },
