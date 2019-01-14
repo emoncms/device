@@ -56,6 +56,12 @@ function device_controller()
             else if ($route->subaction=="check" && $session['read']) {
                 // 2. User checks for device waiting for authentication
                 $result = $device->get_auth_request();
+                
+                $port = 5005;
+                $broadcast_string = "emonpi.local";
+                $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+                socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
+                socket_sendto($sock, $broadcast_string, strlen($broadcast_string), 0, '255.255.255.255', $port);
             }
             else if ($route->subaction=="allow" && $session['write']) {
                 // 3. User allows device to receive authentication details
