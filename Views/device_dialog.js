@@ -413,7 +413,7 @@ var device_dialog =
         device_dialog.deviceOptions = [];
         
         if (device_dialog.deviceType == null || device_dialog.deviceType == "" || 
-        		device_dialog.templates[device_dialog.deviceType] === undefined) {
+                device_dialog.templates[device_dialog.deviceType] === undefined) {
             $('#template-description').text('');
             $('#template-info').hide();
             
@@ -602,10 +602,11 @@ var device_dialog =
         $("#device-config-options-body").off('hidden').on("hidden", function() {
             // Only hide the options collapse after the animation finished.
             // Otherwise, expanding it again may fail
-            if (device_dialog.deviceType == null || device_dialog.deviceType == ""
-                    || !device_dialog.deviceType in device_dialog.templates
+            if (device_dialog.deviceType != null || device_dialog.deviceType != "") {
+                return;
+            }
+            else if (!device_dialog.deviceType in device_dialog.templates
                     || !device_dialog.templates[device_dialog.deviceType].options) {
-                
                 $("#device-config-options").hide();
             }
         });

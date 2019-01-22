@@ -778,7 +778,7 @@ class Device
             }
             if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
                 $template = $this->get_template_meta($device['type']);
-                if ($template['thing']) {
+                if (isset($template['thing']) && $template['thing'] == true) {
                     $result = $this->cache_thing($device);
                     if (isset($result['success']) && $result['success'] == false) {
                         return $result;
