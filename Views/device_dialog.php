@@ -17,9 +17,9 @@
                 <span><?php echo _('Devices'); ?></span>
                 <span id="device-sidebar-close" class="btn-sidebar-close"><i class="icon-remove"></i></span>
             </h4>
-            <div id="select-device-alert" class="hidden" style="overflow: hidden">
+            <div id="select-device-alert" class="hidden">
                 <div class="alert">
-                    <?php echo _('Please select the correct device template to setup your device:'); ?>
+                <?php echo _('Please select the correct device template to setup your device:'); ?>
                 </div>
             </div>
             <div style="overflow-x: hidden; width:100%">
