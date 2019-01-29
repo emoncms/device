@@ -115,9 +115,6 @@ class DeviceTemplate
     }
 
     public function set_fields($device, $fields) {
-        $userid = intval($device['userid']);
-        $nodeid = $device['nodeid'];
-        
         $template = $this->prepare_template($device);
         if (!is_object($template)) {
             return $template;
@@ -126,23 +123,41 @@ class DeviceTemplate
         if (isset($fields->nodeid)) {
             if (isset($template->inputs)) {
                 $inputs = $template->inputs;
-                $this->prepare_inputs($userid, $nodeid, $inputs);
-                
-                foreach ($inputs as $input) {
-                    if ($input->id > 0) {
-                        $stmt = $this->mysqli->prepare("UPDATE input SET nodeid = ? WHERE id = ?");
-                        $stmt->bind_param("si",$fields->nodeid,$input->id);
-                        $success = $stmt->execute();
-                        $stmt->close();
-                        if (!$success) {
-                            return array('success'=>true, 'message'=>"Unable to updated device input: $input->id");
-                        }
-                        if ($this->redis) $this->redis->hset("input:$input->id","nodeid",$fields->nodeid);
-                    }
-                }
+                $this->update_inputs($device, $fields->nodeid, $inputs);
+            }
+            if (isset($template->feeds)) {
+                $feeds = $template->feeds;
+                $this->update_feeds($device, $fields->nodeid, $feeds);
             }
         }
         return array('success'=>true, 'message'=>"Device updated");
+    }
+
+    protected function update_inputs($device, $nodeid, $inputs) {
+        $this->prepare_inputs(intval($device['userid']), $device['nodeid'], $inputs);
+        foreach ($inputs as $input) {
+            if ($input->id > 0) {
+                $stmt = $this->mysqli->prepare("UPDATE input SET nodeid = ? WHERE id = ?");
+                $stmt->bind_param("si",$nodeid,$input->id);
+                $success = $stmt->execute();
+                $stmt->close();
+                if (!$success) {
+                    return array('success'=>true, 'message'=>"Unable to updated device input: $input->id");
+                }
+                if ($this->redis) $this->redis->hset("input:$input->id","nodeid",$nodeid);
+            }
+        }
+    }
+
+    protected function update_feeds($device, $nodeid, $feeds) {
+        foreach ($feeds as $feed) {
+            if (!isset($feed->tag)) {
+                $id = $this->feed->exists_tag_name(intval($device['userid']), $device['nodeid'], $feed->name);
+                if ($id > 0) {
+                    $this->feed->set_feed_fields($id, json_encode(array('tag' => $nodeid)));
+                }
+            }
+        }
     }
 
     public function prepare($device) {
@@ -194,6 +209,10 @@ class DeviceTemplate
         }
         if (strpos($content, '<node>') !== false) {
             $content = str_replace("<node>", $device['nodeid'], $content);
+        }
+        if (strpos($content, '<name>') !== false) {
+            $name = !empty($device['name']) ? preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $device['name']) : $device['nodeid'];
+            $content = str_replace("<name>", $name, $content);
         }
         $template = json_decode($content);
         if (json_last_error() != 0) {
