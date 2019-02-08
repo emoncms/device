@@ -71,7 +71,7 @@ function updateView() {
 
 function updateItems(result) {
     if (typeof result.success !== 'undefined' && !result.success) {
-        alert("Error:\n" + result.message);
+        //alert("Error:\n" + result.message);
         return;
     }
 
@@ -119,7 +119,7 @@ function draw(result) {
     $("#thing-list").empty();
     
     if (typeof result.success !== 'undefined' && !result.success) {
-        alert("Error:\n" + result.message);
+        //alert("Error:\n" + result.message);
         return;
     }
     else if (result.length == 0) {
