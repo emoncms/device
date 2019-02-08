@@ -422,7 +422,9 @@ var device_dialog =
         }
         
         var template = device_dialog.templates[device_dialog.deviceType];
-        $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+        if (template!=undefined) {
+            $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+        }
         $('#template-info').show();
         
         $("#device-config-options-table").hide();
