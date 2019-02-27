@@ -32,6 +32,9 @@ function device_controller()
         // 4. device makes follow up request for authentication
         //    - reply authentication details
         // ---------------------------------------------------------------
+        if ($route->action == "authcheck") { $route->action = "auth"; $route->subaction = "check"; } 
+        if ($route->action == "authallow") { $route->action = "auth"; $route->subaction = "allow"; }         
+        
         if ($route->action == "auth") {
             if ($route->subaction=="request") {
                 // 1. Register request for authentication details, or provide if allowed
