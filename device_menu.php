@@ -1,10 +1,9 @@
 <?php
 
-$menu['setup'][] = array(
+$menu['sidebar']['setup'][] = array(
     'text' => _("Device Setup"),
     'path' => 'device/view',
-    'icon' => 'device',
-    'sort' => 4
+    'icon' => 'device'
 );
 
 /*
