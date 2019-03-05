@@ -5,7 +5,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function device_controller()
 {
-    global $mysqli, $redis, $session, $route, $device;
+    global $mysqli, $redis, $session, $route, $device, $enable_UDP_broadcast;
 
     $result = false;
 
