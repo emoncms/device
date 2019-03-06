@@ -315,7 +315,9 @@ var device_dialog =
         // console.log("deviceType:"+device_dialog.deviceType)
         // console.log(device_dialog.templates)
         var template = device_dialog.templates[device_dialog.deviceType];
-        $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+        if (template!=undefined) {
+            $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+        }
         $('#template-info').show();
     },
 
