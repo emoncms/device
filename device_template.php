@@ -39,11 +39,11 @@ class DeviceTemplate
         $this->process = new Process($this->mysqli, $this->input, $this->feed,"UTC");
     }
 
-    public function get_template_list($userid) {
-        return $this->load_template_list($userid);
+    public function get_template_list() {
+        return $this->load_template_list();
     }
 
-    protected function load_template_list($userid) {
+    protected function load_template_list() {
         $list = array();        
         
         $iti = new RecursiveDirectoryIterator("Modules/device/data");
@@ -59,9 +59,9 @@ class DeviceTemplate
         return $list;
     }
 
-    public function get_template($userid, $type) {
+    public function get_template($type) {
         $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
-        $result = $this->load_template_list($userid);
+        $result = $this->load_template_list();
         if (isset($result['success']) && $result['success'] == false) {
             return $result;
         }
@@ -74,7 +74,7 @@ class DeviceTemplate
     public function prepare_template($device) {
         $userid = intval($device['userid']);
         
-        $result = $this->get_template($userid, $device['type']);
+        $result = $this->get_template($device['type']);
         if (!is_object($result)) {
             return $result;
         }
