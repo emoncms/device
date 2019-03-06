@@ -320,7 +320,7 @@ class Device
         
         $result = $this->set_fields($deviceid,json_encode(array("name"=>$name,"nodeid"=>$nodeid,"type"=>$type)));
         if ($result['success']==true) {
-            return $this->init_template($deviceid);
+            return $this->init($deviceid,false);
         } else {
             return $result;
         }
@@ -591,7 +591,7 @@ class Device
     }
 
     public function init_template($device, $template) {
-        if (isset($template)) $template = json_decode($template);
+        if (isset($template) && $template!==false) $template = json_decode($template);
         
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
             $result = $this->get_template_meta($device['userid'], $device['type']);
