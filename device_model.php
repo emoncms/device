@@ -114,7 +114,7 @@ class Device
 
     public function exists_name($userid, $name) {
         $userid = intval($userid);
-        $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$name);
+        $name = preg_replace('/[^\p{L}_\p{N}\s\-:]/u','',$name);
         
         $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND name=?");
         $stmt->bind_param("is", $userid, $name);
@@ -128,7 +128,7 @@ class Device
 
     public function exists_nodeid($userid, $nodeid) {
         $userid = intval($userid);
-        $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$nodeid);
+        $nodeid = preg_replace('/[^\p{L}_\p{N}\s\-:]/u','',$nodeid);
 
         $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND nodeid=?");
         $stmt->bind_param("is", $userid, $nodeid);
@@ -303,9 +303,9 @@ class Device
     public function autocreate($userid, $_nodeid, $_type) {
         $userid = intval($userid);
         
-        $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$_nodeid);
+        $nodeid = preg_replace('/[^\p{L}_\p{N}\s\-:]/u','',$_nodeid);
         if ($_nodeid != $nodeid) return array("success"=>false, "message"=>"Invalid nodeid");
-        $type = preg_replace('/[^\/\|\,\w\s-:]/','',$_type);
+        $type = preg_replace('/[^\/\|\,\w\s\-:]/','',$_type);
         if ($_type != $type) return array("success"=>false, "message"=>"Invalid type");
         
         $name = "$nodeid:$type";
@@ -328,22 +328,22 @@ class Device
 
     public function create($userid, $nodeid, $name, $description, $type) {
         $userid = intval($userid);
-        $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $nodeid);
+        $nodeid = preg_replace('/[^\p{L}_\p{N}\s\-:]/u', '', $nodeid);
         
         if (isset($name)) {
-            $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $name);
+            $name = preg_replace('/[^\p{L}_\p{N}\s\-:]/u', '', $name);
         } else {
             $name = $nodeid;
         }
         
         if (isset($description)) {
-            $description = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $description);
+            $description = preg_replace('/[^\p{L}_\p{N}\s\-:]/u', '', $description);
         } else {
             $description = '';
         }
         
         if (isset($type) && $type != 'null') {
-            $type = preg_replace('/[^\/\|\,\w\s-:]/','', $type);
+            $type = preg_replace('/[^\/\|\,\w\s\-:]/','', $type);
         } else {
             $type = '';
         }
@@ -413,7 +413,7 @@ class Device
         $fields = json_decode(stripslashes($fields));
 
         if (isset($fields->name)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in device name');
+            if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in device name');
             $stmt = $this->mysqli->prepare("UPDATE device SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
             if ($stmt->execute()) {
@@ -423,7 +423,7 @@ class Device
         }
         
         if (isset($fields->description)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->description)!=$fields->description) return array('success'=>false, 'message'=>'invalid characters in device description');
+            if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$fields->description)!=$fields->description) return array('success'=>false, 'message'=>'invalid characters in device description');
             $stmt = $this->mysqli->prepare("UPDATE device SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->description,$id);
             if ($stmt->execute()) {
@@ -433,7 +433,7 @@ class Device
         }
 
         if (isset($fields->nodeid)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->nodeid)!=$fields->nodeid) return array('success'=>false, 'message'=>'invalid characters in device nodeid');
+            if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$fields->nodeid)!=$fields->nodeid) return array('success'=>false, 'message'=>'invalid characters in device nodeid');
             $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->nodeid,$id);
             if ($stmt->execute()) {
@@ -443,7 +443,7 @@ class Device
         }
         
         if (isset($fields->type)) {
-            if (preg_replace('/[^\/\|\,\w\s-:]/','',$fields->type)!=$fields->type) return array('success'=>false, 'message'=>'invalid characters in device type');
+            if (preg_replace('/[^\/\|\,\w\s\-:]/','',$fields->type)!=$fields->type) return array('success'=>false, 'message'=>'invalid characters in device type');
             $stmt = $this->mysqli->prepare("UPDATE device SET type = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->type,$id);
             if ($stmt->execute()) {
