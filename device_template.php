@@ -60,7 +60,7 @@ class DeviceTemplate
     }
 
     public function get_template($type) {
-        $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
+        $type = preg_replace('/[^\p{L}_\p{N}\s\-:]/u','', $type);
         $result = $this->load_template_list();
         if (isset($result['success']) && $result['success'] == false) {
             return $result;
