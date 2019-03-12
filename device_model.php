@@ -296,33 +296,39 @@ class Device
         return true;
     }
 
-    public function autocreate($userid, $_nodeid, $_type) {
+    public function autocreate($userid, $nodeid, $type) {
         $userid = intval($userid);
         
-        $nodeid = preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $nodeid);
-        if ($_nodeid != $nodeid) return array("success"=>false, "message"=>"Invalid nodeid");
-        $type = preg_replace('/[^\/\|\,\w\s-:]/','',$_type);
-        if ($_type != $type) return array("success"=>false, "message"=>"Invalid type");
-        
+        if (preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $nodeid) != $nodeid) {
+            return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : / and space characters");
+        }
+        if (isset($type) && $type != 'null') {
+            $type = preg_replace('/[^\/\|\,\w\s-:]/','', $type);
+        } else {
+            $type = '';
+        }
         $name = "$nodeid:$type";
         
         $deviceid = $this->exists_nodeid($userid, $nodeid);
-        
         if (!$deviceid) {
             $this->log->info("Automatically create device for user=$userid, nodeid=$nodeid");
-            $deviceid = $this->create($userid, $nodeid, null, null, null);
-            if (!$deviceid) return array("success"=>false, "message"=>"Device creation failed");
+            
+            $result = $this->create($userid, $nodeid, $name, '', $type);
+            if (isset($result['success']) && $result['success'] == false) {
+                return $result;
+            }
+            $deviceid = $result;
         }
-        
-        $result = $this->set_fields($deviceid,json_encode(array("name"=>$name,"nodeid"=>$nodeid,"type"=>$type)));
-        if ($result['success']==true) {
-            return $this->init_template($deviceid);
-        } else {
-            return $result;
+        else {
+            $result = $this->set_fields($deviceid,json_encode(array("nodeid"=>$nodeid,"name"=>$name,"type"=>$type)));
+            if (isset($result['success']) && $result['success'] == false) {
+                return $result;
+            }
         }
+        return $this->init($deviceid);
     }
 
-    public function create($userid, $nodeid, $name, $description, $type, $options) {
+    public function create($userid, $nodeid, $name='', $description='', $type=null, $options=null) {
         $userid = intval($userid);
         
         if (preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $nodeid) != $nodeid) {
@@ -707,7 +713,7 @@ class Device
         return $class->prepare($device);
     }
 
-    public function init($id, $template) {
+    public function init($id, $template=null) {
         $id = intval($id);
         
         $device = $this->get($id);
@@ -718,7 +724,7 @@ class Device
         return array('success'=>true, 'message'=>'Device initialized');
     }
 
-    public function init_template($device, $template) {
+    public function init_template($device, $template=null) {
         if (isset($template)) $template = json_decode($template);
         
         if (empty($device['type'])) {
