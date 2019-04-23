@@ -25,7 +25,7 @@
 
 <div>
     <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Devices Help'); ?></a></div>
-    <div id="device-header"><h3><?php echo _('Devices'); ?></h3></div>
+    <div id="device-header"><h2><?php echo _('Devices'); ?></h2></div>
 
     <div id="table"></div>
 
