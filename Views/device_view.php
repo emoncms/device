@@ -48,8 +48,8 @@
         <button id="device-reload" class="btn btn-small" >&nbsp;<i class="icon-refresh" ></i>&nbsp;<?php echo _('Reload device templates'); ?></button>
     <?php } ?>
     </div>
-	
-	<div id="device-loader" class="ajax-loader"></div>
+    
+    <div id="device-loader" class="ajax-loader"></div>
 </div>
 
 <?php require "Modules/device/Views/device_dialog.php"; ?>

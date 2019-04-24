@@ -214,7 +214,7 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
     text-align: right;
 }
 .item > span {
-	display: inline-block;
+    display: inline-block;
 }
 .item .item-left {
     margin-right: 8px;
@@ -226,7 +226,7 @@ _:-moz-tree-row(hover), .checkbox-slider--b-flat {
     color: #666;
 }
 .item.item-right {
-	min-width: 22px;
+    min-width: 22px;
     text-align: left;
 }
 .item.item-right > span {

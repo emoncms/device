@@ -2,7 +2,7 @@ var device = {
 
     'create':function(nodeid, name, description, type, options, callback) {
         return device.request(callback, "device/create.json", "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type+
-        		"&options="+JSON.stringify(options));
+                "&options="+JSON.stringify(options));
     },
 
     'list':function(callback) {
@@ -51,49 +51,49 @@ var device = {
 
     'init':function(id, template, callback) {
         return $.ajax({
-        	'url': path+"device/init.json?id="+id,
-        	'data': "template="+JSON.stringify(template),
-        	'dataType': 'json',
-        	'type': 'POST',
-        	'async': true,
-        	'success': callback
+            'url': path+"device/init.json?id="+id,
+            'data': "template="+JSON.stringify(template),
+            'dataType': 'json',
+            'type': 'POST',
+            'async': true,
+            'success': callback
         });
     },
 
     'request':function(callback, action, data) {
-    	var request = {
-	        'url': path+action,
-	        'dataType': 'json',
-	        'async': true,
-	        'success': callback,
-	        'error': function(error) {
-	            var message = "Failed to request server";
-	            if (typeof error !== 'undefined') {
-	                message += ": ";
-	                
-	                if (typeof error.responseText !== 'undefined') {
-	                    message += error.responseText;
-	                }
-	                else if (typeof error !== 'string') {
-	                    message += JSON.stringify(error);
-	                }
-	                else {
-	                    message += error;
-	                }
-	            }
-	            console.warn(message);
-	            if (typeof callback === 'function') {
-		            callback({
-		            	'success': false,
-		            	'message': message
-		            });
-	            }
-//	        	return device.request(callback, action, data);
-	        }
-	    }
-		if (typeof data !== 'undefined') {
-			request['data'] = data;
-		}
-	    return $.ajax(request);
+        var request = {
+            'url': path+action,
+            'dataType': 'json',
+            'async': true,
+            'success': callback,
+            'error': function(error) {
+                var message = "Failed to request server";
+                if (typeof error !== 'undefined') {
+                    message += ": ";
+                    
+                    if (typeof error.responseText !== 'undefined') {
+                        message += error.responseText;
+                    }
+                    else if (typeof error !== 'string') {
+                        message += JSON.stringify(error);
+                    }
+                    else {
+                        message += error;
+                    }
+                }
+                console.warn(message);
+                if (typeof callback === 'function') {
+                    callback({
+                        'success': false,
+                        'message': message
+                    });
+                }
+//                return device.request(callback, action, data);
+            }
+        }
+        if (typeof data !== 'undefined') {
+            request['data'] = data;
+        }
+        return $.ajax(request);
     }
 }

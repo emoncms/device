@@ -37,39 +37,39 @@ var thing = {
     },
 
     'request':function(callback, action, data) {
-    	var request = {
-	        'url': path+action,
-	        'dataType': 'json',
-	        'async': true,
-	        'success': callback,
-	        'error': function(error) {
-	            var message = "Failed to request server";
-	            if (typeof error !== 'undefined') {
-	                message += ": ";
-	                
-	                if (typeof error.responseText !== 'undefined') {
-	                    message += error.responseText;
-	                }
-	                else if (typeof error !== 'string') {
-	                    message += JSON.stringify(error);
-	                }
-	                else {
-	                    message += error;
-	                }
-	            }
-	            console.warn(message);
-	            if (typeof callback === 'function') {
-		            callback({
-		            	'success': false,
-		            	'message': message
-		            });
-	            }
-//	        	return thing.request(callback, action, data);
-	        }
-	    }
-		if (typeof data !== 'undefined') {
-			request['data'] = data;
-		}
-	    return $.ajax(request);
+        var request = {
+            'url': path+action,
+            'dataType': 'json',
+            'async': true,
+            'success': callback,
+            'error': function(error) {
+                var message = "Failed to request server";
+                if (typeof error !== 'undefined') {
+                    message += ": ";
+                    
+                    if (typeof error.responseText !== 'undefined') {
+                        message += error.responseText;
+                    }
+                    else if (typeof error !== 'string') {
+                        message += JSON.stringify(error);
+                    }
+                    else {
+                        message += error;
+                    }
+                }
+                console.warn(message);
+                if (typeof callback === 'function') {
+                    callback({
+                        'success': false,
+                        'message': message
+                    });
+                }
+//                return thing.request(callback, action, data);
+            }
+        }
+        if (typeof data !== 'undefined') {
+            request['data'] = data;
+        }
+        return $.ajax(request);
     }
 }
