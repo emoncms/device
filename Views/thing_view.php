@@ -357,11 +357,11 @@ function registerEvents() {
                 var input = self.find('input');
                 if (input.is(":checked")) {
                     thing.setItemOn(item.thingid, item.id, updateResume);
-                    input.prop("checked", true);
+                    $('div[data-id="'+id+'"] input').prop("checked", true);
                 }
                 else {
                     thing.setItemOff(item.thingid, item.id, updateResume);
-                    input.prop("checked", false);
+                    $('div[data-id="'+id+'"] input').prop("checked", false);
                 }
             }, 250);
         }
@@ -382,7 +382,7 @@ function registerEvents() {
                 if (typeof item.scale !== 'undefined' && item.scale != 0) {
                     scale = item.scale;
                 }
-                input.val(formatItemValue(item, value));
+                $('div[data-id="'+id+'"] input').val(formatItemValue(item, value));
                 
                 value = value/scale;
             }
@@ -407,8 +407,7 @@ function registerEvents() {
             if (typeof item.scale !== 'undefined') {
                 scale = item.scale;
             }
-            var value = formatItemValue(item, input.val());
-            $(this).find('.slider-text').text(value);
+            $('div[data-id="'+id+'"] .slider-text').text(formatItemValue(item, input.val());
         }
     });
 
