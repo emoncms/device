@@ -689,6 +689,9 @@ class Device
     }
 
     private function set_template_fields($device, $fields) {
+        if (isset($fields->type)) {
+            $device['type'] = $fields->type;
+        }
         if (empty($device['type'])) {
             return array('success'=>true, 'message'=>'Device type not specified');
         }

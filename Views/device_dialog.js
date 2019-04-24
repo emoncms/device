@@ -774,9 +774,11 @@ var device_dialog =
                 else {
                     row += "<td><input row='"+i+"' class='input-select' type='checkbox' checked /></td>";
                 }
-                row += "<td>"+device_dialog.drawInitAction(input.action)+"</td>"
-                row += "<td>"+input.node+"</td><td>"+input.name+"</td><td>"+input.description+"</td>";
-                row += "<td>"+device_dialog.drawInitProcessList(input.processList)+"</td>";
+                row += "<td>"+device_dialog.drawInitAction(input.action)+"</td>" +
+                        "<td>"+input.node+"</td>" +
+                        "<td>"+input.name+"</td>" +
+                        "<td>"+(typeof input.description !== 'undefined' ? input.description : '')+"</td>" +
+                        "<td>"+device_dialog.drawInitProcessList(input.processList)+"</td>";
                 
                 table += "<tr>"+row+"</tr>";
             }
