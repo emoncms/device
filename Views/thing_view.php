@@ -407,7 +407,7 @@ function registerEvents() {
             if (typeof item.scale !== 'undefined') {
                 scale = item.scale;
             }
-            $('div[data-id="'+id+'"] .slider-text').text(formatItemValue(item, input.val());
+            $('div[data-id="'+id+'"] .slider-text').text(formatItemValue(item, input.val()));
         }
     });
 
