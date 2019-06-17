@@ -118,7 +118,7 @@ class Device
 
     public function exists_nodeid($userid, $nodeid) {
         $userid = intval($userid);
-        $nodeid = preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $nodeid);
+        $nodeid = preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $nodeid);
 
         $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND nodeid=?");
         $stmt->bind_param("is", $userid, $nodeid);
@@ -299,11 +299,11 @@ class Device
     public function autocreate($userid, $nodeid, $type) {
         $userid = intval($userid);
         
-        if (preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $nodeid) != $nodeid) {
+        if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $nodeid) != $nodeid) {
             return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : / and space characters");
         }
         if (isset($type) && $type != 'null') {
-            $type = preg_replace('/[^\/\|\,\w\s-:]/','', $type);
+            $type = preg_replace('/[^\/\|\,\w\s\-\:]/','',$type);
         } else {
             $type = '';
         }
@@ -331,13 +331,19 @@ class Device
     public function create($userid, $nodeid, $name='', $description='', $type=null, $options=null) {
         $userid = intval($userid);
         
-        if (preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $nodeid) != $nodeid) {
-            return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : / and space characters");
+        if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $nodeid) != $nodeid) {
+            return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : and space characters");
         }
         if (!isset($name)) $name = '';
+        else if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $name) != $name) {
+            return array('success'=>false, 'message'=>"Device name must only contain A-Z a-z 0-9 - _ . : and space characters");
+        }
         if (!isset($description)) $description = '';
+        else if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $description) != $description) {
+            return array('success'=>false, 'message'=>"Device name must only contain A-Z a-z 0-9 - _ . : and space characters");
+        }
         if (isset($type) && $type != 'null') {
-            $type = preg_replace('/[^\/\|\,\w\s-:]/','', $type);
+            $type = preg_replace('/[^\/\|\,\w\s\-\:]/','', $type);
         } else {
             $type = '';
         }
@@ -434,8 +440,8 @@ class Device
         }
         
         if (isset($fields->nodeid)) {
-            if (preg_replace('/[^\p{N}\p{L}\-\_\.\s]/u', '', $fields->nodeid) != $fields->nodeid) {
-                return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : / and space characters");
+            if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $fields->nodeid) != $fields->nodeid) {
+                return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : and space characters");
             }
             $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->nodeid,$id);
@@ -446,6 +452,9 @@ class Device
         }
         
         if (isset($fields->name)) {
+            if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $fields->name) != $fields->name) {
+                return array('success'=>false, 'message'=>"Device name must only contain A-Z a-z 0-9 - _ . : and space characters");
+            }
             $stmt = $this->mysqli->prepare("UPDATE device SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
             if ($stmt->execute()) {
@@ -455,6 +464,9 @@ class Device
         }
         
         if (isset($fields->description)) {
+            if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $fields->description) != $fields->description) {
+                return array('success'=>false, 'message'=>"Device description must only contain A-Z a-z 0-9 - _ . : and space characters");
+            }
             $stmt = $this->mysqli->prepare("UPDATE device SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->description,$id);
             if ($stmt->execute()) {
@@ -464,7 +476,7 @@ class Device
         }
         
         if (isset($fields->type)) {
-            if (preg_replace('/[^\/\|\,\w\s-:]/','',$fields->type)!=$fields->type) return array('success'=>false, 'message'=>'invalid characters in device type');
+            if (preg_replace('/[^\/\|\,\w\s\-:]/','',$fields->type)!=$fields->type) return array('success'=>false, 'message'=>'invalid characters in device type');
             $stmt = $this->mysqli->prepare("UPDATE device SET type = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->type,$id);
             if ($stmt->execute()) {

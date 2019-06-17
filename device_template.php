@@ -45,7 +45,7 @@ class DeviceTemplate
     }
 
     protected function load_list() {
-        $list = array();        
+        $list = array();
         
         $iti = new RecursiveDirectoryIterator("Modules/device/data");
         foreach(new RecursiveIteratorIterator($iti) as $file) {
@@ -91,7 +91,7 @@ class DeviceTemplate
     }
 
     public function get($type) {
-        $type = preg_replace('/[^\p{L}_\p{N}\s-:]/u','', $type);
+        $type = preg_replace('/[^\p{L}_\p{N}\s\-:]/u','', $type);
         $result = $this->load_list();
         if (isset($result['success']) && $result['success'] == false) {
             return $result;

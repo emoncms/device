@@ -1,7 +1,7 @@
 <?php
     global $path, $redis_enabled, $session;
     
-    $version = 1;
+    $version = 2;
 ?>
 
 
