@@ -247,8 +247,12 @@ function drawItemValue(item) {
                 "<span class='slider-text'>"+formatItemValue(item, value)+"</span>";
         }
         else {
+            var format = "";
+            if (typeof item.min !== 'undefined') format += "min='"+item.min+"' ";
+            if (typeof item.max !== 'undefined') format += "max='"+item.max+"' ";
+            if (typeof item.step !== 'undefined') format += "step='"+item.step+"' ";
             if (typeof item.write !== 'undefined' && item.write) {
-                return "<input class='item-value item-center input-small' type='"+type+"' value='"+formatItemValue(item, value)+"' />";
+                return "<input class='item-value item-center input-small' type='"+type+"' "+format+"value='"+formatItemValue(item, value)+"' />";
             }
             else {
                 return "<span>"+formatItemValue(item, value)+"</span>";
@@ -372,25 +376,39 @@ function registerEvents() {
         
         var type = $(this).data('type');
         if (type != "switch") {
-            var id = $(this).data('id');
-            var item = items[id];
-            var input = $(this).find('input');
-            
-            var value = parseItemValue(item, type, input.val());
-            if (type == "number") {
-                var scale = 1;
-                if (typeof item.scale !== 'undefined' && item.scale != 0) {
-                    scale = item.scale;
-                }
-                $('div[data-id="'+id+'"] input').val(formatItemValue(item, value));
-                
-                value = value/scale;
-            }
-            
             var self = $(this);
-            thing.setItemValue(item.thingid, item.id, value, function() {
-                self.trigger('focusout');
-            });
+            
+            if (timeout != null) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(function() {
+                timeout = null;
+                
+                var id = self.data('id');
+                var item = items[id];
+                var input = self.find('input');
+                
+                var value = parseItemValue(item, type, input.val());
+                if (type == "number") {
+                    var scale = 1;
+                    if (typeof item.scale !== 'undefined' && item.scale != 0) {
+                        scale = item.scale;
+                    }
+                    if (typeof item.min !== 'undefined' && item.min > value ||
+                        typeof item.max !== 'undefined' && item.max < value) {
+                        
+                        self.trigger('focusout');
+                        return;
+                    }
+                    $('div[data-id="'+id+'"] input').val(formatItemValue(item, value));
+                    
+                    value = value/scale;
+                }
+                thing.setItemValue(item.thingid, item.id, value, function() {
+                    self.trigger('focusout');
+                });
+                
+            }, 250);
         }
     });
 
