@@ -39,7 +39,8 @@ class DeviceThing
                 foreach($item['mapping'] as &$mapping) {
                     // TODO: Implement MQTT mapping here
                     if (isset($mapping->input)) {
-                        $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $mapping->input, $result->inputs);
+                        $nodeid = isset($item['node']) ? $item['node'] : $device['nodeid'];
+                        $inputid = $this->get_input_id($device['userid'], $nodeid, $mapping->input, $result->inputs);
                         if ($inputid == false) {
                             $this->log->error("get_item_list() failed to find input of item '".$item['id']."' in template: ".$device['type']);
                             continue;
@@ -50,7 +51,8 @@ class DeviceThing
                 }
             }
             if (isset($item['input'])) {
-                $inputid = $this->get_input_id($device['userid'], $device['nodeid'], $item['input'], $result->inputs);
+                $nodeid = isset($item['node']) ? $item['node'] : $device['nodeid'];
+                $inputid = $this->get_input_id($device['userid'], $nodeid, $item['input'], $result->inputs);
                 if ($inputid == false) {
                     $this->log->error("get_item_list() failed to find input of item '".$item['id']."' in template: ".$device['type']);
                     continue;
@@ -131,20 +133,19 @@ class DeviceThing
         foreach($inputs as $i) {
             if ($i->name == $name) {
                 if(property_exists($i, "node")) {
-                    $node = $i->node;
-                } else {
-                    $node = $nodeid;
+                    $nodeid = $i->node;
                 }
-                
-                return $input->exists_nodeid_name($userid, $node, $name);
             }
         }
-        return false;
+        return $input->exists_nodeid_name($userid, $nodeid, $name);
     }
 
     protected function get_feed_id($userid, $name) {
         require_once "Modules/feed/feed_model.php";
         $feed = new Feed($this->mysqli, $this->redis, null);
+        
+        // TODO: implement search with optional tag
+        //return $feed->exists_tag_name($userid, $tag, $name);
         
         return $feed->get_id($userid, $name);
     }
