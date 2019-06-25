@@ -168,9 +168,10 @@ function drawThing(thing) {
         if (typeof item.header !== 'undefined' && item.header) {
             header += drawItem("header", itemid, item, collapsed[thingid]);
         }
+        var label = typeof thing.items[i].label !== 'undefined' ? thing.items[i].label : "";
         list += "<div class='group-item'>" +
                 "<div class='group-grow'></div>" +
-                "<div class='item-name'><span>"+thing.items[i].label+"</span></div>" +
+                "<div class='item-name'><span>"+label+"</span></div>" +
                 drawItem("item", itemid, item, true) +
             "</div>";
 
