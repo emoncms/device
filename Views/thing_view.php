@@ -9,7 +9,7 @@
 <div class="view-container">
     <div id="thing-header" class="hide">
         <span id="api-help" style="float:right"><a href="api"><?php echo _('Things API Help'); ?></a></span>
-        <h2><?php echo _('Device things'); ?></h2>
+        <h3><?php echo _('Device things'); ?></h3>
     </div>
     <div id="thing-none" class="alert alert-block hide" style="margin-top: 20px">
         <h4 class="alert-heading"><?php echo _('No Device Things configured'); ?></h4>
