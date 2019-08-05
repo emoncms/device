@@ -43,17 +43,17 @@
             <div class="divider"></div>
             
             <label><b><?php echo _('Key'); ?></b></label>
-            <input id="device-config-node" class="input-medium" type="text" pattern="[a-zA-Z0-9-_. ]+" required>
+            <input id="device-config-node" class="input-medium" type="text" pattern="[a-zA-Z0-9-_.: ]+" required>
             <span id="device-config-name-icon" class="input-icon" data-show=false data-toggle="tooltip" data-placement="bottom" data-container="#device-config-modal">
                 <span class="icon-plus-sign" style="cursor:pointer;"></span>
             </span>
             <div id="device-config-name-container" class="hide">
                 <label><b><?php echo _('Name'); ?></b></label>
-                <input id="device-config-name" class="input-large" type="text">
+                <input id="device-config-name" class="input-large" type="text" pattern="[a-zA-Z0-9-_.: ]+">
             </div>
             
             <label><b><?php echo _('Description'); ?></b></label>
-            <input id="device-config-description" class="input-large" type="text">
+            <input id="device-config-description" class="input-large" type="text" pattern="[a-zA-Z0-9-_.: ]+">
             
             <label><b><?php echo _('Device Key'); ?></b></label>
             <div class="input-append">
