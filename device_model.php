@@ -300,7 +300,7 @@ class Device
         $userid = intval($userid);
         
         if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $nodeid) != $nodeid) {
-            return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : / and space characters");
+            return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : and space characters");
         }
         if (isset($type) && $type != 'null') {
             $type = preg_replace('/[^\/\|\,\w\s\-\:]/','',$type);
@@ -340,7 +340,7 @@ class Device
         }
         if (!isset($description)) $description = '';
         else if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $description) != $description) {
-            return array('success'=>false, 'message'=>"Device name must only contain A-Z a-z 0-9 - _ . : and space characters");
+            return array('success'=>false, 'message'=>"Device description must only contain A-Z a-z 0-9 - _ . : and space characters");
         }
         if (isset($type) && $type != 'null') {
             $type = preg_replace('/[^\/\|\,\w\s\-\:]/','', $type);
