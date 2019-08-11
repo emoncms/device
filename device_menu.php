@@ -1,7 +1,8 @@
 <?php
-
-$menu['setup'][] = array(
+/*
+$menu['sidebar']['emoncms'][] = array(
     'text' => _("Device Setup"),
     'path' => 'device/view',
-    'icon' => 'device'
-);
+    'icon' => 'device',
+    'order' => 'b6'
+);*/
