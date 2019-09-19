@@ -10,5 +10,5 @@ $menu['sidebar']['emoncms'][] = array(
     'text' => _("Things"),
     'path' => 'device/thing/view',
     'icon' => 'thing',
-    'order' => 1
+    'order' => 5
 );
