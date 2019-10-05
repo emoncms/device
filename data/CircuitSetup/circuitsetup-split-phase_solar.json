@@ -151,7 +151,7 @@
 					"arguments": {"type": "ProcessArg::FEEDID", "value": "import_kwh" }
 				}
 			]
-		}
+		},
 		{
 			"name": "SolarW",
 			"description": "Solar Power",
@@ -163,7 +163,7 @@
 				{
 					"process": "power_to_kwh",
 					"arguments": {"type": "ProcessArg::FEEDID", "value": "solar_kwh" }
-				}
+				},
 				{
 					"process": "add_input",
 					"arguments": {"type": "ProcessArg::INPUTID", "value": "W" }
