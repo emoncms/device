@@ -894,9 +894,9 @@ class Device
             $value = $input->get_last_value($item['inputid']);
         }
         if (isset($item['feedid'])) {
-            global $feed_settings;
+            global $settings;
             require_once "Modules/feed/feed_model.php";
-            $feed = new Feed($this->mysqli, $this->redis, $feed_settings);
+            $feed = new Feed($this->mysqli, $this->redis, $settings['feed']);
             
             $value = $feed->get_value($item['feedid']);
         }

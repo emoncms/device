@@ -24,20 +24,20 @@ class DeviceTemplate
 
     // Module required constructor, receives parent as reference
     public function __construct(&$parent) {
-        global $feed_settings;
+        global $settings;
         
         $this->mysqli = &$parent->mysqli;
         $this->redis = &$parent->redis;
         $this->log = new EmonLogger(__FILE__);
         
         require_once "Modules/feed/feed_model.php";
-        $this->feed = new Feed($this->mysqli, $this->redis, $feed_settings);
+        $this->feed = new Feed($this->mysqli, $this->redis, $settings['feed']);
         
         require_once "Modules/input/input_model.php";
         $this->input = new Input($this->mysqli, $this->redis, $this->feed);
         
         require_once "Modules/process/process_model.php";
-        $this->process = new Process($this->mysqli, $this->input, $this->feed,"UTC");
+        $this->process = new Process($this->mysqli, $this->input, $this->feed, 'UTC');
     }
 
     public function get_list() {
