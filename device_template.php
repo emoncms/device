@@ -27,10 +27,10 @@ class DeviceTemplate
         $this->redis = &$parent->redis;
         $this->log = new EmonLogger(__FILE__);
 
-        global $user,$feed_settings;
+        global $user,$settings;
         
         require_once "Modules/feed/feed_model.php";
-        $this->feed = new Feed($this->mysqli, $this->redis, $feed_settings);
+        $this->feed = new Feed($this->mysqli, $this->redis, $settings['feed']);
         
         require_once "Modules/input/input_model.php";
         $this->input = new Input($this->mysqli, $this->redis, $this->feed);

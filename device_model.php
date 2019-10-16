@@ -152,8 +152,8 @@ class Device
         // Only show authentication details to allowed ip address
         if ($allow_ip == $ip) {
             $this->redis->del("device:auth:allow");
-            global $mqtt_server;
-            return $mqtt_server["user"].":".$mqtt_server["password"].":".$mqtt_server["basetopic"];
+            global $settings;
+            return $settings['mqtt']['user'].":".$settings['mqtt']['password'].":".$settings['mqtt']['basetopic'];
         } else {
             $this->redis->set("device:auth:request", json_encode(array("ip"=>$ip)));
             return array("success"=>true, "message"=>"Authentication request registered for IP $ip");
