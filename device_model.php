@@ -43,7 +43,7 @@ class Device
         //----------------------------------------------------
         if($this->redis && $this->redis->exists("device:key:$devicekey")) {
             $session['userid'] = $this->redis->get("device:key:$devicekey:user");
-            $session['read'] = 0;
+            $session['read'] = 1;
             $session['write'] = 1;
             $session['admin'] = 0;
             $session['lang'] = "en"; // API access is always in english
@@ -62,7 +62,7 @@ class Device
             
             if ($result && $id>0) {
                 $session['userid'] = $userid;
-                $session['read'] = 0;
+                $session['read'] = 1;
                 $session['write'] = 1;
                 $session['admin'] = 0;
                 $session['lang'] = "en"; // API access is always in english

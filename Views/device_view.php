@@ -55,7 +55,6 @@
 <?php require "Modules/device/Views/device_dialog.php"; ?>
 
 <script>
-  var path = "<?php echo $path; ?>";
   var devices = <?php echo json_encode($templates); ?>;
   
   // Extend table library field types
