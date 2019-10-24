@@ -5,7 +5,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function device_controller()
 {
-    global $mysqli, $redis, $session, $route, $device, $enable_UDP_broadcast;
+    global $mysqli, $redis, $session, $route, $device, $settings;
 
     $result = false;
 
@@ -34,7 +34,7 @@ function device_controller()
         // ---------------------------------------------------------------
         if ($route->action == "authcheck") { $route->action = "auth"; $route->subaction = "check"; } 
         if ($route->action == "authallow") { $route->action = "auth"; $route->subaction = "allow"; }         
-        
+
         if ($route->action == "auth") {
             if ($route->subaction=="request") {
                 // 1. Register request for authentication details, or provide if allowed
@@ -47,8 +47,8 @@ function device_controller()
             else if ($route->subaction=="check" && $session['read']) {
                 // 2. User checks for device waiting for authentication
                 $result = $device->get_auth_request();
-                
-                if (isset($enable_UDP_broadcast) && $enable_UDP_broadcast) {
+
+                if (isset($settings["device"]["enable_UDP_broadcast"]) && $settings["device"]["enable_UDP_broadcast"]) {
                     $port = 5005;
                     $broadcast_string = "emonpi.local";
                     $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
