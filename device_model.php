@@ -363,6 +363,8 @@ class Device
             if ($deviceid > 0) {
                 // Add the device to redis
                 if ($this->redis) {
+                    // Reload all devices from mysql here to ensure cache is not out of sync 
+                    $this->load_list_to_redis($userid);
                     $this->redis->sAdd("user:device:$userid", $deviceid);
                     $this->redis->hMSet("device:".$deviceid, array(
                         'id'=>$deviceid,
