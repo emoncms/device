@@ -1,0 +1,68 @@
+{
+    "name": "add_input",
+    "category": "Examples",
+    "group": "Simple Functions",
+    "description": "Show how two inputs can be added",
+    "inputs": [
+        {
+            "name": "inputA",
+            "description": "inputA",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "inputA"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "inputB",
+            "description": "inputB",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "inputB"
+                    }
+                },
+                {
+                    "process": "add_input",
+                    "arguments": {
+                        "type": "ProcessArg::INPUTID",
+                        "value": "inputA"
+                    }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "total"
+                    }
+                }
+            ]
+        }
+    ],
+    "feeds": [
+        {
+            "name": "inputA",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "inputB",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "total",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        }
+    ]
+}
