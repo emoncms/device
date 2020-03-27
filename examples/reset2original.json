@@ -1,0 +1,87 @@
+{
+    "name": "reset2original",
+    "category": "Examples",
+    "group": "Simple Functions",
+    "description": "Show how the reset gives the original value to an input to a feed",
+    "inputs": [
+        {
+            "name": "inputA",
+            "description": "inputA",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "inputA"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "inputB",
+            "description": "inputB",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "inputB"
+                    }
+                },
+                {
+                    "process": "add_input",
+                    "arguments": {
+                        "type": "ProcessArg::INPUTID",
+                        "value": "inputA"
+                    }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "total"
+                    }
+                },
+                {
+                    "process": "reset2original",
+                    "arguments": {
+                        "type": "ProcessArg::NONE"
+                    }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "resetOfInputB"
+                    }
+                }
+            ]
+        }
+    ],
+    "feeds": [
+        {
+            "name": "inputA",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "inputB",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "total",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        },
+        {
+            "name": "resetOfInputB",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "60"
+        }
+    ]
+}
