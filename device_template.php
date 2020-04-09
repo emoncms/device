@@ -221,7 +221,7 @@ class DeviceTemplate
 
     // Prepare the feed process lists
     protected function prepare_feed_processes($userid, $prefix, &$feeds, $inputs) {
-                
+        /*
         $process_list = $this->process->get_process_list(); // emoncms supported processes
         
         foreach($feeds as $f) {
@@ -251,7 +251,7 @@ class DeviceTemplate
                     }
                 }
             }
-        }
+        }*/
     }
 
     // Prepare template processes
@@ -395,7 +395,7 @@ class DeviceTemplate
 
     // Create the feed process lists
     protected function create_feed_processes($userid, $feeds, $inputs) {
-        
+        /*
         $process_list = $this->process->get_process_list(); // emoncms supported processes
         
         foreach($feeds as $f) {
@@ -424,7 +424,7 @@ class DeviceTemplate
                     }
                 }
             }
-        }
+        }*/
     }
 
     // Converts template process
