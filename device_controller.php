@@ -111,5 +111,11 @@ function device_controller()
         }
     }
 
+
+    if ($route->action == "clean" && $session['write']) {
+        $route->format = 'text';
+        return $device->clean($session['userid']);
+    }
+
     return array('content'=>$result);
 }
