@@ -404,7 +404,7 @@ class Device
     }
     
     // Clear devices with empty input processLists
-    public function clean($userid,$active = 0) {
+    public function clean($userid,$active=0,$dryrun=0) {
         $userid = (int) $userid;
         $active = (int) $active;
         
@@ -444,21 +444,24 @@ class Device
             
             if ($inputs_empty) {
                  // Delete node
-                 $this->delete($id);
+                 if (!$dryrun) $this->delete($id);
                  
                  // Delete inputs
                  foreach ($inputs as $i) {
                     $inputid = $i->id;
-                    $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
-                    if ($this->redis) {
-                        $this->redis->del("input:$inputid");
-                        $this->redis->srem("user:inputs:$userid",$inputid);
+                    if (!$dryrun) {
+                        $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
+                        if ($this->redis) {
+                            $this->redis->del("input:$inputid");
+                            $this->redis->srem("user:inputs:$userid",$inputid);
+                        }
                     }
                     $deleted_inputs++;
                 }
                 $deleted_nodes++;
             }
         }
+        if ($dryrun) return "DRYRUN: $deleted_nodes nodes to delete ($deleted_inputs inputs)";
         return "Deleted $deleted_nodes nodes ($deleted_inputs inputs)";
     }
 
