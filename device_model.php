@@ -402,6 +402,65 @@ class Device
             }
         }
     }
+    
+    // Clear devices with empty input processLists
+    public function clean($userid,$active = 0) {
+        $userid = (int) $userid;
+        $active = (int) $active;
+        
+        $now = time();
+        
+        $deleted_inputs = 0;
+        $deleted_nodes = 0;
+
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey` FROM device WHERE userid = '$userid'");
+        while ($row = $result->fetch_object()) {
+        
+            $id = $row->id;
+            $nodeid = $row->nodeid;
+            
+            // Fetch inputs associated with node
+            $inputs = array();
+            if ($result2 = $this->mysqli->query("SELECT * FROM input WHERE `userid` = '$userid' AND `nodeid` = '$nodeid'")) {
+                while ($row2 = $result2->fetch_object()) $inputs[] = $row2;
+            }
+            
+            // Check that all node inputs are empty
+            $inputs_empty = true;
+            foreach ($inputs as $i) {
+                $inputid = $i->id;
+                
+                if ($i->processList!=NULL && $i->processList!='') {
+                    $inputs_empty = false;
+                }
+
+                if ($active && $this->redis) {
+                   $input_time = $this->redis->hget("input:lastvalue:$inputid",'time');
+                   if (($now-$input_time)<$active) {
+                       $inputs_empty = false;
+                   }
+                }
+            }
+            
+            if ($inputs_empty) {
+                 // Delete node
+                 $this->delete($id);
+                 
+                 // Delete inputs
+                 foreach ($inputs as $i) {
+                    $inputid = $i->id;
+                    $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
+                    if ($this->redis) {
+                        $this->redis->del("input:$inputid");
+                        $this->redis->srem("user:inputs:$userid",$inputid);
+                    }
+                    $deleted_inputs++;
+                }
+                $deleted_nodes++;
+            }
+        }
+        return "Deleted $deleted_nodes nodes ($deleted_inputs inputs)";
+    }
 
     public function set_fields($id, $fields) {
         $id = intval($id);
