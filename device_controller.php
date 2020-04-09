@@ -114,7 +114,8 @@ function device_controller()
 
     if ($route->action == "clean" && $session['write']) {
         $route->format = 'text';
-        return $device->clean($session['userid']);
+        $active = 0; if (isset($_GET['active'])) $active = (int) $_GET['active'];
+        return $device->clean($session['userid'],$active);
     }
 
     return array('content'=>$result);

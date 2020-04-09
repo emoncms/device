@@ -404,8 +404,11 @@ class Device
     }
     
     // Clear devices with empty input processLists
-    public function clean($userid) {
+    public function clean($userid,$active = 0) {
         $userid = (int) $userid;
+        $active = (int) $active;
+        
+        $now = time();
         
         $deleted_inputs = 0;
         $deleted_nodes = 0;
@@ -425,7 +428,18 @@ class Device
             // Check that all node inputs are empty
             $inputs_empty = true;
             foreach ($inputs as $i) {
-                if ($i->processList!=NULL && $i->processList!='') $inputs_empty = false;
+                $inputid = $i->id;
+                
+                if ($i->processList!=NULL && $i->processList!='') {
+                    $inputs_empty = false;
+                }
+
+                if ($active && $this->redis) {
+                   $input_time = $this->redis->hget("input:lastvalue:$inputid",'time');
+                   if (($now-$input_time)<$active) {
+                       $inputs_empty = false;
+                   }
+                }
             }
             
             if ($inputs_empty) {
