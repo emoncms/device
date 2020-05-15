@@ -195,7 +195,7 @@ class DeviceTemplate
         return array('success'=>true, 'feeds'=>$feeds, 'inputs'=>$inputs);
     }
 
-    protected function prepare_template($device) {
+    public function prepare_template($device) {
         $template = $this->get($device['type']);
         if (!is_object($template)) {
             return $template;
@@ -623,6 +623,31 @@ class DeviceTemplate
         
         // TODO: Delete all inputs of device node here, instead of separate requests in input/Views/device_view.php
         return array('success'=>true, 'message'=>'Device deleted');
+    }
+
+    public function scan_start($userid, $type, $options) {
+        return array('success'=>true,
+            'info'=>array('finished'=>false, 'interrupted'=>false, 'progress'=>0),
+            'devices'=>array(),
+        );
+    }
+
+    public function scan_progress($userid, $type) {
+        $devices = array();
+        
+        return array('success'=>true,
+            'info'=>array('finished'=>true, 'interrupted'=>false, 'progress'=>100),
+            'devices'=>$devices,
+        );
+    }
+
+    public function scan_cancel($userid, $type) {
+        $devices = array();
+        
+        return array('success'=>true,
+            'info'=>array('finished'=>true, 'interrupted'=>true, 'progress'=>100),
+            'devices'=>$devices,
+        );
     }
 
 }

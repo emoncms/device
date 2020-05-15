@@ -22,7 +22,7 @@ function device_controller()
         else if ($route->action == 'api') {
             $result = view("Modules/device/Views/device_api.php", array());
         }
-        else if ($route->action == "thing" && $session['write']) {
+        else if ($route->action == "thing") {
             if ($route->subaction == "view") {
                 $templates = $device->get_template_list();
                 $result = view("Modules/device/Views/thing_view.php", 
@@ -83,41 +83,15 @@ function device_controller()
         else if ($route->action == "autocreate") {
             if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
         }
-        else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
-            if ($route->subaction == "listshort") {
-                if ($session['userid']>0 && $session['read']) $result = $device->get_template_list_meta();
-            }
-            else if ($route->subaction == "list") {
-                if ($session['userid']>0 && $session['read']) $result = $device->get_template_list();
-            }
-            else if ($route->subaction == "reload") {
-                if ($session['userid']==1 || $session['admin']) $result = $device->reload_template_list();
-            }
-            else if ($route->subaction == "get") {
-                if ($session['userid']>0 && $session['read']) $result = $device->get_template(get('type'));
-            }
-            else if ($route->subaction == "options") {
-                if ($session['userid']>0 && $session['read']) $result = $device->get_template_options(get('type'));
-            }
+        else if ($route->action == "template" || $route->action == "scan") {
+            $result = device_template($device);
         }
-        else if ($route->action == "scan") {
-            if ($route->subaction == "start") {
-                if ($session['userid']>0 && $session['write']) $result = $device->scan_start($session['userid'],get("type"),get("options"));
-            }
-            else if ($route->subaction == "progress") {
-                if ($session['userid']>0 && $session['write']) $result = $device->scan_progress($session['userid'],get("type"));
-            }
-            else if ($route->subaction == "cancel") {
-                if ($session['userid']>0 && $session['write']) $result = $device->scan_cancel($session['userid'],get("type"));
-            }
-        }
-        else if ($route->action == "thing" && 
-                $route->subaction == "list") {
-            if ($session['userid']>0 && $session['write']) $result = $device->get_thing_list($session['userid']);
+        else if ($route->action == "thing" || $route->action == "item") {
+            $result = device_things($device);
         }
         else {
             $deviceid = (int) get('id');
-            if ($device->exist($deviceid)) // if the feed exists
+            if ($device->exist($deviceid)) // if the device exists
             {
                 $deviceget = $device->get($deviceid);
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
@@ -126,32 +100,6 @@ function device_controller()
                     else if ($route->action == 'init') $result = $device->init($deviceid, prop('template'));
                     else if ($route->action == "delete") $result = $device->delete($deviceid);
                     else if ($route->action == "newdevicekey") $result = $device->set_new_devicekey($deviceid);
-                    else if ($route->action == 'template') {
-                        if (isset($_GET['type'])) {
-                            $device->set_fields($deviceid, json_encode(array("type"=>get('type'))));
-                        }
-                        if ($route->subaction == 'prepare') $result = $device->prepare_template($deviceid);
-                        else if ($route->subaction == 'init') $result = $device->init_template($deviceget, prop('template'));
-                    }
-                    else if ($route->action == "thing") {
-                        if ($route->subaction == "get")  $result = $device->get_thing($deviceid);
-                        else if ($route->subaction == 'init') {
-                            if (isset($_GET['type'])) {
-                                $device->set_fields($deviceid, json_encode(array("type"=>get('type'))));
-                            }
-                            $result = $device->init_thing($deviceget);
-                        }
-                    }
-                    else if ($route->action == "item") {
-                        if ($route->subaction == "get")  $result = $device->get_item($deviceid, get('itemid'));
-                        else if ($route->subaction == "on") $result = $device->set_item_on($deviceid, get('itemid'));
-                        else if ($route->subaction == "off") $result = $device->set_item_off($deviceid, get('itemid'));
-                        else if ($route->subaction == "toggle") $result = $device->toggle_item_value($deviceid, get('itemid'));
-                        else if ($route->subaction == "increase") $result = $device->increase_item_value($deviceid, get('itemid'));
-                        else if ($route->subaction == "decrease") $result = $device->decrease_item_value($deviceid, get('itemid'));
-                        else if ($route->subaction == "percent")  $result = $device->set_item_percent($deviceid, get('itemid'), get('value'));
-                        else if ($route->subaction == "set")  $result = $device->set_item_value($deviceid, get('itemid'), get('value'));
-                    }
                 }
             }
             else {
@@ -159,6 +107,104 @@ function device_controller()
             }
         }
     }
-
     return array('content'=>$result);
+}
+
+function device_template($device)
+{
+    global $session, $route;
+    try {
+        if ($route->action == 'template') {
+            if ($route->subaction == "listshort") {
+                if ($session['userid']>0 && $session['read']) return $device->get_template_list_meta();
+            }
+            else if ($route->subaction == "list") {
+                if ($session['userid']>0 && $session['read']) return $device->get_template_list();
+            }
+            else if ($route->subaction == "reload") {
+                if ($session['userid']==1 || $session['admin']) return $device->reload_template_list();
+            }
+            else if ($route->subaction == "options") {
+                if ($session['userid']>0 && $session['read']) return $device->get_template_options(get('type'));
+            }
+            else if ($route->subaction == "get") {
+                if ($session['userid']>0 && $session['read']) return $device->get_template(get('type'));
+            }
+            else if (isset($_GET['id'])) {
+                $deviceid = (int) get('id');
+                if (!$device->exist($deviceid)) {
+                    return array('success'=>false, 'message'=>'Device does not exist');
+                }
+                $deviceget = $device->get($deviceid);
+                if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
+                    if (isset($_GET['type'])) {
+                        $type = get('type');
+                        $deviceget['type'] = $type;
+                        $device->set_fields($deviceid, json_encode(array("type"=>$type)));
+                    }
+                    if ($route->subaction == 'prepare') {
+                        return $device->prepare_template($deviceget);
+                    }
+                    else if ($route->subaction == 'init') {
+                        return $device->init_template($deviceget, prop('template'));
+                    }
+                }
+            }
+        }
+        else if ($route->action == "scan" && $session['userid']>0 && $session['write']) {
+            $type = get('type');
+            $template = $device->get_template_class($type);
+            
+            if ($route->subaction == "start") {
+                return $template->scan_start($session['userid'],$type,get("configs"));
+            }
+            else if ($route->subaction == "progress") {
+                return $template->scan_progress($session['userid'],$type);
+            }
+            else if ($route->subaction == "cancel") {
+                return $template->scan_cancel($session['userid'],$type);
+            }
+        }
+    } catch (DeviceException $e) {
+        return $e->getResult();
+    }
+    return false;
+}
+
+function device_things($device)
+{
+    global $session, $route;
+    try {
+        if ($route->action == 'thing' && 
+                $route->subaction == "list" && $session['userid']>0) {
+            return $device->get_thing_list($session['userid']);
+        }
+        else if (isset($_GET['id'])) {
+            $deviceid = (int) get('id');
+            if (!$device->exist($deviceid)) {
+                return array('success'=>false, 'message'=>'Thing does not exist');
+            }
+            $deviceget = $device->get($deviceid);
+            if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
+                $thingget = $device->get_thing($deviceget);
+                if ($route->action == "thing") {
+                    if ($route->subaction == "get") return $thingget;
+                }
+                else if ($route->action == "item") {
+                    $thing = $device->get_thing_class($deviceget['type']);
+                    if ($route->subaction == "get")  return $thing->get_item($thingget, get('itemid'));
+                    else if ($route->subaction == "on") return $thing->set_item_on($thingget, get('itemid'));
+                    else if ($route->subaction == "off") return $thing->set_item_off($thingget, get('itemid'));
+                    else if ($route->subaction == "toggle") return $thing->toggle_item_value($thingget, get('itemid'));
+                    else if ($route->subaction == "increase") return $thing->increase_item_value($thingget, get('itemid'));
+                    else if ($route->subaction == "decrease") return $thing->decrease_item_value($thingget, get('itemid'));
+                    else if ($route->subaction == "percent")  return $thing->set_item_percent($thingget, get('itemid'), get('value'));
+                    else if ($route->subaction == "set")  return $thing->set_item_value($thingget, get('itemid'), get('value'));
+                }
+            }
+        }
+    } catch (DeviceException $e) {
+        return $e->getResult();
+    }
+    return false;
 }
