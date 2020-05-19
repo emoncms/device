@@ -96,6 +96,8 @@ function device_controller()
                 $deviceget = $device->get($deviceid);
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
                     if ($route->action == "get") $result = $deviceget;
+                    else if ($route->action == 'options') $result = $device->get_options($deviceget);
+                    else if ($route->action == 'configs') $result = $device->get_configs($deviceget);
                     else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
                     else if ($route->action == 'init') $result = $device->init($deviceid, prop('template'));
                     else if ($route->action == "delete") $result = $device->delete($deviceid);
@@ -192,7 +194,8 @@ function device_things($device)
                 }
                 else if ($route->action == "item") {
                     $thing = $device->get_thing_class($deviceget['type']);
-                    if ($route->subaction == "get")  return $thing->get_item($thingget, get('itemid'));
+                    if ($route->subaction == "list")  return $thing->get_item_list($thingget);
+                    else if ($route->subaction == "get")  return $thing->get_item($thingget, get('itemid'));
                     else if ($route->subaction == "on") return $thing->set_item_on($thingget, get('itemid'));
                     else if ($route->subaction == "off") return $thing->set_item_off($thingget, get('itemid'));
                     else if ($route->subaction == "toggle") return $thing->toggle_item_value($thingget, get('itemid'));

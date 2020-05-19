@@ -24,12 +24,12 @@ class DeviceTemplate
 
     // Module required constructor, receives parent as reference
     public function __construct(&$parent) {
-        global $settings;
-        
+        $this->device = &$parent;
         $this->mysqli = &$parent->mysqli;
         $this->redis = &$parent->redis;
         $this->log = new EmonLogger(__FILE__);
         
+        global $settings;
         require_once "Modules/feed/feed_model.php";
         $this->feed = new Feed($this->mysqli, $this->redis, $settings['feed']);
         
@@ -38,6 +38,42 @@ class DeviceTemplate
         
         require_once "Modules/process/process_model.php";
         $this->process = new Process($this->mysqli, $this->input, $this->feed, 'UTC');
+    }
+
+    public function get($type) {
+        $type = preg_replace('/[^\p{L}_\p{N}\s\-:]/u','', $type);
+        $result = $this->load_list();
+        if (isset($result['success']) && $result['success'] == false) {
+            return $result;
+        }
+        if (!isset($result[$type])) {
+            return array('success'=>false, 'message'=>'Device template "'.$type.'" not found');
+        }
+        return $result[$type];
+    }
+
+    public function get_options($type) {
+        $options = array();
+        $result = $this->get($type);
+        if (!is_object($result)) {
+            return $result;
+        }
+        if (isset($result->options)) {
+            foreach ($result->options as $o) {
+                $option = array(
+                    'id' => $o->id,
+                    'name' => isset($o->name) ? $o->name : $o->id,
+                    'description' => isset($o->description) ? $o->description : '',
+                    'mandatory' => isset($o->mandatory) ? $o->mandatory : false,
+                    'type' => isset($o->type) ? $o->type : 'text'
+                );
+                if (isset($o->select)) $option['select'] = $o->select;
+                if (isset($o->default)) $option['default'] = $o->default;
+                
+                $options[] = $option;
+            }
+        }
+        return $options;
     }
 
     public function get_list() {
@@ -90,30 +126,6 @@ class DeviceTemplate
         return $template;
     }
 
-    public function get($type) {
-        $type = preg_replace('/[^\p{L}_\p{N}\s\-:]/u','', $type);
-        $result = $this->load_list();
-        if (isset($result['success']) && $result['success'] == false) {
-            return $result;
-        }
-        if (!isset($result[$type])) {
-            return array('success'=>false, 'message'=>'Device template "'.$type.'" not found');
-        }
-        return $result[$type];
-    }
-
-    public function get_options($type) {
-        $result = $this->get($type);
-        if (!is_object($result)) {
-            return $result;
-        }
-        
-        if (isset($result->options)) {
-            return (array) $result->options;
-        }
-        return array();
-    }
-
     public function set_fields($device, $fields) {
         $template = $this->prepare_template($device);
         if (!is_object($template)) {
@@ -130,7 +142,7 @@ class DeviceTemplate
                 $this->update_feeds($device, $fields->nodeid, $feeds);
             }
         }
-        return array('success'=>true, 'message'=>"Device updated");
+        return array('success'=>true, 'message'=>"Device configuration updated");
     }
 
     protected function update_inputs($device, $nodeid, $inputs) {
@@ -200,11 +212,11 @@ class DeviceTemplate
         if (!is_object($template)) {
             return $template;
         }
-        $options = isset($device['options']) ? (array) $device['options'] : array();
+        $configs = $this->device->get_configs($device);
         $content = json_encode($template);
         
         if (strpos($content, '*') !== false) {
-            $separator = isset($options['sep']) ? $options['sep'] : self::SEPARATOR;
+            $separator = isset($configs['sep']) ? $configs['sep'] : self::SEPARATOR;
             $content = str_replace("*", $separator, $content);
         }
         if (strpos($content, '<node>') !== false) {
@@ -397,6 +409,7 @@ class DeviceTemplate
             }
             $template = $result;
         }
+        if (is_string($template)) $template = json_decode($template);
         if (!is_object($template)) $template = (object) $template;
         
         if (isset($template->feeds)) {
@@ -625,14 +638,14 @@ class DeviceTemplate
         return array('success'=>true, 'message'=>'Device deleted');
     }
 
-    public function scan_start($userid, $type, $options) {
+    public function scan_start($type, $options) {
         return array('success'=>true,
             'info'=>array('finished'=>false, 'interrupted'=>false, 'progress'=>0),
             'devices'=>array(),
         );
     }
 
-    public function scan_progress($userid, $type) {
+    public function scan_progress($type) {
         $devices = array();
         
         return array('success'=>true,
@@ -641,7 +654,7 @@ class DeviceTemplate
         );
     }
 
-    public function scan_cancel($userid, $type) {
+    public function scan_cancel($type) {
         $devices = array();
         
         return array('success'=>true,

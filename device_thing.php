@@ -45,11 +45,10 @@ class DeviceThing
             'name' => $device['name'],
             'description' => $device['description'],
             'type' => $device['type'],
-            'options' => $device['options'],
             'items' => array()
         );
         
-        $items = $this->get_items($thing);
+        $items = $this->get_item_list($thing);
         foreach ($items as &$item) {
             $item['value'] = $this->get_item_value($item);
             
@@ -90,7 +89,7 @@ class DeviceThing
             }
         }
         // If nothing can be found in cache, load and cache all items
-        $items = $this->get_items($thing);
+        $items = $this->get_item_list($thing);
         foreach ($items as $item) {
             if ($item['id'] == $itemid) {
                 return $item;
@@ -99,7 +98,7 @@ class DeviceThing
         return array('success'=>false, 'message'=>'Item does not exist');
     }
 
-    public function get_items($thing) {
+    public function get_item_list($thing) {
         $items = array();
         if ($this->redis && $this->redis->exists("device:thing:".$thing['id'])) {
             $itemids = $this->redis->sMembers("device:thing:".$thing['id']);
@@ -125,8 +124,8 @@ class DeviceThing
             foreach ((array) $items as $key => $value) {
                 if (isset($value['select'])) $value['select'] = json_encode($value['select']);
                 if (isset($value['mapping'])) $value['mapping'] = json_encode($value['mapping']);
-                $this->redis->sAdd("device:thing:$id", $key);
-                $this->redis->hMSet("device:item:$id:$key", $value);
+                $this->redis->sAdd("device:thing:".$thing['id'], $key);
+                $this->redis->hMSet("device:item:".$thing['id'].":$key", $value);
             }
         }
         return $items;
@@ -291,13 +290,13 @@ class DeviceThing
         return array('success'=>false, 'message'=>"Error while setting item value");
     }
 
-}
-
-class ThingException extends DeviceException {
-    public function getResult() {
-        return array(
-            'success'=>false,
-            'message'=>$this->getMessage(),
-            'trace'=>$this->getTrace());
+    public function delete() {
+        if ($this->redis && $this->redis->exists("device:thing:$id")) {
+            foreach ($this->redis->sMembers("device:thing:$id") as $key) {
+                $this->redis->del("device:item:$id:$key");
+                $this->redis->srem("device:thing:$id", $key);
+            }
+        }
     }
+
 }

@@ -13,10 +13,6 @@ var device = {
         return device.request(callback, "device/get.json", "id="+id);
     },
 
-    'options':function(type, callback) {
-        return device.request(callback, "device/template/options.json", "type="+type);
-    },
-
     'newDeviceKey':function(id, callback) {
         return device.request(callback, "device/newdevicekey.json", "id="+id);
     },
