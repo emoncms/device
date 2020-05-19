@@ -44,9 +44,9 @@
 
     <div id="toolbar_bottom"><hr>
         <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
-    <?php if ($settings["redis"]["enabled"] && $session["admin"]) { ?>
+    	<?php if ($settings["redis"]["enabled"] && $session["admin"]) { ?>
         <button id="device-reload" class="btn btn-small" >&nbsp;<i class="icon-refresh" ></i>&nbsp;<?php echo _('Reload device templates'); ?></button>
-    <?php } ?>
+    	<?php } ?>
     </div>
 
     <div id="device-loader" class="ajax-loader"></div>

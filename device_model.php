@@ -133,8 +133,8 @@ class Device
         // Only show authentication details to allowed ip address
         if ($allow_ip == $ip) {
             $this->redis->del("device:auth:allow");
-            global $mqtt_server;
-            return $mqtt_server["user"].":".$mqtt_server["password"].":".$mqtt_server["basetopic"];
+            global $settings;
+            return $settings['mqtt']['user'].":".$settings['mqtt']['password'].":".$settings['mqtt']['basetopic'];
         } else {
             $this->redis->set("device:auth:request", json_encode(array("ip"=>$ip)));
             return array("success"=>true, "message"=>"Authentication request registered for IP $ip");
@@ -345,6 +345,8 @@ class Device
                 );
                 // Add the device to redis
                 if ($this->redis) {
+                    // Reload all devices from mysql here to ensure cache is not out of sync 
+                    $this->load_list_to_redis($userid);
                     $this->redis->sAdd("user:device:$userid", $deviceid);
                     $this->redis->hMSet("device:".$deviceid, $device);
                 }
@@ -415,6 +417,67 @@ class Device
             unset($this->things[$id]);
         }
         return array('success'=>true, 'message'=>'Device successfully deleted');
+    }
+
+    // Clear devices with empty input processLists
+    public function clean($userid,$active=0,$dryrun=0) {
+        $userid = (int) $userid;
+        $active = (int) $active;
+        
+        $now = time();
+        
+        $deleted_inputs = 0;
+        $deleted_nodes = 0;
+    
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey` FROM device WHERE userid = '$userid'");
+        while ($row = $result->fetch_object()) {
+            $id = $row->id;
+            $nodeid = $row->nodeid;
+            
+            // Fetch inputs associated with node
+            $inputs = array();
+            if ($result2 = $this->mysqli->query("SELECT * FROM input WHERE `userid` = '$userid' AND `nodeid` = '$nodeid'")) {
+                while ($row2 = $result2->fetch_object()) $inputs[] = $row2;
+            }
+            
+            // Check that all node inputs are empty
+            $inputs_empty = true;
+            foreach ($inputs as $i) {
+                $inputid = $i->id;
+                
+                if ($i->processList!=NULL && $i->processList!='') {
+                    $inputs_empty = false;
+                }
+
+                if ($active && $this->redis) {
+                   $input_time = $this->redis->hget("input:lastvalue:$inputid",'time');
+                   if (($now-$input_time)<$active) {
+                       $inputs_empty = false;
+                   }
+                }
+            }
+            
+            if ($inputs_empty) {
+                 // Delete node
+                 if (!$dryrun) $this->delete($id);
+                 
+                 // Delete inputs
+                 foreach ($inputs as $i) {
+                    $inputid = $i->id;
+                    if (!$dryrun) {
+                        $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
+                        if ($this->redis) {
+                            $this->redis->del("input:$inputid");
+                            $this->redis->srem("user:inputs:$userid",$inputid);
+                        }
+                    }
+                    $deleted_inputs++;
+                }
+                $deleted_nodes++;
+            }
+        }
+        if ($dryrun) return "DRYRUN: $deleted_nodes nodes to delete ($deleted_inputs inputs)";
+        return "Deleted $deleted_nodes nodes ($deleted_inputs inputs)";
     }
 
     public function set_fields($id, $fields) {
