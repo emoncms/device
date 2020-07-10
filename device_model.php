@@ -735,7 +735,7 @@ class Device
     private function parse_template_meta($template) {
         return array(
             "module" => $template->module,
-            "name" => empty($template->name) ? $id : $template->name,
+            "name" => $template->name,
             "group" => empty($template->group) ? "Miscellaneous" : $template->group,
             "category" => empty($template->category) ? "General" : $template->category,
             "description" => empty($template->description) ? "" : $template->description,
