@@ -794,11 +794,13 @@ class Device
     private function load_thing_list() {
         $devices = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type` FROM device");
         while ($device = (array) $devices->fetch_object()) {
-            try {
-                $this->get_thing_class($device['type'])->load($device);
-            }
-            catch(Exception $e) {
-                // Do nothing and skip device thing
+            if (!empty($device['type'])) {
+                try {
+                    $this->get_thing_class($device['type'])->load($device);
+                }
+                catch(Exception $e) {
+                    // Do nothing and skip device thing
+                }
             }
         }
     }

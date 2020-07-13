@@ -115,6 +115,9 @@ class DeviceThing
         if (!is_object($template)) {
             throw new DeviceException($template['message']);
         }
+        if (empty($template->items)) {
+            return $items;
+        }
         for ($i=0; $i<count($template->items); $i++) {
             $item = (array) $template->items[$i];
             $items[] = $this->parse_item($thing, $item, $template);
