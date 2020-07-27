@@ -47,27 +47,27 @@ class DeviceThing
             'type' => $device['type'],
             'items' => array()
         );
+        $keys = array(
+            'id',
+            'type',
+            'label',
+            'header',
+            'write',
+            'left',
+            'right',
+            'format',
+            'scale',
+            'min',
+            'max',
+            'step',
+            'select',
+            'default',
+            'value'
+        );
         
         $items = $this->get_item_list($thing);
         foreach ($items as &$item) {
             $item['value'] = $this->get_item_value($item);
-            
-            $keys = array(
-                'id',
-                'type',
-                'label',
-                'header',
-                'write',
-                'left',
-                'right',
-                'format',
-                'scale',
-                'min',
-                'max',
-                'step',
-                'select',
-                'default'
-            );
             foreach (array_keys($item) as $key) {
                 if (!in_array($key, $keys)) unset($item[$key]);
             }
