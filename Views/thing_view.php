@@ -165,6 +165,9 @@ function drawThing(thing) {
         var item = thing.items[i];
         var itemid = thingid+'-'+item.id.toLowerCase().replace(/[_.:/ ]/g, '-');
         
+        if (typeof item.value == 'undefined' || item.value == null) {
+            continue;
+        }
         if (typeof item.header !== 'undefined' && item.header) {
             header += drawItem("header", itemid, item, collapsed[thingid]);
         }
