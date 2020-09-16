@@ -116,12 +116,15 @@ class Device
         $userid = intval($userid);
         $name = preg_replace('/[^\p{L}_\p{N}\s\-:]/u','',$name);
         
-        $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND name=?");
+        $stmt = $this->mysqli->prepare("SELECT id,name FROM device WHERE userid=? AND name=?");
         $stmt->bind_param("is", $userid, $name);
         $stmt->execute();
-        $stmt->bind_result($id);
+        $stmt->bind_result($id,$_name);
         $result = $stmt->fetch();
         $stmt->close();
+
+        // SQL search may not be case sensitive
+        if ($_name!=$name) return false;
         
         if ($result && $id > 0) return $id; else return false;
     }
@@ -130,12 +133,15 @@ class Device
         $userid = intval($userid);
         $nodeid = preg_replace('/[^\p{L}_\p{N}\s\-:]/u','',$nodeid);
 
-        $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND nodeid=?");
+        $stmt = $this->mysqli->prepare("SELECT id,nodeid FROM device WHERE userid=? AND nodeid=?");
         $stmt->bind_param("is", $userid, $nodeid);
         $stmt->execute();
-        $stmt->bind_result($id);
+        $stmt->bind_result($id,$_nodeid);
         $result = $stmt->fetch();
         $stmt->close();
+        
+        // SQL search may not be case sensitive
+        if ($_nodeid!=$nodeid) return false;
         
         if ($result && $id > 0) return $id; else return false;
     }
