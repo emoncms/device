@@ -542,7 +542,10 @@ var device_dialog =
                     var inputId = device_dialog.device.inputs[i].id;
                     inputIds.push(parseInt(inputId));
                 }
-                input.delete_multiple(inputIds);
+                input.delete_multiple_async(inputIds)
+                .done(function(){
+                    update();
+                });
             }
             $('#device-delete-modal').modal('hide');
             $('#wrap').trigger("device-delete");
