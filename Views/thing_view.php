@@ -181,6 +181,9 @@ function drawThing(thing) {
         item['thingid'] = thing.id;
         items[itemid] = item;
     }
+    if (list.length < 1) {
+        return;
+    }
     things[thingid] = thing;
     
     $("#thing-list").append(
