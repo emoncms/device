@@ -1,4 +1,6 @@
 {
     "name"         : "Device",
-    "version"      : "2.0.5"
+    "version"      : "2.0.10",
+    "location"     : "/var/www/emoncms/Modules",
+    "branches_available": ["stable","master"]
 }

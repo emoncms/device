@@ -107,16 +107,36 @@ class Device
         return $device_exist;
     }
 
+    public function exists_name($userid, $name) {
+        $userid = intval($userid);
+        $name = preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u','',$name);
+        
+        $stmt = $this->mysqli->prepare("SELECT id,name FROM device WHERE userid=? AND name=?");
+        $stmt->bind_param("is", $userid, $name);
+        $stmt->execute();
+        $stmt->bind_result($id,$_name);
+        $result = $stmt->fetch();
+        $stmt->close();
+        
+        // SQL search may not be case sensitive
+        if ($_name != $name) return false;
+        
+        if ($result && $id > 0) return $id; else return false;
+    }
+
     public function exists_nodeid($userid, $nodeid) {
         $userid = intval($userid);
         $nodeid = preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $nodeid);
-
-        $stmt = $this->mysqli->prepare("SELECT id FROM device WHERE userid=? AND nodeid=?");
+        
+        $stmt = $this->mysqli->prepare("SELECT id,nodeid FROM device WHERE userid=? AND nodeid=?");
         $stmt->bind_param("is", $userid, $nodeid);
         $stmt->execute();
-        $stmt->bind_result($id);
+        $stmt->bind_result($id, $_nodeid);
         $result = $stmt->fetch();
         $stmt->close();
+        
+        // SQL search may not be case sensitive
+        if ($_nodeid != $nodeid) return false;
         
         if ($result && $id > 0) return $id; else return false;
     }
@@ -275,10 +295,9 @@ class Device
         if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $nodeid) != $nodeid) {
             return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : and space characters");
         }
-        if (isset($type) && $type != 'null') {
-            $type = preg_replace('/[^\/\|\,\w\s\-\:]/','',$type);
-        } else {
-            $type = '';
+        if (!isset($type) || $type == 'null') $type = '';
+        else if (preg_replace('/[^\p{N}\p{L}\-\_]/u', '', $type) != $type) {
+            return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - and _ characters");
         }
         $name = "$nodeid:$type";
         
@@ -307,7 +326,7 @@ class Device
         if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $nodeid) != $nodeid) {
             return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : and space characters");
         }
-        if (!isset($name)) $name = '';
+        if (!isset($name)) $name = $nodeid;
         else if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $name) != $name) {
             return array('success'=>false, 'message'=>"Device name must only contain A-Z a-z 0-9 - _ . : and space characters");
         }
@@ -315,10 +334,9 @@ class Device
         else if (preg_replace('/[^\p{N}\p{L}\-\_\.\:\s]/u', '', $description) != $description) {
             return array('success'=>false, 'message'=>"Device description must only contain A-Z a-z 0-9 - _ . : and space characters");
         }
-        if (isset($type) && $type != 'null') {
-            $type = preg_replace('/[^\/\|\,\w\s\-\:]/','', $type);
-        } else {
-            $type = '';
+        if (!isset($type) || $type == 'null') $type = '';
+        else if (preg_replace('/[^\p{N}\p{L}\-\_]/u', '', $type) != $type) {
+            return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - and _ characters");
         }
         
         if (!$this->exists_nodeid($userid, $nodeid)) {
@@ -532,7 +550,9 @@ class Device
         }
         
         if (isset($fields->type)) {
-            if (preg_replace('/[^\/\|\,\w\s\-:]/','',$fields->type)!=$fields->type) return array('success'=>false, 'message'=>'invalid characters in device type');
+            if (preg_replace('/[^\p{N}\p{L}\-\_]/u', '', $fields->type) != $fields->type) {
+                return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - and _ characters");
+            }
             $stmt = $this->mysqli->prepare("UPDATE device SET type = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->type,$id);
             if ($stmt->execute()) {
