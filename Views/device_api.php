@@ -42,6 +42,7 @@
 <table class="table">
     <tr><td><?php echo _('List devices'); ?></td><td><a href="<?php echo $path; ?>device/list.json"><?php echo $path; ?>device/list.json</a></td></tr>
     <tr><td><?php echo _('Get device details'); ?></td><td><a href="<?php echo $path; ?>device/get.json?id=1"><?php echo $path; ?>device/get.json?id=1</a></td></tr>
+    <tr><td><?php echo _('Get device configs'); ?></td><td><a href="<?php echo $path; ?>device/configs.json?id=1"><?php echo $path; ?>device/configs.json?id=1</a></td></tr>
     <tr><td><?php echo _('Add a device'); ?></td><td><a href="<?php echo $path; ?>device/create.json?nodeid=Test&name=Test"><?php echo $path; ?>device/create.json?nodeid=Test&name=Test</a></td></tr>
     <tr><td><?php echo _('Delete device'); ?></td><td><a href="<?php echo $path; ?>device/delete.json?id=1"><?php echo $path; ?>device/delete.json?id=1</a></td></tr>
     <tr><td><?php echo _('Update device'); ?></td><td><a href="<?php echo $path; ?>device/set.json?id=1&fields={%22name%22:%22Test%22,%22description%22:%22Room%22,%22nodeid%22:%22House%22,%22type%22:%22test%22}"><?php echo $path; ?>device/set.json?id=1&fields={"name":"Test","description":"Room","nodeid":"House","type":"test"}</a></td></tr>
@@ -61,7 +62,15 @@
     <tr><td><?php echo _('List templates'); ?></td><td><a href="<?php echo $path; ?>device/template/list.json"><?php echo $path; ?>device/template/list.json</a></td></tr>
     <tr><td><?php echo _('Reload templates'); ?></td><td><a href="<?php echo $path; ?>device/template/reload.json"><?php echo $path; ?>device/template/reload.json</a></td></tr>
     <tr><td><?php echo _('get template details'); ?></td><td><a href="<?php echo $path; ?>device/template/get.json?type=example"><?php echo $path; ?>device/template/get.json?type=example</a></td></tr>
+    <tr><td><?php echo _('get template options'); ?></td><td><a href="<?php echo $path; ?>device/template/options.json?type=example"><?php echo $path; ?>device/template/options.json?type=example</a></td></tr>
     <tr><td><?php echo _('Prepare device initialization'); ?></td><td><a href="<?php echo $path; ?>device/template/prepare.json?id=1"><?php echo $path; ?>device/template/prepare.json?id=1</a></td></tr>
+</table>
+
+<p><b><?php echo _('Scan actions'); ?></b></p>
+<table class="table">
+    <tr><td><?php echo _('Start device scan'); ?></td><td><a href="<?php echo $path; ?>device/scan/start.json?type=example&options={}"><?php echo $path; ?>device/scan/start.json?type=example&options={}</a></td></tr>
+    <tr><td><?php echo _('Get device scan progress'); ?></td><td><a href="<?php echo $path; ?>device/scan/progress.json?type=example"><?php echo $path; ?>device/scan/progress.json?type=example</a></td></tr>
+    <tr><td><?php echo _('Cancel device scan'); ?></td><td><a href="<?php echo $path; ?>device/scan/camncel.json?type=example"><?php echo $path; ?>device/scan/camncel.json?type=example</a></td></tr>
 </table>
 
 <a class="anchor" id="expression"></a> 

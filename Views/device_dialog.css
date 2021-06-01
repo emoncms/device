@@ -1,57 +1,57 @@
 .modal-adjust {
-    width: 88%;
-    left: 6%; /* (100%-width)/2 */
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+    left: 0px;
+    border-radius: 0;
+    border: none;
+    width: 100%;
     overflow-y: hidden;
 }
-@media (min-width: 1280px) {
+@media (min-width: 480px) {
+    .modal-adjust {
+        border-radius: 6px;
+        border: 1px solid rgba(0,0,0,0.3);
+    }
+}
+@media (min-width: 480px) and (max-width: 767px) {
+    .modal-adjust {
+        width: 90%;
+        top: 5%;
+        left: 5%;
+        right: 5%;
+    }
+}
+@media (min-width: 768px) {
+    .modal-adjust {
+        width: 80%;
+        right: 10%;
+        left: 10%;
+    }
+}
+@media (min-width: 979px) {
     .modal-adjust {
         width: 60%;
-        left: 20%; /* (100%-width)/2 */
-        margin-left: auto;
-        margin-right: auto;
-        overflow-y: hidden;
+        right: 20%;
+        left: 20%;
     }
 }
 
 .modal-adjust .modal-body {
+    padding: 0;
     max-height: none;
     overflow-y: hidden;
 }
 
-.modal-adjust .tooltip-inner {
-    max-width: 250px;
+/* hide/show items on very small devices */
+.modal-adjust .visible-xs {
+    display: none
 }
-
-.modal-adjust .divider {
-    *width: 100%;
-    height: 1px;
-    margin: 9px 1px;
-    *margin: -5px 0 5px;
-    overflow: hidden;
-    background-color: #e5e5e5;
-    border-bottom: 1px solid #ffffff;
-}
-
-.modal-adjust .alert-comment {
-    margin: 0px;
-    color: #737373;
-    background-color: #f9f9f9;
-    border-color: #e6e6e6;
-}
-
-.modal-adjust .alert-comment h4 {
-    color: #737373;
-}
-
-.modal-adjust .content {
-    position: absolute;
-    left: 15px;
-    right: 0px;
-    bottom: 0px;
-    height: 100%;
-    overflow-y: auto;
+@media (max-width: 375px) {
+    .modal-adjust .hidden-xs {
+        display: none
+    }
+    .modal-adjust .visible-xs {
+        display: inline-block
+    }
 }
 
 .modal-overlay {
@@ -60,32 +60,51 @@
     margin: auto;
     background: rgba(255, 255, 255, .8) center;
 }
+
 .modal-content {
     position: absolute;
-    left: 15px;
+    left: 0px;
     right: 0px;
-    padding-right: 15px;
-    margin-left: 15px;
-    margin-top: -15px;
+    padding: 0 15px;
     height: 100%;
-    max-height: none;
+    min-width: 345px;
+    overflow-x: hidden;
     overflow-y: auto;
+    transition: width 0.5s ease-in-out;
+}
+.modal-content .btn-sidebar-open {
+    margin-bottom: 5px;
 }
 
-.modal-content .btn-sidebar {
-  margin-bottom: 5px;
-}
 .modal-sidebar {
+    width: 0;
     position: absolute;
-    margin-top: -15px;
-    margin-left: -15px;
     max-height: none;
     height: 100%;
-    width: 250px;
     overflow-x: hidden;
     overflow-y: auto;
     background-color: #f2f2f2;
+    transition: width 0.3s ease-in-out;
     z-index: 1000;
+}
+.modal-sidebar.show {
+    width: 100%;
+}
+.modal-sidebar .btn-sidebar-close {
+    right: 0;
+    top: .5em;
+    position: absolute;
+    cursor: pointer;
+    line-height: 1.3;
+    background: #f2f2f2;
+    padding: .3em .6em;
+}
+.modal-sidebar .alert {
+    margin-bottom: 0;
+    padding-left: 10px;
+    line-height: 1.1;
+    border: 0;
+    border-radius: 0;
 }
 .modal-sidebar .accordion {
   margin-bottom: 0px;
@@ -100,6 +119,10 @@
 .modal-sidebar .accordion-inner {
     padding: 0px;
     border-top: 0px;
+}
+.modal-sidebar .accordion-toggle {
+    white-space: nowrap;
+    overflow: hidden;
 }
 .modal-sidebar .category-heading {
     background-color: #cccccc;
@@ -135,6 +158,52 @@
     background-color: #44b3e2;
     color: #ffffff;
 }
+@media (min-width: 680px) { 
+    .modal-sidebar.show {
+        width: 250px;
+        transition: none;
+    }
+    #device-content {
+        left: 250px;
+    }
+}
+
+.modal-adjust .input-icon {
+    display: inline-block;
+    vertical-align: middle;
+    height: 20px;
+    line-height: 20px;
+    margin-bottom: 8px;
+}
+.modal-adjust .device-key {
+    font-size: 12px !important;
+    font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+}
+
+.modal-adjust .tooltip-inner {
+    max-width: 250px;
+    #color: #333;
+    #background-color: #f5f5f5;
+    #border: 1px solid #f0f0f0;
+}
+.modal-adjust .alert-comment {
+    margin: 0px;
+    color: #737373;
+    background-color: #f9f9f9;
+    border-color: #e6e6e6;
+}
+.modal-adjust .alert-comment h4 {
+    color: #737373;
+}
+.modal .divider {
+    *width: 100%;
+    height: 1px;
+    margin: 9px 1px;
+    *margin: -5px 0 5px;
+    overflow: hidden;
+    background-color: #e5e5e5;
+    border-bottom: 1px solid #ffffff;
+}
 
 .device-selected {
     background-color: #209ed3 !important;
@@ -156,111 +225,160 @@
 .device-input td:nth-of-type(1) { width:108px; }
 .device-input td:nth-of-type(2) { width:168px; }
 
+.modal-options {
+    margin-bottom: 10px;
+    position: relative;
+    width:100%;
+}
+
+.modal-options .option-header {
+    cursor: pointer;
+    padding-top: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-options .option-header .icon-collapse {
+    vertical-align: middle;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 4px;
+    opacity: 0.3;
+}
+
+.modal-options .option-header h5 {
+    vertical-align: middle;
+    margin: 0px;
+}
+
+.modal-options .option-header:hover {
+    background-color: #f5f5f5;
+}
+
+.modal-options .input-large {
+    margin-bottom: 0px;
+}
+
+.table-options input[type="text"] {
+    width: 195px;
+}
+
+.table-options input[type="checkbox"] {
+    margin: 0px;
+}
+.table-options input[type=checkbox]:focus+:before {
+    outline: none !important;
+}
+.checkbox-slider--b-flat input+span {
+    cursor: default !important;
+}
+
+/* Chrome */
+@supports (-webkit-appearance:none ) {
+    .checkbox-slider--b-flat {
+        height: 20px;
+        padding: 0px;
+    }
+}
+
+/* IE */
+@media screen and (-ms-high-contrast: active) , ( -ms-high-contrast : none) {
+    .checkbox-slider--b-flat {
+        height: 20px;
+    }
+}
+
+/* Firefox */
+_:-moz-tree-row(hover), .checkbox-slider--b-flat {
+    height: 20px;
+    width: 20px;
+    border-radius: 25px;
+    background-color: gainsboro;
+}
+
+*::before, *::after {
+    box-sizing: border-box;
+}
+
+.table-options .option-input {
+    margin: 0px;
+}
+.table-options .option-comment {
+    color:#888;
+    font-size:12px;
+}
+@media (max-width: 480px) {
+    .table-options .option-comment {
+        display: none;
+    }
+}
+
+.table-options tbody + tbody {
+    border-top: 1px solid #dddddd;
+}
+.table-options tbody:hover {
+    background-color: #f5f5f5;
+}
+.table-options td {
+    border-top-width: 0px;
+    vertical-align: middle;
+}
+.table-options td:nth-of-type(3) { text-align: right; }
+.table-options td:nth-of-type(4) { width:14px; text-align: center; }
+
+.table-feeds td,
+.table-inputs td {
+    text-align: left;
+    white-space: nowrap;
+}
 .table-feeds td:nth-of-type(1) { width:14px; text-align: center; }
 .table-feeds td:nth-of-type(2) { width:5%; }
-.table-feeds td:nth-of-type(3) { width:15%; }
+.table-feeds td:nth-of-type(3) { width:20%; }
 .table-feeds td:nth-of-type(4) { width:25%; }
 
 .table-inputs td:nth-of-type(1) { width:14px; text-align: center; }
 .table-inputs td:nth-of-type(2) { width:5%; }
 .table-inputs td:nth-of-type(3) { width:5%; }
-.table-inputs td:nth-of-type(4) { width:10%; }
+.table-inputs td:nth-of-type(4) { width:15%; }
 .table-inputs td:nth-of-type(5) { width:25%; }
 
-
-#device-config-modal.modal {
-    margin: 0;
-    border-radius: 0;
-    border: none;
-    width: 100%;
-    left: 0;
-    top: 3%;
-}
-#device-config-body {
-    padding: 0
-}
-#device-config-modal.modal .accordion-toggle {
-    white-space: nowrap;
-    overflow: hidden;
-}
-#device-content {
-    left: 0.2rem;
-    margin-left: 0;
-    transition: width 0.5s ease-in-out;
-}
-#device-sidebar-close {
-    cursor: pointer;
+.scan-progress {
     position: absolute;
-    right: 0;
-    top: .5em;
-    line-height: 1.3;
-    background: #f2f2f2;
-    padding: .3em .6em;
-}
-#device-sidebar {
-    transition: width 0.3s ease-in-out;
-    width: 0;
-}
-#device-sidebar.show {
-    width: 100%;
-}
-.key {
-    font-size: 12px !important;
-    font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
-}
-#device-config-modal.modal .modal-content {
-    margin-top: 0
-}
-#device-config-modal.modal .modal-sidebar {
-    margin: 0
+    top: 49px;
+    left: 0px;
+    right: 0px;
+    -webkit-border-radius: 0px;
+       -moz-border-radius: 0px;
+            border-radius: 0px;
 }
 
-/* add horizontal padding to devices larger than iphone5 (320px)*/
-@media (min-width: 340px) {
-    #device-config-modal.modal {
-        margin: 0 auto
-    }
-    #device-config-modal.modal .modal-sidebar {
-        margin: 0 -1rem
-    }
-    #device-content {
-        left: 15px;
-    }
-    #device-config-body {
-        padding: 0 1rem
-    }
+.progress-default .bar,
+.progress .bar-default {
+    background-color: #dddddd;
+    background-image: -moz-linear-gradient(top, #eeeeee, #cccccc);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#eeeeee), to(#cccccc));
+    background-image: -webkit-linear-gradient(top, #eeeeee, #cccccc);
+    background-image: -o-linear-gradient(top, #eeeeee, #cccccc);
+    background-image: linear-gradient(to bottom, #eeeeee, #cccccc);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffeeeeee', endColorstr='#ffcccccc', GradientType=0);
 }
 
-@media (min-width: 680px) { 
-    #device-sidebar.show {
-        width: 250px;
-        transition: none;
-    }
-    #device-content {
-        left: 270px;
-    }
-    #device-config-modal.modal {
-        margin: 0;
-        border-radius: 6px;
-        border: 1px solid rgba(0,0,0,0.3);
-        width: 94%;
-        left: 3%;
-    }
-    #device-config-modal.modal .modal-sidebar {
-        margin: 0 -1rem
-    }
-
+.progress-default.progress-striped .bar,
+.progress-striped .bar-default {
+    background-color: #eeeeee;
+    background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
 
-/* hide/show items on very small devices */
-.visible-xs {
-    display: none
+.scan-result li {
+    padding: 6px 6px 6px 0px;
+    vertical-align: middle;
+    cursor: pointer;
 }
-@media (max-width: 375px) {
-    .hidden-xs {
-        display: none
-    }
-    .visible-xs {
-        display: inline-block
-    }
-}
+.scan-result li:hover,
+.scan-result li:focus {
+    color: #3a87ad;

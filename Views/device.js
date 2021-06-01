@@ -1,49 +1,95 @@
 var device = {
-    'list':function() {
-        var result = {};
-        $.ajax({ url: path+"device/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
+
+    'create':function(nodeid, name, description, type, options, callback) {
+        return device.request(callback, "device/create.json", "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type+
+                "&options="+JSON.stringify(options));
     },
 
-    'get':function(id) {
-        var result = {};
-        $.ajax({ url: path+"device/get.json", data: "id="+id, async: false, success: function(data) {result = data;} });
-        return result;
+    'list':function(callback) {
+        return device.request(callback, "device/list.json");
     },
 
-    'set':function(id, fields) {
-        var result = {};
-        $.ajax({ url: path+"device/set.json", data: "id="+id+"&fields="+JSON.stringify(fields), async: false, success: function(data) {result = data;} });
-        return result;
+    'get':function(id, callback) {
+        return device.request(callback, "device/get.json", "id="+id);
     },
 
-    'setNewDeviceKey':function(id) {
-        var result = {};
-        $.ajax({ url: path+"device/setnewdevicekey.json", data: "id="+id, async: false, success: function(data) {result = data;} });
-        return result;
+    'newDeviceKey':function(id, callback) {
+        return device.request(callback, "device/newdevicekey.json", "id="+id);
     },
 
-    'remove':function(id) {
-        var result = {};
-        $.ajax({ url: path+"device/delete.json", data: "id="+id, async: false, success: function(data) {result = data;} });
-        return result;
+    'set':function(id, fields, callback) {
+        return device.request(callback, "device/set.json", "id="+id+"&fields="+JSON.stringify(fields));
     },
 
-    'create':function(nodeid, name, description, type) {
-        var result = {};
-        $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type, async: false, success: function(data) {result = data;} });
-        return result;
+    'remove':function(id, callback) {
+        return device.request(callback, "device/delete.json", "id="+id);
     },
 
-    'init':function(id, template) {
-        var result = {};
-        $.ajax({ url: path+"device/init.json?id="+id, type: 'POST', data: "template="+JSON.stringify(template), dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
+    'scanStart':function(type, options, callback) {
+        return device.request(callback, "device/scan/start.json", "type="+type+"&options="+JSON.stringify(options));
     },
 
-    'prepareTemplate':function(id) {
-        var result = {};
-        $.ajax({ url: path+"device/template/prepare.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
+    'scanProgress':function(type, callback) {
+        return device.request(callback, "device/scan/progress.json", "type="+type);
+    },
+
+    'scanCancel':function(type, callback) {
+        return device.request(callback, "device/scan/cancel.json", "type="+type);
+    },
+
+    'reload':function(callback) {
+        return device.request(callback, "device/template/reload.json");
+    },
+
+    'prepare':function(id, callback) {
+        return device.request(callback, "device/template/prepare.json", "id="+id);
+    },
+
+    'init':function(id, template, callback) {
+        return $.ajax({
+            'url': path+"device/init.json?id="+id,
+            'data': "template="+JSON.stringify(template),
+            'dataType': 'json',
+            'type': 'POST',
+            'async': true,
+            'success': callback
+        });
+    },
+
+    'request':function(callback, action, data) {
+        var request = {
+            'url': path+action,
+            'dataType': 'json',
+            'async': true,
+            'success': callback,
+            'error': function(error) {
+                var message = "Failed to request server";
+                if (typeof error !== 'undefined') {
+                    message += ": ";
+                    
+                    if (typeof error.responseText !== 'undefined') {
+                        message += error.responseText;
+                    }
+                    else if (typeof error !== 'string') {
+                        message += JSON.stringify(error);
+                    }
+                    else {
+                        message += error;
+                    }
+                }
+                console.warn(message);
+                if (typeof callback === 'function') {
+                    callback({
+                        'success': false,
+                        'message': message
+                    });
+                }
+//                return device.request(callback, action, data);
+            }
+        }
+        if (typeof data !== 'undefined') {
+            request['data'] = data;
+        }
+        return $.ajax(request);
     }
 }

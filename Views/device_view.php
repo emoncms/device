@@ -1,5 +1,5 @@
 <?php
-    global $path, $settings, $session;
+    global $path, $session, $settings;
     
     $version = 2;
 ?>
@@ -13,7 +13,7 @@
 #table input[type="text"] {
   width: 88%;
 }
-#table td:nth-of-type(1) { width:5%;}
+#table td:nth-of-type(1) { width:10%;}
 #table th:nth-of-type(5), td:nth-of-type(5) { text-align: right; }
 #table th:nth-of-type(6), td:nth-of-type(6) { text-align: right; }
 #table th[fieldg="time"] { font-weight:normal; text-align: right; }
@@ -44,12 +44,12 @@
 
     <div id="toolbar_bottom"><hr>
         <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
-        <?php if ($settings['redis']['enabled'] && $session["admin"]) { ?>
+    	<?php if ($settings["redis"]["enabled"] && $session["admin"]) { ?>
         <button id="device-reload" class="btn btn-small" >&nbsp;<i class="icon-refresh" ></i>&nbsp;<?php echo _('Reload device templates'); ?></button>
-        <?php } ?>
+    	<?php } ?>
     </div>
-	
-	<div id="device-loader" class="ajax-loader"></div>
+
+    <div id="device-loader" class="ajax-loader"></div>
 </div>
 
 <?php require "Modules/device/Views/device_dialog.php"; ?>
@@ -89,7 +89,7 @@
 
   function update(){
     var requestTime = (new Date()).getTime();
-    $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+    device.list(function(data, textStatus, xhr) {
       table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
       table.data = data;
 
@@ -116,7 +116,7 @@
         $("#api-help-header").hide();
       }
       $("#device-loader").hide();
-    }});
+    });
   }
 
   var updater;
@@ -142,8 +142,13 @@
 
   $("#table").bind("onDelete", function(e,id,row) {
     // Get device of clicked row
-    var localDevice = device.get(id);
-    device_dialog.loadDelete(localDevice, row);
+    device.get(id, function(result) {
+        if (typeof result.success !== 'undefined' && !result.success) {
+            alert('Unable to retrieve device:\n'+result.message);
+            return false;
+        }
+        device_dialog.loadDelete(result, row);
+    });
   });
 
   $("#table").on('click', '.icon-wrench', function() {
@@ -157,10 +162,8 @@
   });
 
   $("#device-reload").click(function() {
-    $.ajax({ url: path+"device/template/reload.json", async: true, dataType: "json", success: function(result)
-      {
-        alert(result.message);
-      }
+    device.reload(function(result) {
+      alert(result.message);
     });
   });
 
