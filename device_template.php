@@ -41,8 +41,8 @@ class DeviceTemplate
     }
 
     public function get($type) {
-        if (preg_replace('/[^\p{N}\p{L}\-\_]/u', '', $type) != $type) {
-            return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - and _ characters");
+        if (preg_replace('/[^\p{N}\p{L}\-\_\/]/u', '', $type) != $type) {
+            return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - _ / characters");
         }
         $result = $this->load_list();
         if (isset($result['success']) && $result['success'] == false) {

@@ -296,8 +296,8 @@ class Device
             return array('success'=>false, 'message'=>"Device key must only contain A-Z a-z 0-9 - _ . : and space characters");
         }
         if (!isset($type) || $type == 'null') $type = '';
-        else if (preg_replace('/[^\p{N}\p{L}\-\_]/u', '', $type) != $type) {
-            return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - and _ characters");
+        else if (preg_replace('/[^\p{N}\p{L}\-\_\/]/u', '', $type) != $type) {
+            return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - _ / characters");
         }
         $name = "$nodeid:$type";
         
@@ -335,8 +335,8 @@ class Device
             return array('success'=>false, 'message'=>"Device description must only contain A-Z a-z 0-9 - _ . : and space characters");
         }
         if (!isset($type) || $type == 'null') $type = '';
-        else if (preg_replace('/[^\p{N}\p{L}\-\_]/u', '', $type) != $type) {
-            return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - and _ characters");
+        else if (preg_replace('/[^\p{N}\p{L}\-\_\/]/u', '', $type) != $type) {
+            return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - _ / characters");
         }
         
         if (!$this->exists_nodeid($userid, $nodeid)) {
@@ -550,8 +550,8 @@ class Device
         }
         
         if (isset($fields->type)) {
-            if (preg_replace('/[^\p{N}\p{L}\-\_]/u', '', $fields->type) != $fields->type) {
-                return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - and _ characters");
+            if (preg_replace('/[^\p{N}\p{L}\-\_\/]/u', '', $fields->type) != $fields->type) {
+                return array('success'=>false, 'message'=>"Device type must only contain A-Z a-z 0-9 - _ / characters");
             }
             $stmt = $this->mysqli->prepare("UPDATE device SET type = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->type,$id);
