@@ -356,7 +356,7 @@ class Device
         
         if (!$this->exists_nodeid($userid, $nodeid)) {
             // device key disabled by default
-            $devicekey = ""; // md5(uniqid(mt_rand(), true));
+            $devicekey = ""; 
             
             $stmt = $this->mysqli->prepare("INSERT INTO device (userid,nodeid,name,description,type,devicekey) VALUES (?,?,?,?,?,?)");
             $stmt->bind_param("isssss",$userid,$nodeid,$name,$description,$type,$devicekey);
@@ -552,7 +552,7 @@ class Device
             }
         }
         
-        $devicekey = md5(uniqid(mt_rand(), true));
+        $devicekey = bin2hex(random_bytes(16));
         
         $stmt = $this->mysqli->prepare("UPDATE device SET devicekey = ? WHERE id = ?");
         $stmt->bind_param("si",$devicekey,$id);
