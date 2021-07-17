@@ -552,7 +552,7 @@ class Device
             }
         }
         
-        $devicekey = bin2hex(random_bytes(16));
+        $devicekey = generate_secure_key(16);
         
         $stmt = $this->mysqli->prepare("UPDATE device SET devicekey = ? WHERE id = ?");
         $stmt->bind_param("si",$devicekey,$id);
