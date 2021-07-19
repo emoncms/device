@@ -5,7 +5,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function device_controller()
 {
-    global $mysqli, $redis, $session, $route, $device;
+    global $mysqli, $redis, $session, $route, $device, $settings;
 
     $result = false;
 
@@ -32,7 +32,11 @@ function device_controller()
         // 4. device makes follow up request for authentication
         //    - reply authentication details
         // ---------------------------------------------------------------
+
         /*
+        if ($route->action == "authcheck") { $route->action = "auth"; $route->subaction = "check"; } 
+        if ($route->action == "authallow") { $route->action = "auth"; $route->subaction = "allow"; }         
+
         if ($route->action == "auth") {
             if ($route->subaction=="request") {
                 // 1. Register request for authentication details, or provide if allowed
@@ -42,14 +46,23 @@ function device_controller()
                 }
                 $route->format = "text";
             }
-            else if ($route->subaction=="check" && $session['write']) {
+            else if ($route->subaction=="check" && $session['read']) {
                 // 2. User checks for device waiting for authentication
                 $result = $device->get_auth_request();
+
+                if (isset($settings["device"]["enable_UDP_broadcast"]) && $settings["device"]["enable_UDP_broadcast"]) {
+                    $port = 5005;
+                    $broadcast_string = "emonpi.local";
+                    $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+                    socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
+                    socket_sendto($sock, $broadcast_string, strlen($broadcast_string), 0, '255.255.255.255', $port);
+                }
             }
             else if ($route->subaction=="allow" && $session['write']) {
                 // 3. User allows device to receive authentication details
                 $result = $device->allow_auth_request(get("ip"));
             }
+
         }*/
         if ($route->action == 'list') {
             if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
@@ -63,16 +76,16 @@ function device_controller()
         }
         else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
             if ($route->subaction == "listshort") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta($session['userid']);
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta();
             }
             else if ($route->subaction == "list") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list($session['userid']);
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list();
             }
             else if ($route->subaction == "reload") {
-                if ($session['userid']>0 && $session['write']) $result = $device->reload_template_list($session['userid']);
+                if ($session['userid']>0 && $session['write']) $result = $device->reload_template_list();
             }
             else if ($route->subaction == "get") {
-                if ($session['userid']>0 && $session['write']) $result = $device->get_template($session['userid'], get('type'));
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('type'));
             }
         }
         else {
@@ -99,6 +112,14 @@ function device_controller()
                 $result = array('success'=>false, 'message'=>'Device does not exist');
             }
         }
+    }
+
+
+    if ($route->action == "clean" && $session['write']) {
+        $route->format = 'text';
+        $active = 0; if (isset($_GET['active'])) $active = (int) $_GET['active'];
+        $dryrun = 0; if (isset($_GET['dryrun']) && $_GET['dryrun']==1) $dryrun = 1;
+        return $device->clean($session['userid'],$active,$dryrun);
     }
 
     return array('content'=>$result);

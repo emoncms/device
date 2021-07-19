@@ -315,7 +315,9 @@ var device_dialog =
         // console.log("deviceType:"+device_dialog.deviceType)
         // console.log(device_dialog.templates)
         var template = device_dialog.templates[device_dialog.deviceType];
-        $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+        if (template!=undefined) {
+            $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
+        }
         $('#template-info').show();
     },
 
@@ -540,7 +542,10 @@ var device_dialog =
                     var inputId = device_dialog.device.inputs[i].id;
                     inputIds.push(parseInt(inputId));
                 }
-                input.delete_multiple(inputIds);
+                input.delete_multiple_async(inputIds)
+                .done(function(){
+                    update();
+                });
             }
             $('#device-delete-modal').modal('hide');
             $('#wrap').trigger("device-delete");
