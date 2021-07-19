@@ -32,6 +32,7 @@ function device_controller()
         // 4. device makes follow up request for authentication
         //    - reply authentication details
         // ---------------------------------------------------------------
+
         /*
         if ($route->action == "authcheck") { $route->action = "auth"; $route->subaction = "check"; } 
         if ($route->action == "authallow") { $route->action = "auth"; $route->subaction = "allow"; }         
@@ -63,7 +64,7 @@ function device_controller()
             }
         }*/
         if ($route->action == 'list') {
-            if ($session['userid']>0 && $session['read']) $result = $device->get_list($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
         }
         else if ($route->action == "create") {
             if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"),get("options"));

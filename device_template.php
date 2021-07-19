@@ -221,6 +221,7 @@ class DeviceTemplate
 
     // Prepare the feed process lists
     protected function prepare_feed_processes($userid, $prefix, &$feeds, $inputs) {
+
         /*
         $process_list = $this->process->get_process_list(); // emoncms supported processes
         
@@ -329,7 +330,8 @@ class DeviceTemplate
             if ($f->action === 'create') {
                 $this->log->info("create_feeds() userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine unit=$unit");
                 
-                $result = $this->feed->create($userid,$f->tag,$f->name,$datatype,$engine,$options,$unit);
+                $server = 0;
+                $result = $this->feed->create($userid,$f->tag,$f->name,$datatype,$engine,$options,$unit,$server);
                 if($result['success'] !== true) {
                     $this->log->error("create_feeds() failed for userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine unit=$unit");
                 }
@@ -395,6 +397,7 @@ class DeviceTemplate
 
     // Create the feed process lists
     protected function create_feed_processes($userid, $feeds, $inputs) {
+
         /*
         $process_list = $this->process->get_process_list(); // emoncms supported processes
         
