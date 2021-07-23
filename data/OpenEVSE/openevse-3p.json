@@ -1,5 +1,5 @@
 {
-    "name": "Single-phase",
+    "name": "Three-phase",
     "category": "EVSE",
     "group": "OpenEVSE",
     "description": "OpenEVSE / EmonEVSE auto configuration",
@@ -18,7 +18,7 @@
                 },
                 {
                     "process": "scale",
-                    "arguments": { "type": "ProcessArg::VALUE", "value": 230 }
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 690 }
                 },
                 {
                     "process": "log_to_feed",
