@@ -317,7 +317,6 @@ class DeviceTemplate
     protected function create_feeds($userid, &$feeds) {
         
         foreach($feeds as $f) {
-            $datatype = constant($f->type); // DataType::
             $engine = constant($f->engine); // Engine::
             if (isset($f->unit)) $unit = $f->unit; else $unit = "";
             
@@ -327,11 +326,11 @@ class DeviceTemplate
             }
             
             if ($f->action === 'create') {
-                $this->log->info("create_feeds() userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine unit=$unit");
+                $this->log->info("create_feeds() userid=$userid tag=$f->tag name=$f->name engine=$engine unit=$unit");
                 
-                $result = $this->feed->create($userid,$f->tag,$f->name,$datatype,$engine,$options,$unit);
+                $result = $this->feed->create($userid,$f->tag,$f->name,$engine,$options,$unit);
                 if($result['success'] !== true) {
-                    $this->log->error("create_feeds() failed for userid=$userid tag=$f->tag name=$f->name datatype=$datatype engine=$engine unit=$unit");
+                    $this->log->error("create_feeds() failed for userid=$userid tag=$f->tag name=$f->name engine=$engine unit=$unit");
                 }
                 else {
                     $f->id = $result["feedid"]; // Assign the created feed id to the feeds array
