@@ -60,7 +60,7 @@
   // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
   table.element = "#table";
-  table.groupprefix = "Location ";
+  table.groupprefix = "";
   table.groupby = 'description';
   table.groupfields = {
     'dummy-4':{'title':'', 'type':"blank"},
