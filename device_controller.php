@@ -65,11 +65,14 @@ function device_controller()
             if ($session['userid']>0 && $session['read']) $result = $device->get_list($session['userid']);
         }
         else if ($route->action == "create") {
-            if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"),get("options"));
+            if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"),get("dkey"));
         }
         // Used in conjunction with input name describe to auto create device
         else if ($route->action == "autocreate") {
             if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
+        }
+        else if ($route->action == "generatekey") {
+            if ($session['userid']>0 && $session['write']) $result = $device->generate_devicekey();
         }
         else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
             if ($route->subaction == "listshort") {

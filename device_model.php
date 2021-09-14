@@ -320,7 +320,7 @@ class Device
         
         if (!$deviceid) {
             $this->log->info("Automatically create device for user=$userid, nodeid=$nodeid");
-            $deviceid = $this->create($userid, $nodeid, null, null, null);
+            $deviceid = $this->create($userid, $nodeid, null, null, null, null);
             if (!$deviceid) return array("success"=>false, "message"=>"Device creation failed");
         }
         
@@ -332,7 +332,7 @@ class Device
         }
     }
 
-    public function create($userid, $nodeid, $name, $description, $type) {
+    public function create($userid, $nodeid, $name, $description, $type, $devicekey = "") {
         $userid = intval($userid);
         $nodeid = preg_replace('/[^\p{L}_\p{N}\s\-:.]/u', '', $nodeid);
         
@@ -355,9 +355,6 @@ class Device
         }
         
         if (!$this->exists_nodeid($userid, $nodeid)) {
-            // device key disabled by default
-            $devicekey = ""; 
-            
             $stmt = $this->mysqli->prepare("INSERT INTO device (userid,nodeid,name,description,type,devicekey) VALUES (?,?,?,?,?,?)");
             $stmt->bind_param("isssss",$userid,$nodeid,$name,$description,$type,$devicekey);
             $result = $stmt->execute();
@@ -532,7 +529,9 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET devicekey = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->devicekey,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"devicekey",$fields->devicekey);
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"devicekey",$fields->devicekey);
+                }
             } else $success = false;
             $stmt->close();
         }
@@ -544,6 +543,10 @@ class Device
         }
     }
     
+    public function generate_devicekey() {
+        return generate_secure_key(16);
+    }
+
     public function set_new_devicekey($id) {
         $id = intval($id);
         if (!$this->exist($id)) {
@@ -552,7 +555,7 @@ class Device
             }
         }
         
-        $devicekey = generate_secure_key(16);
+        $devicekey = $this->generate_devicekey();
         
         $stmt = $this->mysqli->prepare("UPDATE device SET devicekey = ? WHERE id = ?");
         $stmt->bind_param("si",$devicekey,$id);
@@ -560,7 +563,9 @@ class Device
         $stmt->close();
         
         if ($result) {
-            $this->redis->hSet("device:".$id,"devicekey",$devicekey);
+            if ($this->redis) {
+                $this->redis->hSet("device:".$id,"devicekey",$devicekey);
+            }
             return $devicekey; 
         } else {
             return false;

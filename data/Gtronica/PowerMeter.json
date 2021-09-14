@@ -1,0 +1,182 @@
+{
+	"name": "PowerMeter",
+	"category": "Gtronica",
+	"group": "Custom",
+	"description": "Automatic inputs and feeds creation for Hiking DDS238-2 WIFI Tasmota device and websend rules.",
+	"inputs": [
+		{
+			"name": "P",
+			"description": "Power W",
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {
+						"type": "ProcessArg::FEEDID",
+						"value": "Power"
+					}
+				}
+			]
+		},
+		{
+			"name": "I",
+			"description": "Current I",
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {
+						"type": "ProcessArg::FEEDID",
+						"value": "Current"
+					}
+				}
+			]
+		},
+		{
+			"name": "V",
+			"description": "Voltage",
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {
+						"type": "ProcessArg::FEEDID",
+						"value": "Voltage"
+					}
+				}
+			]
+		},
+		{
+			"name": "S",
+			"description": "Aparent Power",
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {
+						"type": "ProcessArg::FEEDID",
+						"value": "Apparent"
+					}
+				}
+			]
+		},
+		{
+			"name": "Q",
+			"description": "Reactive Factor",
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {
+						"type": "ProcessArg::FEEDID",
+						"value": "Reactive"
+					}
+				}
+			]
+		},
+		{
+			"name": "Pf",
+			"description": "Power Factor",
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {
+						"type": "ProcessArg::FEEDID",
+						"value": "Factor"
+					}
+				}
+			]
+		},
+		{
+			"name": "Total",
+			"description": "Total",
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {
+						"type": "ProcessArg::FEEDID",
+						"value": "Total"
+					}
+				}
+			]
+		},
+		{
+			"name": "Today",
+			"description": "Today",
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {
+						"type": "ProcessArg::FEEDID",
+						"value": "Today"
+					}
+				}
+			]
+		},
+		{
+			"name": "Yesterday",
+			"description": "Yesterday",
+			"processList": [
+				{
+					"process": "log_to_feed",
+					"arguments": {
+						"type": "ProcessArg::FEEDID",
+						"value": "Yesterday"
+					}
+				}
+			]
+		}
+	],
+	"feeds": [
+		{
+			"name": "Power",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"interval": "5",
+			"unit": "W"
+		},
+		{
+			"name": "Current",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"unit": "A"
+		},
+		{
+			"name": "Voltage",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"unit": "V"
+		},
+		{
+			"name": "Apparent",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"unit": "VA"
+		},
+		{
+			"name": "Reactive",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"unit": "VAr"
+		},
+		{
+			"name": "Factor",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"unit": "cosϕ"
+		},
+		{
+			"name": "Total",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"unit": "kWh"
+		},
+		{
+			"name": "Today",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"unit": "kWh"
+		},
+		{
+			"name": "Yesterday",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"unit": "kWh"
+		}
+	]
+}

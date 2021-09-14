@@ -146,8 +146,7 @@ var device_dialog =
             $('#device-config-node').val(this.device.nodeid);
             $('#device-config-name').val(this.device.name);
             $('#device-config-description').val(this.device.description);
-            $('#device-config-devicekey').val(this.device.devicekey).prop("disabled", false);
-            $("#device-config-devicekey-new").prop("disabled", false);
+            $('#device-config-devicekey').val(this.device.devicekey);
             $('#device-delete').show();
             $("#device-save").html("Save");
             if (this.device.type != null && this.device.type != '') {
@@ -163,8 +162,7 @@ var device_dialog =
             $('#device-config-node').val('');
             $('#device-config-name').val('');
             $('#device-config-description').val('');
-            $('#device-config-devicekey').val('').prop("disabled", true);
-            $("#device-config-devicekey-new").prop("disabled", true);
+            $('#device-config-devicekey').val('');
             $('#device-delete').hide();
             $("#device-init").hide();
             $("#device-save").html("Save & Initialize");
@@ -260,11 +258,10 @@ var device_dialog =
                         alert('Unable to update device fields:\n'+result.message);
                         return false;
                     }
-                    update();
                 }
                 else {
                     var type = device_dialog.deviceType;
-                    var result = device.create(node, name, desc, type);
+                    var result = device.create(node, name, desc, type, devicekey);
                     if (typeof result.success !== 'undefined' && !result.success) {
                         alert('Unable to create device:\n'+result.message);
                         return false;
@@ -278,13 +275,13 @@ var device_dialog =
                         };
                         init = true;
                     }
-                    update();
                 }
-                $('#device-config-modal').modal('hide');
+                update();
+				$('#device-config-modal').modal('hide');
                 if (init) device_dialog.loadInit();
             }
             else {
-                alert('Device needs to be configured first.');
+                alert('Please give Node and Name.');
                 return false;
             }
         });
@@ -300,8 +297,7 @@ var device_dialog =
         });
         
         $("#device-config-devicekey-new").off('click').on('click', function () {
-            device_dialog.device.devicekey = device.setNewDeviceKey(device_dialog.device.id);
-            $('#device-config-devicekey').val(device_dialog.device.devicekey);
+            $('#device-config-devicekey').val(device.generatekey(device_dialog.device.id));
         });
     },
 

@@ -1,8 +1,10 @@
 <?php
-/*
-$menu['sidebar']['emoncms'][] = array(
-    'text' => _("Device Setup"),
-    'path' => 'device/view',
-    'icon' => 'device',
-    'order' => 'b6'
-);*/
+global $session;
+if ($session["write"]) {
+    $menu["setup"]["l2"]['device'] = array(
+        "name"=>_("Devices"),
+        "href"=>"device/view", 
+        "order"=>1, 
+        "icon"=>"device"
+    );
+}
