@@ -297,7 +297,7 @@ var device_dialog =
         });
         
         $("#device-config-devicekey-new").off('click').on('click', function () {
-            $('#device-config-devicekey').val(device.generatekey(device_dialog.device.id));
+            $('#device-config-devicekey').val(device.generatekey());
         });
     },
 
