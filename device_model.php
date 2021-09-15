@@ -77,7 +77,7 @@ class Device
                     $this->redis->hMset("device:lastvalue:$id", array('time' => $time));
                 } else {
                     //$time = date("Y-n-j H:i:s", $time);
-                    $this->mysqli->query("UPDATE device SET time='$time' WHERE id = '$id");
+                    $this->mysqli->query("UPDATE device SET time='$time' WHERE id = '$id'");
                 }
             }
         }
