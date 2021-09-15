@@ -1,5 +1,5 @@
 {
-	"name": "AirSensor",
+	"name": "Air Sensor",
 	"category": "Gtronica",
 	"group": "Custom",
 	"description": "Automatic inputs and feeds creation for IKEA Vindriktning + BME280 with a Tasmota device inside and websend rules.",

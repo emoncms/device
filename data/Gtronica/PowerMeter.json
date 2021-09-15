@@ -1,5 +1,5 @@
 {
-	"name": "PowerMeter",
+	"name": "Power Meter",
 	"category": "Gtronica",
 	"group": "Custom",
 	"description": "Automatic inputs and feeds creation for Hiking DDS238-2 WIFI Tasmota device and websend rules.",
