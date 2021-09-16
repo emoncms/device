@@ -105,7 +105,7 @@ var device_dialog =
                     
                     body.append(
                         "<div id='template-"+categoryid+"-"+groupid+"-"+id.replace('/', '-')+"'" +
-                        		"data-type='"+id+"' class='group-device'>" +
+                                "data-type='"+id+"' class='group-device'>" +
                             "<span>"+name+"</span>" +
                         "</div>"
                     );
@@ -277,7 +277,7 @@ var device_dialog =
                     }
                 }
                 update();
-				$('#device-config-modal').modal('hide');
+                $('#device-config-modal').modal('hide');
                 if (init) device_dialog.loadInit();
             }
             else {
@@ -429,44 +429,44 @@ var device_dialog =
                 var label;
                 switch(process['arguments']['type']) {
                 case 0: // VALUE
-                	label = "important";
+                    label = "important";
                     title = "Value - ";
                     break;
                     
                 case 1: //INPUTID
-                	label = "warning";
+                    label = "warning";
                     title = "Input - ";
                     break;
                     
                 case 2: //FEEDID
-                	label = "info";
+                    label = "info";
                     title = "Feed - ";
                     break;
                     
                 case 3: // NONE
-                	label = "important";
+                    label = "important";
                     title = "";
                     break;
                     
                 case 4: // TEXT
-                	label = "important";
+                    label = "important";
                     title = "Text - ";
                     break;
                     
                 case 5: // SCHEDULEID
-                	label = "warning";
+                    label = "warning";
                     title = "Schedule - "
                     break;
                     
                 default:
-                	label = "important";
+                    label = "important";
                     title = "ERROR - ";
                     break;
                 }
-            	title += process["name"];
+                title += process["name"];
                 
                 if (process['arguments']['value'] != undefined) {
-                	title += ": " + process['arguments']['value'];
+                    title += ": " + process['arguments']['value'];
                 }
                 
                 out += "<span class='label label-"+label+"' title='"+title+"' style='cursor:default'><small>"+process["short"]+"</small></span> ";
