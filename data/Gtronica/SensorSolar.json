@@ -1,0 +1,127 @@
+{	"name": "Sensor Solar",
+	"category": "Gtronica",
+	"group": "Custom",
+	"description": "Automatic inputs and feeds creation for gtronica.com Multi Sensors (Solar) device.",
+	"inputs": [
+		{
+			"name": "T",
+			"description": "Temperature C",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "tempC" }
+							  }
+							]
+		},
+		{
+			"name": "H",
+			"description": "Humidity Rh%",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "humiRH" }
+							  }
+							]
+		},
+		{
+			"name": "T1",
+			"description": "Temp 1",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "T1" }
+							  }
+							]
+		},		{
+			"name": "T2",
+			"description": "Temp 2",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "T2" }
+							  }
+							]
+		},		{
+			"name": "T3",
+			"description": "Temp 3",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "T3" }
+							  }
+							]
+		},		{
+			"name": "T4",
+			"description": "Temp 4",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "T4" }
+							  }
+							]
+		},		{
+			"name": "T5",
+			"description": "Temp 5",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "T5" }
+							  }
+							]
+		},
+		{
+			"name": "R",
+			"description": "Wifi RSSI",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "rssi" }
+							  }
+							]
+		}
+	],
+
+	"feeds": [
+	  {
+			"name": "tempC",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"interval": "5"
+	  },
+	  {
+			"name": "humiRH",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL"
+      },
+	  {
+			"name": "rssi",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL"
+      },
+	  {
+			"name": "T1",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL"
+      },
+	  {
+			"name": "T2",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL"
+      },
+	  {
+			"name": "T3",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL"
+      },
+	  {
+			"name": "T4",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL"
+      },
+	  {
+			"name": "T5",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL"
+      }
+	]
+}

@@ -25,7 +25,7 @@
 
 <div>
     <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Devices Help'); ?></a></div>
-    <div id="device-header"><h2><?php echo _('Devices'); ?></h2></div>
+    <div id="device-header"><h2><?php echo _('Devices Location'); ?></h2></div>
 
     <div id="table"></div>
 
@@ -33,11 +33,11 @@
         <div class="alert alert-block">
             <h4 class="alert-heading"><?php echo _('No devices'); ?></h4><br>
             <p>
-                <?php echo _('Devices are used to configure and prepare the communication with different physical devices.'); ?>
+                <?php echo _('Devices are used to configure and prepare the communication with different physical devices. Devices are grouped by Location for easy tracking when deploying at scale.'); ?>
                 <br><br>
-                <?php echo _('A device configures and prepares inputs, feeds possible other settings, representing e.g. different registers of defined metering units.'); ?>
+                <?php echo _('A device configures and prepares inputs, feeds and other possible settings. e.g. representing different registers of defined metering units.'); ?>
                 <br>
-                <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Device API helper'); ?></a>
+                <?php echo _('Follow the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Device API helper'); ?></a>
             </p>
         </div>
     </div>
@@ -48,8 +48,8 @@
         <button id="device-reload" class="btn btn-small" >&nbsp;<i class="icon-refresh" ></i>&nbsp;<?php echo _('Reload device templates'); ?></button>
         <?php } ?>
     </div>
-	
-	<div id="device-loader" class="ajax-loader"></div>
+    
+    <div id="device-loader" class="ajax-loader"></div>
 </div>
 
 <?php require "Modules/device/Views/device_dialog.php"; ?>
@@ -60,7 +60,7 @@
   // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
   table.element = "#table";
-  table.groupprefix = "Location ";
+  table.groupprefix = "";
   table.groupby = 'description';
   table.groupfields = {
     'dummy-4':{'title':'', 'type':"blank"},
