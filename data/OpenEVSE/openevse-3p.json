@@ -71,6 +71,20 @@
             ]
         },
         {
+            "name": "temp4",
+            "description": "EVSE internal temperature 4",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.1 }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_temperature_4" }
+                }
+            ]
+        },
+        {
             "name": "state",
             "description": "State",
             "processList": [
@@ -96,7 +110,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "manual_override" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "ev_manual_override" }
                 }
             ]
         },
@@ -159,6 +173,13 @@
             "unit": "°C"
         },
         {
+            "name": "ev_temperature_4",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "30",
+            "unit": "°C"
+        },
+        {
             "name": "ev_state",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
@@ -173,7 +194,7 @@
             "unit": ""
         },
         {
-            "name": "manual_override",
+            "name": "ev_manual_override",
             "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
