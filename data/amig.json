@@ -280,151 +280,126 @@
 	}],
 	"feeds": [{
 		"name": "n1T",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n1R",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n1D",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n2T",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n2R",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n2D",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n3T",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n3R",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n3D",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n4T",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n4R",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "n4D",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "iTS",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "eTS",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "eSR",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "iTA",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "iRH",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "iDP",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "eTA",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "eRH",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "eDP",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "hfV",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "hfW",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "CO2",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	},
 	{
 		"name": "SYS",
-		"type": "DataType::REALTIME",
 		"engine": "Engine::PHPFINA",
 		"interval": "10"
 	}]

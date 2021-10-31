@@ -86,37 +86,31 @@
     "feeds": [
         {
             "name": "Temperature",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "ºC"
         },
         {
             "name": "Humidity",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "%"
         },
         {
             "name": "Pressure",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "hPa"
         },
         {
             "name": "PM1",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "µg/m³"
         },
         {
             "name": "PM2",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "µg/m³"
         },
         {
             "name": "PM10",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "µg/m³"
         }

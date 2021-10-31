@@ -99,48 +99,41 @@
     "feeds": [
         {
             "name": "tempIntC",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "ºC",
             "interval": "5"
         },
         {
             "name": "tempExtC",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "ºC",
             "interval": "5"
         },
         {
             "name": "humiRH",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "%",
             "interval": "5"
         },
         {
             "name": "batV",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "V",
             "interval": "5"
         },
         {
             "name": "pulse",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "interval": "5"
         },
         {
             "name": "txPower",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "",
             "interval": "5"
         },
         {
             "name": "rssidBm",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "dBm",
             "interval": "5"

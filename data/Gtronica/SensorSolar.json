@@ -112,50 +112,42 @@
     "feeds": [
         {
             "name": "tempC",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPTIMESERIES",
             "unit": "ºC",
             "interval": "5"
         },
         {
             "name": "humiRH",
-            "type": "DataType::REALTIME",
             "unit": "%",
             "engine": "Engine::PHPTIMESERIES"
         },
         {
             "name": "rssi",
-            "type": "DataType::REALTIME",
             "unit": "dBm",
             "engine": "Engine::PHPTIMESERIES"
         },
         {
             "name": "T1",
-            "type": "DataType::REALTIME",
             "unit": "ºC",
             "engine": "Engine::PHPTIMESERIES"
         },
         {
             "name": "T2",
-            "type": "DataType::REALTIME",
             "unit": "ºC",
             "engine": "Engine::PHPTIMESERIES"
         },
         {
             "name": "T3",
-            "type": "DataType::REALTIME",
             "unit": "ºC",
             "engine": "Engine::PHPTIMESERIES"
         },
         {
             "name": "T4",
-            "type": "DataType::REALTIME",
             "unit": "ºC",
             "engine": "Engine::PHPTIMESERIES"
         },
         {
             "name": "T5",
-            "type": "DataType::REALTIME",
             "unit": "ºC",
             "engine": "Engine::PHPTIMESERIES"
         }

@@ -125,70 +125,60 @@
     "feeds": [
         {
             "name": "ev_current",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "A"
         },
         {
             "name": "ev_power",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "W"
         },
         {
             "name": "ev_energy",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "kWh"
         },
         {
             "name": "ev_temperature_1",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "°C"
         },
         {
             "name": "ev_temperature_2",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "°C"
         },
         {
             "name": "ev_state",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": ""
         },
         {
             "name": "ev_connected",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": ""
         },
         {
             "name": "manual_override",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": ""
         },
         {
             "name": "ev_pilot",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": "A"
         },
         {
             "name": "ev_divertmode_state",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": ""
