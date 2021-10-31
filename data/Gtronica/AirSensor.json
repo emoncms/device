@@ -1,124 +1,118 @@
 {
-	"name": "Air Sensor",
-	"category": "Gtronica",
-	"group": "Custom",
-	"description": "Automatic inputs and feeds creation for IKEA Vindriktning + BME280 with a Tasmota device inside and websend rules.",
-	"inputs": [
-		{
-			"name": "T",
-			"description": "Temperature",
-			"processList": [
-				{
-					"process": "log_to_feed",
-					"arguments": {
-						"type": "ProcessArg::FEEDID",
-						"value": "Temperature"
-					}
-				}
-			]
-		},
-		{
-			"name": "H",
-			"description": "Humidity",
-			"processList": [
-				{
-					"process": "log_to_feed",
-					"arguments": {
-						"type": "ProcessArg::FEEDID",
-						"value": "Humidity"
-					}
-				}
-			]
-		},
-		{
-			"name": "P",
-			"description": "Pressure",
-			"processList": [
-				{
-					"process": "log_to_feed",
-					"arguments": {
-						"type": "ProcessArg::FEEDID",
-						"value": "Pressure"
-					}
-				}
-			]
-		},
-		{
-			"name": "PM1",
-			"description": "PM1",
-			"processList": [
-				{
-					"process": "log_to_feed",
-					"arguments": {
-						"type": "ProcessArg::FEEDID",
-						"value": "PM1"
-					}
-				}
-			]
-		},
-		{
-			"name": "PM2",
-			"description": "PM2.5",
-			"processList": [
-				{
-					"process": "log_to_feed",
-					"arguments": {
-						"type": "ProcessArg::FEEDID",
-						"value": "PM2"
-					}
-				}
-			]
-		},
-		{
-			"name": "PM10",
-			"description": "PM10",
-			"processList": [
-				{
-					"process": "log_to_feed",
-					"arguments": {
-						"type": "ProcessArg::FEEDID",
-						"value": "PM10"
-					}
-				}
-			]
-		}
-	],
-	"feeds": [
-		{
-			"name": "Temperature",
-			"type": "DataType::REALTIME",
-			"engine": "Engine::MYSQL",
-			"unit": "ºC"
-		},
-		{
-			"name": "Humidity",
-			"type": "DataType::REALTIME",
-			"engine": "Engine::MYSQL",
-			"unit": "%"
-		},
-		{
-			"name": "Pressure",
-			"type": "DataType::REALTIME",
-			"engine": "Engine::MYSQL",
-			"unit": "hPa"
-		},
-		{
-			"name": "PM1",
-			"type": "DataType::REALTIME",
-			"engine": "Engine::MYSQL",
-			"unit": "µg/m³"
-		},
-		{
-			"name": "PM2",
-			"type": "DataType::REALTIME",
-			"engine": "Engine::MYSQL",
-			"unit": "µg/m³"
-		},
-		{
-			"name": "PM10",
-			"type": "DataType::REALTIME",
-			"engine": "Engine::MYSQL",
-			"unit": "µg/m³"
-		}
-	]
+    "name": "Air Sensor",
+    "category": "Gtronica",
+    "group": "Custom",
+    "description": "Automatic inputs and feeds creation for IKEA Vindriktning + BME280 with a Tasmota device inside and websend rules.",
+    "inputs": [
+        {
+            "name": "T",
+            "description": "Temperature",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Temperature"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "H",
+            "description": "Humidity",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Humidity"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "P",
+            "description": "Pressure",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Pressure"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "PM1",
+            "description": "PM1",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "PM1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "PM2",
+            "description": "PM2.5",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "PM2"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "PM10",
+            "description": "PM10",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "PM10"
+                    }
+                }
+            ]
+        }
+    ],
+    "feeds": [
+        {
+            "name": "Temperature",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "ºC"
+        },
+        {
+            "name": "Humidity",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "%"
+        },
+        {
+            "name": "Pressure",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "hPa"
+        },
+        {
+            "name": "PM1",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "µg/m³"
+        },
+        {
+            "name": "PM2",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "µg/m³"
+        },
+        {
+            "name": "PM10",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "µg/m³"
+        }
+    ]
 }

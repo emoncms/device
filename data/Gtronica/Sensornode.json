@@ -1,125 +1,142 @@
 {
-	"name": "Sensor Node",
-	"category": "Gtronica",
-	"group": "Custom",
-	"description": "Automatic inputs and feeds creation for gtronica.com Sensor Node device.",
-	"inputs": [{
-		"name": "1",
-		"description": "Temperature Internal C",
-		"processList": [{
-			"process": "log_to_feed",
-			"arguments": {
-				"type": "ProcessArg::FEEDID",
-				"value": "tempIntC"
-			}
-		}]
-	},
-	{
-		"name": "2",
-		"description": "Temperature DS C",
-		"processList": [{
-			"process": "log_to_feed",
-			"arguments": {
-				"type": "ProcessArg::FEEDID",
-				"value": "tempExtC"
-			}
-		}]
-	},
-	{
-		"name": "3",
-		"description": "Humidity Rh%",
-		"processList": [{
-			"process": "log_to_feed",
-			"arguments": {
-				"type": "ProcessArg::FEEDID",
-				"value": "humiRH"
-			}
-		}]
-	},
-	{
-		"name": "4",
-		"description": "Internal Battery",
-		"processList": [{
-			"process": "log_to_feed",
-			"arguments": {
-				"type": "ProcessArg::FEEDID",
-				"value": "batV"
-			}
-		}]
-	},
-	{
-		"name": "5",
-		"description": "Pulse Cnt",
-		"processList": [{
-			"process": "log_to_feed",
-			"arguments": {
-				"type": "ProcessArg::FEEDID",
-				"value": "pulse"
-			}
-		}]
-	},
-	{
-		"name": "6",
-		"description": "TX Power",
-		"processList": [{
-			"process": "log_to_feed",
-			"arguments": {
-				"type": "ProcessArg::FEEDID",
-				"value": "txPower"
-			}
-		}]
-	},
-	{
-		"name": "7",
-		"description": "RX RSSI",
-		"processList": [{
-			"process": "log_to_feed",
-			"arguments": {
-				"type": "ProcessArg::FEEDID",
-				"value": "rssidBm"
-			}
-		}]
-	}],
-	"feeds": [{
-		"name": "tempIntC",
-		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
-		"interval": "5"
-	},
-	{
-		"name": "tempExtC",
-		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
-		"interval": "5"
-	},
-	{
-		"name": "humiRH",
-		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
-		"interval": "5"
-	},
-	{
-		"name": "batV",
-		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
-		"interval": "5"
-	},
-	{
-		"name": "pulse",
-		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
-		"interval": "5"
-	},
-	{
-		"name": "txPower",
-		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
-		"interval": "5"
-	},
-	{
-		"name": "rssidBm",
-		"type": "DataType::REALTIME",
-		"engine": "Engine::MYSQL",
-		"interval": "5"
-	}]
+    "name": "Sensor Node",
+    "category": "Gtronica",
+    "group": "Custom",
+    "description": "Automatic inputs and feeds creation for gtronica.com Sensor Node device.",
+    "inputs": [
+        {
+            "name": "1",
+            "description": "Temperature Internal C",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "tempIntC"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2",
+            "description": "Temperature DS C",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "tempExtC"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3",
+            "description": "Humidity Rh",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "humiRH"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4",
+            "description": "Internal Battery",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "batV"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5",
+            "description": "Pulse Cnt",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "pulse"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "6",
+            "description": "TX Power",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "txPower"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "7",
+            "description": "RX RSSI",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "rssidBm"
+                    }
+                }
+            ]
+        }
+    ],
+    "feeds": [
+        {
+            "name": "tempIntC",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "ºC",
+            "interval": "5"
+        },
+        {
+            "name": "tempExtC",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "ºC",
+            "interval": "5"
+        },
+        {
+            "name": "humiRH",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "%",
+            "interval": "5"
+        },
+        {
+            "name": "batV",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "V",
+            "interval": "5"
+        },
+        {
+            "name": "pulse",
+            "engine": "Engine::PHPTIMESERIES",
+            "interval": "5"
+        },
+        {
+            "name": "txPower",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "",
+            "interval": "5"
+        },
+        {
+            "name": "rssidBm",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "dBm",
+            "interval": "5"
+        }
+    ]
 }

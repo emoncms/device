@@ -48,19 +48,16 @@
     "feeds": [
         {
             "name": "inputA",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "60"
         },
         {
             "name": "inputB",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "60"
         },
         {
             "name": "total",
-            "type": "DataType::REALTIME",
             "engine": "Engine::PHPFINA",
             "interval": "60"
         }

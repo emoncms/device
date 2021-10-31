@@ -203,140 +203,120 @@
 	"feeds": [
 		{
 			"name": "Voltage 1",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "V"
 		},
 		{
 			"name": "Voltage 2",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "V"
 		},
 		{
 			"name": "House Current 1",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "House Current 2",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Charging Current 3",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Charging Current 4",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Solar Current 5",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Solar Current 6",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "charging_import",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "W"
 		},
 		{
 			"name": "charging_import_kwh",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "kWh"
 		},
 		{
 			"name": "use",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "W"
 		},
 		{
 			"name": "use_kwh",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "kWh"
 		},
 		{
 			"name": "solar",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "W"
 		},
 		{
 			"name": "solar_kwh",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "kWh"
 		},
 		{
 			"name": "house_import",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "W"
 		},
 		{
 			"name": "house_import_kwh",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "kWh"
 		},
 		{
 			"name": "House PF 1",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": ""
 		},
 		{
 			"name": "House PF 2",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": ""
 		},
 		{
 			"name": "Temp",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "°C"
 		},
 		{
 			"name": "Frequency",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": ""

@@ -183,133 +183,114 @@
 	"feeds": [
 		{
 			"name": "Voltage 1",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "V"
 		},
 		{
 			"name": "Voltage 2",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "V"
 		},
 		{
 			"name": "Total Voltage",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "V"
 		},
 		{
 			"name": "Solar Voltage",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "V"
 		},
 		{
 			"name": "Current 1",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Current 2",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Total Current",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Solar Current 1",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Solar Current 2",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Total Solar Current",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "use",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "W"
 		},
 		{
 			"name": "use_kwh",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "kWh"
 		},
 		{
 			"name": "solar",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "W"
 		},
 		{
 			"name": "solar_kwh",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "kWh"
 		},
 		{
 			"name": "import",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "W"
 		},
 		{
 			"name": "import_kwh",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "kWh"
 		},
 		{
 			"name": "Power Factor",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": ""
 		},
 		{
 			"name": "Temp",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "°C"
 		},
 		{
 			"name": "Frequency",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": ""
