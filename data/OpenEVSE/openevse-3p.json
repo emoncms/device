@@ -187,12 +187,7 @@
             "unit": ""
         },
         {
-<<<<<<< HEAD
-            "name": "manual_override",
-=======
             "name": "ev_manual_override",
-            "type": "DataType::REALTIME",
->>>>>>> origin/stable
             "engine": "Engine::PHPFINA",
             "interval": "30",
             "unit": ""
