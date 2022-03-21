@@ -32,7 +32,6 @@ function device_controller()
         // 4. device makes follow up request for authentication
         //    - reply authentication details
         // ---------------------------------------------------------------
-
         /*
         if ($route->action == "authcheck") { $route->action = "auth"; $route->subaction = "check"; } 
         if ($route->action == "authallow") { $route->action = "auth"; $route->subaction = "allow"; }         
@@ -62,16 +61,20 @@ function device_controller()
                 // 3. User allows device to receive authentication details
                 $result = $device->allow_auth_request(get("ip"));
             }
-        }*/
+        }
+        */
         if ($route->action == 'list') {
-            if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
+            if ($session['userid']>0 && $session['read']) $result = $device->get_list($session['userid']);
         }
         else if ($route->action == "create") {
-            if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"),get("options"));
+            if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"),get("dkey"));
         }
         // Used in conjunction with input name describe to auto create device
         else if ($route->action == "autocreate") {
             if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
+        }
+        else if ($route->action == "generatekey") {
+            if ($session['userid']>0 && $session['write']) $result = $device->generate_devicekey();
         }
         else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
             if ($route->subaction == "listshort") {

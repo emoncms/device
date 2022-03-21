@@ -113,77 +113,66 @@
 	"feeds": [
 		{
 			"name": "Voltage 1",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "V"
 		},
 		{
 			"name": "Voltage 2",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "V"
 		},
 		{
 			"name": "Total Voltage",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "V"
 		},
 		{
 			"name": "Current 1",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Current 2",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Total Current",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "A"
 		},
 		{
 			"name": "Total Watts",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "W"
 		},
 		{
 			"name": "kWh",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "kWh"
 		},
 		{
 			"name": "Power Factor",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": ""
 		},
 		{
 			"name": "Temp",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": "°C"
 		},
 		{
 			"name": "Frequency",
-			"type": "DataType::REALTIME",
 			"engine": "Engine::PHPFINA",
 			"interval": "10",
 			"unit": ""

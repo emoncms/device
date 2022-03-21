@@ -73,4 +73,9 @@ and the feeds page the feeds created:
 
 ## Development
 
+**After updating a device template redis redis must be updated reload the templates to make the changes visable:**
+
+http://emonpi/device/template/reload.json
+
+
 See: [Development: Devices, Inputs and Feeds in emoncms](https://community.openenergymonitor.org/t/development-devices-inputs-and-feeds-in-emoncms/4281/17)

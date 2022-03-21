@@ -1,0 +1,9 @@
+{
+    "name": "Tasmota",
+    "category": "Control",
+    "group": "MQTT",
+    "description": "Tasmota control",
+    "inputs": [],
+    "feeds": [],
+    "control": {}
+}

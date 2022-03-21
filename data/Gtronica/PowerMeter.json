@@ -1,0 +1,173 @@
+{
+    "name": "Power Meter",
+    "category": "Gtronica",
+    "group": "Custom",
+    "description": "Automatic inputs and feeds creation for Hiking DDS238-2 WIFI Tasmota device and websend rules.",
+    "inputs": [
+        {
+            "name": "P",
+            "description": "Power W",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "I",
+            "description": "Current I",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Current"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "V",
+            "description": "Voltage",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Voltage"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "S",
+            "description": "Aparent Power",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Apparent"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Q",
+            "description": "Reactive Factor",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Reactive"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pf",
+            "description": "Power Factor",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Factor"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Total",
+            "description": "Total",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Total"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Today",
+            "description": "Today",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Today"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Yesterday",
+            "description": "Yesterday",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Yesterday"
+                    }
+                }
+            ]
+        }
+    ],
+    "feeds": [
+        {
+            "name": "Power",
+            "engine": "Engine::PHPTIMESERIES",
+            "interval": "5",
+            "unit": "W"
+        },
+        {
+            "name": "Current",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "A"
+        },
+        {
+            "name": "Voltage",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "V"
+        },
+        {
+            "name": "Apparent",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "VA"
+        },
+        {
+            "name": "Reactive",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "VAr"
+        },
+        {
+            "name": "Factor",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "cosϕ"
+        },
+        {
+            "name": "Total",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
+        },
+        {
+            "name": "Today",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
+        },
+        {
+            "name": "Yesterday",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
+        }
+    ]
+}
