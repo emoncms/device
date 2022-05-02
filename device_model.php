@@ -354,6 +354,11 @@ class Device
             $type = '';
         }
         
+        if ($this->redis) {
+            // Reload all devices from mysql here to ensure cache is not out of sync 
+            $this->load_list_to_redis($userid);
+        }
+        
         if (!$this->exists_nodeid($userid, $nodeid)) {
             $stmt = $this->mysqli->prepare("INSERT INTO device (userid,nodeid,name,description,type,devicekey) VALUES (?,?,?,?,?,?)");
             $stmt->bind_param("isssss",$userid,$nodeid,$name,$description,$type,$devicekey);
@@ -366,8 +371,6 @@ class Device
             if ($deviceid > 0) {
                 // Add the device to redis
                 if ($this->redis) {
-                    // Reload all devices from mysql here to ensure cache is not out of sync 
-                    $this->load_list_to_redis($userid);
                     $this->redis->sAdd("user:device:$userid", $deviceid);
                     $this->redis->hMSet("device:".$deviceid, array(
                         'id'=>$deviceid,
@@ -383,7 +386,7 @@ class Device
             }
             return array('success'=>false, 'result'=>"SQL returned invalid insert feed id");
         }
-        return array('success'=>false, 'message'=>'Device already exists');
+        return array('success'=>false, 'message'=>'Device already exists, cache reloaded, try reloading the page');
     }
 
     public function delete($id) {
