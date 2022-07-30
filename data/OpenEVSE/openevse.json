@@ -1,5 +1,5 @@
 {
-    "name": "Three-phase",
+    "name": "Single-phase",
     "category": "EVSE",
     "group": "OpenEVSE",
     "description": "OpenEVSE / EmonEVSE auto configuration",
