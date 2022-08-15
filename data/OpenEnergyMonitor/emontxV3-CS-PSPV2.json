@@ -1,11 +1,11 @@
 {
     "name": "Solar PV Type 2",
     "category": "OpenEnergyMonitor",
-    "group": "EmonTx",
-    "description": "EmonTx Solar PV Type 2 template using CT4 for solar",
+    "group": "EmonTx Continuous Sampling",
+    "description": "EmonTx Solar PV Type 2 template using CT1 for grid and CT4 for solar",
     "inputs": [
         {
-            "name": "power1",
+            "name": "P1",
             "description": "House consumption",
             "processList": [
                 {
@@ -23,7 +23,7 @@
             ]
         },
         {
-            "name": "power4",
+            "name": "P4",
             "description": "Solar generation",
             "processList": [
                 {

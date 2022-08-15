@@ -1,11 +1,11 @@
 {
     "name": "HomeEnergyMonitor",
     "category": "OpenEnergyMonitor",
-    "group": "EmonTx",
+    "group": "EmonTx Continuous Sampling",
     "description": "Basic EmonTx v3 Home Energy Monitor configuration",
     "inputs": [
         {
-            "name": "power1",
+            "name": "P1",
             "description": "House consumption",
             "processList": [
                 {
