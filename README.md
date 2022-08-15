@@ -11,11 +11,9 @@ Contributions from: [Trystan Lea](http://github.com/trystanlea), [Adminde](https
 
 ## Installation
 
+**The Device module is not pre-installed as standard of emonSD**
+
 The following steps document the installation of the device module on a stock emonpi/emonbase running the latest emonSD image.
-
-After logging in via SSH, place the pi in write mode:
-
-    rpi-rw
     
 Navigate to the emoncms Modules folder:
 

@@ -47,8 +47,11 @@ class DeviceTemplate
         $list = array();        
         
         $iti = new RecursiveDirectoryIterator("Modules/device/data");
-        foreach(new RecursiveIteratorIterator($iti) as $file){
-            if(strpos($file ,".json") !== false){
+        foreach(new RecursiveIteratorIterator($iti) as $splinfo ){
+            $name = $splinfo->getFilename();
+            $file = $splinfo->getPathname();
+            if(strlen($name) > 5 && $name[0] != '.' &&
+                    substr_compare ( $name, '.json', -5 ) === 0) {
                 $content = json_decode(file_get_contents($file));
                 if (json_last_error() != 0) {
                     return array('success'=>false, 'message'=>"Error reading file $file: ".json_last_error_msg());
