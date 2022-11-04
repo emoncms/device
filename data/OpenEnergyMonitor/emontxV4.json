@@ -69,6 +69,10 @@
             "description": "",
             "processList": [
                 {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
                     "process": "log_to_feed_join",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "E1" }
                 }
@@ -78,6 +82,10 @@
             "name": "E2",
             "description": "",
             "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
                 {
                     "process": "log_to_feed_join",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "E2" }
@@ -89,6 +97,10 @@
             "description": "",
             "processList": [
                 {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
                     "process": "log_to_feed_join",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "E3" }
                 }
@@ -98,6 +110,10 @@
             "name": "E4",
             "description": "",
             "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
                 {
                     "process": "log_to_feed_join",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "E4" }
@@ -109,6 +125,10 @@
             "description": "",
             "processList": [
                 {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
                     "process": "log_to_feed_join",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "E5" }
                 }
@@ -118,6 +138,10 @@
             "name": "E6",
             "description": "",
             "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },   
                 {
                     "process": "log_to_feed_join",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "E6" }
