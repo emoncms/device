@@ -581,44 +581,20 @@ class Device
 
     public function get_template_list_meta() {
         $templates = array();
-        
-        if ($this->redis) {
-            if (!$this->redis->exists("device:templates:meta")) $this->load_template_list();
-            
-            $ids = $this->redis->sMembers("device:templates:meta");
-            foreach ($ids as $id) {
-                $template = $this->redis->hGetAll("device:template:$id");
-                $template["control"] = (bool) $template["control"];
-                
-                $templates[$id] = $template;
-            }
+        if (empty($this->templates)) { // Cache it now
+            $this->load_template_list();
         }
-        else {
-            if (empty($this->templates)) { // Cache it now
-                $this->load_template_list();
-            }
-            $templates = $this->templates;
-        }
+        $templates = $this->templates;
         ksort($templates);
         return $templates;
     }
 
     private function get_template_meta($id) {
-        if ($this->redis) {
-            if ($this->redis->exists("device:template:$id")) {
-                $template = $this->redis->hGetAll("device:template:$id");
-                $template["control"] = (bool) $template["control"];
-                
-                return $template;
-            }
+        if (empty($this->templates)) { // Cache it now
+            $this->load_template_list();
         }
-        else {
-            if (empty($this->templates)) { // Cache it now
-                $this->load_template_list();
-            }
-            if(isset($this->templates[$id])) {
-                return $this->templates[$id];
-            }
+        if(isset($this->templates[$id])) {
+            return $this->templates[$id];
         }
         return array('success'=>false, 'message'=>'Device template does not exist');
     }
@@ -685,25 +661,9 @@ class Device
         return array('success'=>false, 'message'=>'Device type not specified');
     }
 
-    public function reload_template_list() {
-        $result = $this->load_template_list();
-        if (isset($result['success']) && $result['success'] == false) {
-            return $result;
-        }
-        return array('success'=>true, 'message'=>'Templates successfully reloaded');
-    }
-
     private function load_template_list() {
 
-        if ($this->redis) {
-            foreach ($this->redis->sMembers("device:templates:meta") as $id) {
-                $this->redis->del("device:template:$id");
-            }
-            $this->redis->del("device:templates:meta");
-        }
-        else {
-            $this->templates = array();
-        }
+        $this->templates = array();
         $templates = array();
         
         $dir = scandir("Modules");
@@ -736,13 +696,7 @@ class Device
         $meta["description"] = (!isset($template->description) ? "" : $template->description);
         $meta["control"] = (!isset($template->control) ? false : true);
         
-        if ($this->redis) {
-            $this->redis->sAdd("device:templates:meta", $id);
-            $this->redis->hMSet("device:template:$id", $meta);
-        }
-        else {
-            $this->templates[$id] = $meta;
-        }
+        $this->templates[$id] = $meta;
     }
 
     private function get_module_class($module, $type) {

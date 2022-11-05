@@ -5,6 +5,26 @@
     "description": "Basic EmonTx v4 6 CT Energy Monitor configuration",
     "inputs": [
         {
+            "name": "MSG",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "MSG" }
+                }
+            ]
+        },
+        {
+            "name": "Vrms",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Vrms" }
+                }
+            ]
+        },
+        {
             "name": "P1",
             "description": "",
             "processList": [
@@ -147,10 +167,62 @@
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "E6" }
                 }
             ]
+        },
+        {
+            "name": "T1",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "T1" }
+                }
+            ]
+        },
+        {
+            "name": "T2",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "T2" }
+                }
+            ]
+        },
+        {
+            "name": "T3",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "T3" }
+                }
+            ]
+        },
+        {
+            "name": "pulse",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "pulse" }
+                }
+            ]
         }
     ],
 
     "feeds": [
+        {
+            "name": "MSG",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": ""
+        },
+        {
+            "name": "Vrms",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "V"
+        },
         {
             "name": "P1",
             "engine": "Engine::PHPFINA",
@@ -222,6 +294,30 @@
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "kWh"
+        },
+        {
+            "name": "T1",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "°C"
+        },
+        {
+            "name": "T2",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "°C"
+        },
+        {
+            "name": "T3",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "°C"
+        },
+        {
+            "name": "pulse",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "p"
         }
     ]
 }
