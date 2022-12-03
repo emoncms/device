@@ -457,7 +457,13 @@ class DeviceTemplate
         else if ($process->arguments->type === ProcessArg::FEEDID) {
             $temp = $this->search_array($feeds, 'name', $value); // return feed array that matches $feedArray[]['name']=$value
             if (isset($temp->id) && $temp->id > 0) {
-                $value = $temp->id;
+                $fget = $this->feed->get((int)$temp->id);
+                if (isset($fget['engine']) && $fget['engine']!=Engine::VIRTUALFEED) {
+                    $value = $temp->id;
+                } else {
+                    $this->log->error("convertProcess() Could not link virtual feed '$value'. process='$process->process' type='".$process->arguments->type."'");
+                    return array('success'=>false, 'message'=>"Could not link virtual feed '$value'. process='$process->process' type='".$process->arguments->type."'");
+                }
             }
             else {
                 $this->log->info("convertProcess() Feed name '$value' was not found. process='$process->process' type='".$process->arguments->type."'");
