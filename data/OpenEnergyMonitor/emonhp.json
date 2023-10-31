@@ -1,0 +1,127 @@
+{
+    "name": "emonHP L3 1x electric",
+    "category": "OpenEnergyMonitor",
+    "group": "emonHP Heat Pump Monitor",
+    "description": "Basic emonHP Heat Pump Monitor with 1x Electricity and 1x Heat Meter",
+    "inputs": [
+        {
+            "name": "electric_Power",
+            "description": "heat pump electrical power consumption",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "electric_Power" }
+                }
+             ]
+        },
+        {
+            "name": "electric_Energy",
+            "description": "heat pump electrical energy consumption",
+            "processList": [
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "electric_Energy" }
+                }
+            ]
+        },        
+        {
+            "name": "heatmeter_Power",
+            "description": "heat pump heat power output",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_Power" }
+                }
+            ]
+        },
+        {
+            "name": "heatmeter_Energy",
+            "description": "heat pump heat energy output",
+            "processList": [
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_Energy" }
+                }
+            ]
+        },
+        {
+            "name": "heatmeter_FlowT",
+            "description": "heat pump heat flow temp",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_FlowT" }
+                }
+            ]
+        },
+        {
+            "name": "heatmeter_ReturnT",
+            "description": "heat pump heat return temp",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_ReturnT" }
+                }
+            ]
+        },
+        {
+            "name": "heatmeter_FlowRate",
+            "description": "heat pump heat flow rate",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": "16.67" }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_FlowRate" }
+                }
+            ]
+        }
+    ],
+
+    "feeds": [
+        {
+            "name": "electric_Power",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "W"
+        },
+        {
+            "name": "electric_Energy",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "kWh"
+        },
+        {
+            "name": "heatmeter_Power",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "W"
+        },
+        {
+            "name": "heatmeter_Energy",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "kWh"
+        },
+        {
+            "name": "heatmeter_FlowT",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "°C"
+        },
+        {
+            "name": "heatmeter_ReturnT",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "°C"
+        },
+        {
+            "name": "heatmeter_FlowRate",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "l/m"
+        }
+    ]
+}
