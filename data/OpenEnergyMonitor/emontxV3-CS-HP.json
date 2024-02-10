@@ -1,7 +1,7 @@
 {
     "name": "Heatpump Monitor",
     "category": "OpenEnergyMonitor",
-    "group": "EmonTx",
+    "group": "EmonTx Continuous Sampling",
     "description": "Heatpump Monitor firmware for EmonTx v3",
     "inputs": [
         {

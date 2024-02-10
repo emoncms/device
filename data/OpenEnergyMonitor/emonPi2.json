@@ -1,0 +1,275 @@
+{
+    "name": "emonPi2 Standard",
+    "category": "OpenEnergyMonitor",
+    "group": "EmonPi2",
+    "description": "Basic EmonPi2 6 CT Energy Monitor configuration",
+    "inputs": [
+        {
+            "name": "MSG",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "MSG" }
+                }
+            ]
+        },
+        {
+            "name": "Vrms",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Vrms" }
+                }
+            ]
+        },
+        {
+            "name": "P1",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "P1" }
+                }
+            ]
+        },
+        {
+            "name": "P2",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "P2" }
+                }
+            ]
+        },
+        {
+            "name": "P3",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "P3" }
+                }
+            ]
+        },
+        {
+            "name": "P4",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "P4" }
+                }
+            ]
+        },
+        {
+            "name": "P5",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "P5" }
+                }
+            ]
+        },
+        {
+            "name": "P6",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "P6" }
+                }
+            ]
+        },
+        {
+            "name": "E1",
+            "description": "",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "E1" }
+                }
+            ]
+        },
+        {
+            "name": "E2",
+            "description": "",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "E2" }
+                }
+            ]
+        },
+        {
+            "name": "E3",
+            "description": "",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "E3" }
+                }
+            ]
+        },
+        {
+            "name": "E4",
+            "description": "",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "E4" }
+                }
+            ]
+        },
+        {
+            "name": "E5",
+            "description": "",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "E5" }
+                }
+            ]
+        },
+        {
+            "name": "E6",
+            "description": "",
+            "processList": [
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": 0.001 }
+                },   
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "E6" }
+                }
+            ]
+        },
+        {
+            "name": "pulse",
+            "description": "",
+            "processList": [
+                {
+                    "process": "log_to_feed_join",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "pulse" }
+                }
+            ]
+        }
+    ],
+
+    "feeds": [
+        {
+            "name": "MSG",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": ""
+        },
+        {
+            "name": "Vrms",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "V"
+        },
+        {
+            "name": "P1",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "W"
+        },
+        {
+            "name": "P2",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "W"
+        },
+        {
+            "name": "P3",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "W"
+        },
+        {
+            "name": "P4",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "W"
+        },
+        {
+            "name": "P5",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "W"
+        },
+        {
+            "name": "P6",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "W"
+        },
+        {
+            "name": "E1",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "kWh"
+        },
+        {
+            "name": "E2",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "kWh"
+        },
+        {
+            "name": "E3",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "kWh"
+        },
+        {
+            "name": "E4",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "kWh"
+        },
+        {
+            "name": "E5",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "kWh"
+        },
+        {
+            "name": "E6",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "kWh"
+        },
+        {
+            "name": "pulse",
+            "engine": "Engine::PHPFINA",
+            "interval": "10",
+            "unit": "p"
+        }
+    ]
+}
