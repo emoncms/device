@@ -15,12 +15,12 @@
             ]
         },
         {
-            "name": "Vrms",
+            "name": "V1",
             "description": "",
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "Vrms" }
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "V1" }
                 }
             ]
         },
@@ -188,7 +188,7 @@
             "unit": ""
         },
         {
-            "name": "Vrms",
+            "name": "V1",
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "V"
