@@ -279,7 +279,7 @@
         },
         {
             "name": "ET2",
-            "description": "Energy T3 Pomta 2",
+            "description": "Energy T2 Ponta 2",
             "processList": [
                 {
                     "process": "log_to_feed",
@@ -292,7 +292,7 @@
         },
         {
             "name": "ET3",
-            "description": "Energy T4 Cheia 3",
+            "description": "Energy T3 Cheia 3",
             "processList": [
                 {
                     "process": "log_to_feed",
