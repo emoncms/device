@@ -1,0 +1,586 @@
+{
+    "name": "Edp Box",
+    "category": "Gtronica",
+    "group": "Custom",
+    "description": "Automatic inputs and feeds creation for EdpBox Tasmota device with script and websend.",
+    "inputs": [
+        {
+            "name": "V",
+            "description": "Voltage L1",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Voltage L1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "I",
+            "description": "Current L1",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Current L1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "P",
+            "description": "Power Import W",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Import"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pe",
+            "description": "Power Export W",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Export"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pf",
+            "description": "Power Factor",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Factor"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "F",
+            "description": "Frequency",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Frequency"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "V2",
+            "description": "Voltage L2",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Voltage L2"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "I2",
+            "description": "Current L2",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Current L2"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "V3",
+            "description": "Voltage L3",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Voltage L3"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "I3",
+            "description": "Current L1",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Current L3"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "It",
+            "description": "Current Total",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Current Total"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pi1",
+            "description": "Power Import L1 W",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Import L1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pi2",
+            "description": "Power Import L2 W",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Import L2"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pi3",
+            "description": "Power Import L3 W",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Import L3"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pe1",
+            "description": "Power Export L1 W",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Export L1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pe2",
+            "description": "Power Export L2 W",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Export L2"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pe3",
+            "description": "Power Export L3 W",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Export L3"
+                    }
+                }
+            ]
+        },
+		{
+            "name": "Pf1",
+            "description": "Power Factor L1",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Factor L1"
+                    }
+                }
+            ]
+        },
+		{
+            "name": "Pf2",
+            "description": "Power Factor L2",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Factor L2"
+                    }
+                }
+            ]
+        },
+		{
+            "name": "Pf3",
+            "description": "Power Factor L3",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Factor L3"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ET1",
+            "description": "Energy T1 Vazio 1",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Energy T1 Vazio 1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ET2",
+            "description": "Energy T3 Pomta 2",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Energy T2 Ponta 2"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ET3",
+            "description": "Energy T4 Cheia 3",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Energy T3 Cheia 3"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Ei",
+            "description": "Energy Import",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Energy Import"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Ee",
+            "description": "Energy Export",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Energy Export"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Tarif",
+            "description": "Tariff",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Tariff"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ConT1",
+            "description": "Contract T1",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Contract T1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ConT2",
+            "description": "Contract T2",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Contract T2"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ConT3",
+            "description": "Contract T3",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Contract T3"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "DCP",
+            "description": "DCP",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "DCP"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Q",
+            "description": "DCP Q",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "DCP Q"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "K",
+            "description": "DCP K",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "DCP K"
+                    }
+                }
+            ]
+        }
+    ],
+    "feeds": [
+        {
+            "name": "Voltage L1",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "V"
+        },
+        {
+            "name": "Current L1",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "A"
+        },
+        {
+            "name": "Power Import",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "W"
+        },
+        {
+            "name": "Power Export",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "W"
+        },
+        {
+            "name": "Factor",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "cosϕ"
+        },
+        {
+            "name": "Frequency",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "Hz"
+        },
+        {
+            "name": "Voltage L2",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "V"
+        },
+        {
+            "name": "Current L2",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "A"
+        },
+        {
+            "name": "Voltage L3",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "V"
+        },
+        {
+            "name": "Current L3",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "A"
+        },
+        {
+            "name": "Current Total",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "A"
+        },
+        {
+            "name": "Power Import L1",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "W"
+        },
+        {
+            "name": "Power Import L2",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "W"
+        },
+        {
+            "name": "Power Import L3",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "W"
+        },
+        {
+            "name": "Power Export L1",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "W"
+        },
+        {
+            "name": "Power Export L2",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "W"
+        },
+        {
+            "name": "Power Export L3",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "W"
+        },
+        {
+            "name": "Factor L1",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "cosϕ"
+        },
+        {
+            "name": "Factor L2",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "cosϕ"
+        },
+        {
+            "name": "Factor L3",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "cosϕ"
+        },
+        {
+            "name": "Energy T1 Vazio 1",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
+        },
+        {
+            "name": "Energy T2 Ponta 2",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
+        },
+        {
+            "name": "Energy T3 Cheia 3",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
+        },
+        {
+            "name": "Energy Import",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
+        },
+        {
+            "name": "Energy Export",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh"
+        },
+        {
+            "name": "Tariff",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": ""
+        },
+        {
+            "name": "Contract T1",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kVA"
+        },
+        {
+            "name": "Contract T2",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kVA"
+        },
+        {
+            "name": "Contract T3",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kVA"
+        },
+        {
+            "name": "DCP",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": ""
+        },
+        {
+            "name": "DCP Q",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": ""
+        },
+        {
+            "name": "DCP K",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": ""
+        }
+    ]
+}

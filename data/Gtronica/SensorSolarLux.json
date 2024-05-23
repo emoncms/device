@@ -1,8 +1,8 @@
 {
-    "name": "Sensor Solar",
+    "name": "Sensor Solar + Lux",
     "category": "Gtronica",
     "group": "Custom",
-    "description": "Automatic inputs and feeds creation for gtronica.com Multi Sensors (Solar) device.",
+    "description": "Automatic inputs and feeds creation for gtronica.com Multi Sensors (Solar + Lux) device.",
     "inputs": [
         {
             "name": "T",
@@ -107,6 +107,45 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "P",
+            "description": "Power",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "P"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "PS",
+            "description": "Pulse S0",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "PS"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "L",
+            "description": "Lux",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "L"
+                    }
+                }
+            ]
         }
     ],
     "feeds": [
@@ -149,6 +188,21 @@
         {
             "name": "T5",
             "unit": "ºC",
+            "engine": "Engine::PHPTIMESERIES"
+        },
+        {
+            "name": "P",
+            "unit": "W",
+            "engine": "Engine::PHPTIMESERIES"
+        },
+        {
+            "name": "PS",
+            "unit": "",
+            "engine": "Engine::PHPTIMESERIES"
+        },
+        {
+            "name": "L",
+            "unit": "lx",
             "engine": "Engine::PHPTIMESERIES"
         }
     ]
