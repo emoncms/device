@@ -40,6 +40,13 @@
                         "type": "ProcessArg::FEEDID",
                         "value": "Power Import"
                     }
+                },
+                {
+                    "process": "power_to_kwhd",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Import kWhd"
+                    }
                 }
             ]
         },
@@ -52,6 +59,13 @@
                     "arguments": {
                         "type": "ProcessArg::FEEDID",
                         "value": "Power Export"
+                    }
+                },
+                {
+                    "process": "power_to_kwhd",
+                    "arguments": {
+                        "type": "ProcessArg::FEEDID",
+                        "value": "Power Export kWhd"
                     }
                 }
             ]
@@ -225,7 +239,7 @@
                 }
             ]
         },
-		{
+        {
             "name": "Pf1",
             "description": "Power Factor L1",
             "processList": [
@@ -238,7 +252,7 @@
                 }
             ]
         },
-		{
+        {
             "name": "Pf2",
             "description": "Power Factor L2",
             "processList": [
@@ -251,7 +265,7 @@
                 }
             ]
         },
-		{
+        {
             "name": "Pf3",
             "description": "Power Factor L3",
             "processList": [
@@ -581,6 +595,16 @@
             "name": "DCP K",
             "engine": "Engine::PHPTIMESERIES",
             "unit": ""
+        },
+        {
+            "name": "Power Import kWhd",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh/d"
+        },
+        {
+            "name": "Power Export kWhd",
+            "engine": "Engine::PHPTIMESERIES",
+            "unit": "kWh/d"
         }
     ]
 }
