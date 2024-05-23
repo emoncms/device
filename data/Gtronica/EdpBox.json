@@ -2,7 +2,7 @@
     "name": "Edp Box",
     "category": "Gtronica",
     "group": "Custom",
-    "description": "Automatic inputs and feeds creation for EdpBox Tasmota device with script and websend.",
+    "description": "Automatic inputs and feeds creation for HAN Wifi Module EdpBox Tasmota device with script and websend. github.com/chaveiro/HAN-WIFI-Module",
     "inputs": [
         {
             "name": "V",
