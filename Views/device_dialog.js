@@ -137,7 +137,7 @@ var device_dialog =
         $("#template-list").text('');
         
         var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device.<br>" +
-                "Initializing a device usualy should only be done once on installation. " +
+                "Initializing a device usually should only be done once on installation. " +
                 "If the configuration was already applied, only missing inputs and feeds will be created.";
         
         $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
