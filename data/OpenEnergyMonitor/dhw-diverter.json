@@ -1,8 +1,8 @@
 {
-    "name": "DHW Diverter",
+    "name": "DHW Diverter emonPi2",
     "category": "OpenEnergyMonitor",
     "group": "emonHP Heat Pump Monitor",
-    "description": "emonPi2 CT1 DHW diverter valve for heat pump DHW status detection",
+    "description": "emonPi2 with CT1 measuring diverter valve power, convert to DHW status detection flag",
     "inputs": [
         {
             "name": "P1",
@@ -21,7 +21,7 @@
                     "arguments": { "type": "ProcessArg::NONE"}
                 },
                 {
-                    "process": "max_value_allowed",
+                    "process": "maxvalue",
                     "arguments": { "type": "ProcessArg::VALUE", "value": "1" }
                 },
                 {
@@ -43,7 +43,7 @@
                 {
             "name": "dhw_flag",
             "engine": "Engine::PHPFINA",
-            "interval": "10"
+            "interval": "10",
         }
     ]
 }
