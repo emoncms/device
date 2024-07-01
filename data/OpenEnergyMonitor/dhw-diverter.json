@@ -21,7 +21,7 @@
                     "arguments": { "type": "ProcessArg::NONE"}
                 },
                 {
-                    "process": "maxvalue",
+                    "process": "max_value_allowed",
                     "arguments": { "type": "ProcessArg::VALUE", "value": "1" }
                 },
                 {
@@ -43,7 +43,7 @@
                 {
             "name": "dhw_flag",
             "engine": "Engine::PHPFINA",
-            "interval": "10",
+            "interval": "10"
         }
     ]
 }
