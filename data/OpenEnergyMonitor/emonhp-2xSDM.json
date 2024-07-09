@@ -55,7 +55,7 @@
                     "arguments": { "type": "ProcessArg::INPUTID", "value": "electric_Energy" }
                 },
                 {
-                    "process": "log_to_feed",
+                    "process": "log_to_feed_join",
                     "arguments": { "type": "ProcessArg::FEEDID", "value": "total_electric_Energy" }
                 }
             ]
