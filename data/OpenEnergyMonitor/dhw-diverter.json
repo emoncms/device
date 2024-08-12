@@ -14,7 +14,7 @@
                 },
                 {
                     "process": "offset",
-                    "arguments": { "type": "ProcessArg::VALUE", "value": "-4" }
+                    "arguments": { "type": "ProcessArg::VALUE", "value": "-6" }
                 },
                 {
                     "process": "allowpositive",
