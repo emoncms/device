@@ -1,0 +1,27 @@
+{
+    "name": "EmonTH HeatPump",
+    "category": "OpenEnergyMonitor",
+    "group": "Temperature & Humidity",
+    "description": "emonTH as an emonHP heat pump monitor indoor room temperature sensor",
+    "inputs": [
+        {
+            "name": "temperature",
+            "description": "Temperature C",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "heatpump_roomT" }
+                }
+            ]
+        }
+    ],
+
+    "feeds": [
+        {
+            "name": "heatpump_roomT",
+            "engine": "Engine::PHPFINA",
+            "interval": "60",
+            "unit": "°C"
+        }
+    ]
+}
