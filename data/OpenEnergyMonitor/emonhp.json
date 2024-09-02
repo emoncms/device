@@ -2,7 +2,7 @@
     "name": "emonHP L3 1x electric",
     "category": "OpenEnergyMonitor",
     "group": "emonHP Heat Pump Monitor",
-    "description": "Basic emonHP Heat Pump Monitor with 1x Electricity and 1x Heat Meter",
+    "description": "emonHP Heat Pump Monitor with 1x Electricity and 1x Heat Meter",
     "inputs": [
         {
             "name": "electric_Power",
@@ -10,7 +10,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "electric_Power" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_elec" }
                 }
              ]
         },
@@ -20,7 +20,7 @@
             "processList": [
                 {
                     "process": "log_to_feed_join",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "electric_Energy" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_elec_kwh" }
                 }
             ]
         },        
@@ -30,7 +30,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_Power" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_heat" }
                 }
             ]
         },
@@ -40,7 +40,7 @@
             "processList": [
                 {
                     "process": "log_to_feed_join",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_Energy" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_heat_kwh" }
                 }
             ]
         },
@@ -50,7 +50,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_FlowT" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_flowT" }
                 }
             ]
         },
@@ -60,7 +60,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_ReturnT" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_returnT" }
                 }
             ]
         },
@@ -74,7 +74,17 @@
                 },
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatmeter_FlowRate" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_flowrate" }
+                }
+            ]
+        },
+        {
+            "name": "heatmeter_Record_error",
+            "description": "heat meter error register",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_error" }
                 }
             ]
         }
@@ -82,46 +92,51 @@
 
     "feeds": [
         {
-            "name": "electric_Power",
+            "name": "heatpump_elec",
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "W"
         },
         {
-            "name": "electric_Energy",
+            "name": "heatpump_elec_kwh:",
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "kWh"
         },
         {
-            "name": "heatmeter_Power",
+            "name": "heatpump_heat",
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "W"
         },
         {
-            "name": "heatmeter_Energy",
+            "name": "heatpump_heat_kwh",
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "kWh"
         },
         {
-            "name": "heatmeter_FlowT",
+            "name": "heatpump_flowT",
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "°C"
         },
         {
-            "name": "heatmeter_ReturnT",
+            "name": "heatpump_returnT",
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "°C"
         },
         {
-            "name": "heatmeter_FlowRate",
+            "name": "heatpump_flowrate",
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "l/m"
+        },
+        {
+            "name": "heatpump_error",
+            "engine": "Engine::PHPFINA",
+            "interval": "10"
         }
     ]
 }
