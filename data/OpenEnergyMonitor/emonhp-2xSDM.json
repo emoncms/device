@@ -164,12 +164,6 @@
             "unit": "kWh"
         },
         {
-            "name": "heatmeter_Power",
-            "engine": "Engine::PHPFINA",
-            "interval": "10",
-            "unit": "W"
-        },
-        {
             "name": "heatpump_heat",
             "engine": "Engine::PHPFINA",
             "interval": "10",
