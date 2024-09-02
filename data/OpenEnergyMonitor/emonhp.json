@@ -98,7 +98,7 @@
             "unit": "W"
         },
         {
-            "name": "heatpump_elec_kwh:",
+            "name": "heatpump_elec_kwh",
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "kWh"
