@@ -1,5 +1,5 @@
 {
-    "name": "DHW Diverter emonPi2 analog",
+    "name": "DHW Diverter analog",
     "category": "OpenEnergyMonitor",
     "group": "emonHP Heat Pump Monitor",
     "description": "emonPi2 DHW status sensor on analog input",
@@ -43,7 +43,7 @@
             "engine": "Engine::PHPFINA",
             "interval": "10"
         },
-                {
+        {
             "name": "dhw_flag",
             "engine": "Engine::PHPFINA",
             "interval": "10"
