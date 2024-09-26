@@ -30,7 +30,7 @@
                 },
                 {
                     "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "dhw_flag" }
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_dhw" }
                 }
             ]
         }
