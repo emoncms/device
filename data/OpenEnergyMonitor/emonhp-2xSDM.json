@@ -59,7 +59,7 @@
                     "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_elec_kwh" }
                 }
             ]
-        },    
+        },
         {
             "name": "heatmeter_Power",
             "description": "heat pump heat power output",
@@ -111,16 +111,6 @@
                 {
                     "process": "log_to_feed",
                     "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_flowrate" }
-                }
-            ]
-        },
-        {
-            "name": "heatmeter_Record_error",
-            "description": "heat meter error register",
-            "processList": [
-                {
-                    "process": "log_to_feed",
-                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_error" }
                 }
             ]
         }
@@ -192,11 +182,6 @@
             "engine": "Engine::PHPFINA",
             "interval": "10",
             "unit": "l/m"
-        },
-        {
-            "name": "heatpump_error",
-            "engine": "Engine::PHPFINA",
-            "interval": "10"
         }
     ]
 }
