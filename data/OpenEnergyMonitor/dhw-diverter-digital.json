@@ -19,11 +19,6 @@
 
     "feeds": [
         {
-            "name": "ping15",
-            "engine": "Engine::PHPFINA",
-            "interval": "10"
-        },
-        {
             "name": "heatpump_dhw",
             "engine": "Engine::PHPFINA",
             "interval": "10"
