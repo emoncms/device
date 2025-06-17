@@ -3,7 +3,7 @@
 ?>
 
 <link href="<?php echo $path; ?>Modules/device/Views/device_dialog.css" rel="stylesheet">
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=2"></script>
 
 <div id="device-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-config-modal-label" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
