@@ -714,6 +714,12 @@ class Device
         return array('success'=>false, 'message'=>'Device type not specified');
     }
 
+    public function init_custom_template($device, $template) {
+        if (isset($template) && $template!==false) $template = json_decode($template);
+        $class = $this->get_module_class('device', self::TEMPLATE);
+        return $class->init_template($device, $template);
+    }
+
     public function generate_template($id) {
         // Device ID
         $id = intval($id);

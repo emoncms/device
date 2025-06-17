@@ -380,7 +380,7 @@ var device_dialog =
             $('#device-init-modal').modal('hide');
             
             var template = device_dialog.parseTemplate();
-            var result = device.init(device_dialog.device.id, template);
+            var result = device.initCustom(device_dialog.device.id, template);
             if (typeof result.success !== 'undefined' && !result.success) {
                 alert('Unable to initialize device:\n'+result.message);
                 return false;

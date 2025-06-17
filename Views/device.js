@@ -44,6 +44,12 @@ var device = {
         return result;
     },
 
+    'initCustom':function(id, template) {
+        var result = {};
+        $.ajax({ url: path+"device/template/init_custom.json?id="+id, type: 'POST', data: "template="+JSON.stringify(template), dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
     'prepareTemplate':function(id) {
         var result = {};
         $.ajax({ url: path+"device/template/prepare.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
