@@ -299,6 +299,11 @@ var device_dialog =
         $("#device-config-devicekey-new").off('click').on('click', function () {
             $('#device-config-devicekey').val(device.generatekey());
         });
+
+        $("#generate-template").on('click', function () {
+            let device_template = device.generateTemplate(device_dialog.device.id);
+            $('#generate-template-textarea').val(JSON.stringify(device_template, null, 2));
+        });
     },
 
     'drawTemplate':function() {

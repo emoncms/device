@@ -1,7 +1,7 @@
 <?php
     global $path, $settings, $session;
     
-    $version = 2;
+    $version = 3;
 ?>
 
 
