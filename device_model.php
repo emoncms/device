@@ -614,15 +614,26 @@ class Device
     }
 
     public function prepare_template($id) {
+        // Device ID
         $id = intval($id);
         
+        // Fetch device info: userid, nodeid, name, description, type, devicekey
         $device = $this->get($id);
+        
+        // If device type is present fetch the associated template
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+
+            // Returns template meta information
+            // e.g. module, name, category, group, description, control
             $result = $this->get_template_meta($device['type']);
             if (isset($result["success"]) && $result["success"] == false) {
                 return $result;
             }
             $module = $result['module'];
+
+            // This is typically called here as get_module_class('device', 'template')
+            // returning the device_template.php class
+            // implementation supports greater modularity but is not in use?
             $class = $this->get_module_class($module, self::TEMPLATE);
             if ($class != null) {
                 return $class->prepare_template($device);
@@ -632,9 +643,17 @@ class Device
         return array('success'=>false, 'message'=>'Device type not specified');
     }
 
+    /**
+     * Initialize a device with a template
+     * @param int $id Device ID
+     * @param string|false $template JSON encoded template with what actions to perform
+     * @return array Result of the initialization
+     */
     public function init($id, $template) {
+        // Device ID
         $id = intval($id);
         
+        // Fetch device info: userid, nodeid, name, description, type, devicekey
         $device = $this->get($id);
         $result = $this->init_template($device, $template);
         if (isset($result['success']) && $result['success'] == false) {
@@ -647,11 +666,16 @@ class Device
         if (isset($template) && $template!==false) $template = json_decode($template);
         
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+            // Returns template meta information
+            // e.g. module, name, category, group, description, control
             $result = $this->get_template_meta($device['type']);
             if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             $module = $result['module'];
+            // This is typically called here as get_module_class('device', 'template')
+            // returning the device_template.php class
+            // implementation supports greater modularity but is not in use?
             $class = $this->get_module_class($module, self::TEMPLATE);
             if ($class != null) {
                 return $class->init_template($device, $template);
