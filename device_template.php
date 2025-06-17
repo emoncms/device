@@ -466,64 +466,78 @@ class DeviceTemplate
 
     // Converts template process
     protected function convert_process($feeds, $inputs, $process, $process_list) {
-        if (isset($process->arguments->value)) {
-            $value = $process->arguments->value;
+
+        // Normalize arguments to always be an array of argument objects
+        $arguments = $process->arguments;
+        if (!is_array($arguments)) {
+            $arguments = [$arguments];
         }
-        else if ($process->arguments->type === ProcessArg::NONE) {
-            $value = 0;
-        }
-        else {
-            $this->log->error("convertProcess() Bad device template. Undefined argument value. process='$process->process' type='".$process->arguments->type."'");
-            return array('success'=>false, 'message'=>"Bad device template. Undefined argument value. process='$process->process' type='".$process->arguments->type."'");
-        }
-        
-        if ($process->arguments->type === ProcessArg::VALUE) {
-        }
-        else if ($process->arguments->type === ProcessArg::INPUTID) {
-            $temp = $this->search_array($inputs, 'name', $value); // return input array that matches $inputArray[]['name']=$value
-            if (isset($temp->id) && $temp->id > 0) {
-                $value = $temp->id;
+
+        $args = [];
+        foreach ($arguments as $argument) {
+            if (isset($argument->value)) {
+                $value = $argument->value;
+            }
+            else if ($argument->type === ProcessArg::NONE) {
+                $value = 0;
             }
             else {
-                $this->log->info("convertProcess() Input name '$value' was not found. process='$process->process' type='".$process->arguments->type."'");
-                return array('success'=>false, 'message'=>"Input name '$value' was not found. process='$process->process' type='".$process->arguments->type."'");
+                $this->log->error("convertProcess() Bad device template. Undefined argument value. process='$process->process' type='".$argument->type."'");
+                return array('success'=>false, 'message'=>"Bad device template. Undefined argument value. process='$process->process' type='".$argument->type."'");
             }
-        }
-        else if ($process->arguments->type === ProcessArg::FEEDID) {
-            $temp = $this->search_array($feeds, 'name', $value); // return feed array that matches $feedArray[]['name']=$value
-            if (isset($temp->id) && $temp->id > 0) {
-                $fget = $this->feed->get((int)$temp->id);
-                if (isset($fget['engine']) && $fget['engine']!=Engine::VIRTUALFEED) {
+
+            if ($argument->type === ProcessArg::VALUE) {
+                // No conversion needed
+            }
+            else if ($argument->type === ProcessArg::INPUTID) {
+                $temp = $this->search_array($inputs, 'name', $value);
+                if (isset($temp->id) && $temp->id > 0) {
                     $value = $temp->id;
-                } else {
-                    $this->log->error("convertProcess() Could not link virtual feed '$value'. process='$process->process' type='".$process->arguments->type."'");
-                    return array('success'=>false, 'message'=>"Could not link virtual feed '$value'. process='$process->process' type='".$process->arguments->type."'");
+                }
+                else {
+                    $this->log->info("convertProcess() Input name '$value' was not found. process='$process->process' type='".$argument->type."'");
+                    return array('success'=>false, 'message'=>"Input name '$value' was not found. process='$process->process' type='".$argument->type."'");
                 }
             }
-            else {
-                $this->log->info("convertProcess() Feed name '$value' was not found. process='$process->process' type='".$process->arguments->type."'");
-                return array('success'=>false, 'message'=>"Feed name '$value' was not found. process='$process->process' type='".$process->arguments->type."'");
+            else if ($argument->type === ProcessArg::FEEDID) {
+                $temp = $this->search_array($feeds, 'name', $value);
+                if (isset($temp->id) && $temp->id > 0) {
+                    $fget = $this->feed->get((int)$temp->id);
+                    if (isset($fget['engine']) && $fget['engine']!=Engine::VIRTUALFEED) {
+                        $value = $temp->id;
+                    } else {
+                        $this->log->error("convertProcess() Could not link virtual feed '$value'. process='$process->process' type='".$argument->type."'");
+                        return array('success'=>false, 'message'=>"Could not link virtual feed '$value'. process='$process->process' type='".$argument->type."'");
+                    }
+                }
+                else {
+                    $this->log->info("convertProcess() Feed name '$value' was not found. process='$process->process' type='".$argument->type."'");
+                    return array('success'=>false, 'message'=>"Feed name '$value' was not found. process='$process->process' type='".$argument->type."'");
+                }
             }
+            else if ($argument->type === ProcessArg::NONE) {
+                $value = "";
+            }
+            else if ($argument->type === ProcessArg::TEXT) {
+                // No conversion needed
+            }
+            else if ($argument->type === ProcessArg::SCHEDULEID) {
+                // Not supported for now
+            }
+            else {
+                $this->log->error("convertProcess() Bad device template. Unsuported argument type. process='$process->process' type='".$argument->type."'");
+                return array('success'=>false, 'message'=>"Bad device template. Unsuported argument type. process='$process->process' type='".$argument->type."'");
+            }
+
+            $args[] = $value;
         }
-        else if ($process->arguments->type === ProcessArg::NONE) {
-            $value = "";
-        }
-        else if ($process->arguments->type === ProcessArg::TEXT) {
-        }
-        else if ($process->arguments->type === ProcessArg::SCHEDULEID) {
-            //not supported for now
-        }
-        else {
-            $this->log->error("convertProcess() Bad device template. Unsuported argument type. process='$process->process' type='".$process->arguments->type."'");
-            return array('success'=>false, 'message'=>"Bad device template. Unsuported argument type. process='$process->process' type='".$process->arguments->type."'");
-        }
-        
+
         $process_key = $process->process;
-        $this->log->info("convertProcess() process process='$process_key' type='".$process->arguments->type."' value='" . $value . "'");
+        $this->log->info("convertProcess() process process='$process_key' args='" . json_encode($args) . "'");
 
         return [
-            'fn' => $process_key, // e.g. 'process__log_to_feed_join'
-            'args' => [$value]    // or multiple args if needed
+            'fn' => $process_key,
+            'args' => $args
         ];
     }
 
