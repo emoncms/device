@@ -59,7 +59,7 @@
             <div class="divider"></div>
 
             <div class="generate-template-section">
-                <p><b><?php echo _('Generate template from existing inputs, input processing and feeds'); ?></p>
+                <p><b><?php echo _('Generate template from existing inputs, input processing and feeds'); ?></b></p>
                 <button class="btn" id="generate-template">Generate template</button>
                 <textarea id="generate-template-textarea" class="input-large hidden" placeholder="<?php echo _('Generated template will be shown here'); ?>"></textarea>
             </div>
