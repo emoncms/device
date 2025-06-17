@@ -302,39 +302,40 @@ class DeviceTemplate
             
             // Arguments
             if(isset($process->arguments)) {
-                if(isset($process->arguments->type)) {
-                    // This is the argument type from the template
-                    $process->arguments->type = @constant($process->arguments->type); // ProcessArg::
-                    // $process_type = $process_list[$process->process]['argtype']; // get emoncms process ProcessArg
-                    $process_args = isset($process_list[$process->process]['args']) ? $process_list[$process->process]['args'] : array();
-                     
-                    // Just get first argument type for now
-                    $process_type = ProcessArg::NONE;
-                    if (isset($process_args[0]) && isset($process_args[0]['type'])) {
-                        $process_type = $process_args[0]['type'];
+                // Normalize arguments to always be an array of argument objects
+                if (!is_array($process->arguments)) {
+                    $process->arguments = [$process->arguments];
+                }
+
+                $process_args = isset($process_list[$process->process]['args']) ? $process_list[$process->process]['args'] : array();
+
+                // Check all arguments
+                foreach ($process->arguments as $idx => $argument) {
+                    if (!isset($argument->type)) {
+                        $this->log->error("prepare_processes() Bad device template. Argument type is missing at index $idx, set to NONE if not required. process='$process->process'");
+                        return array('success'=>false, 'message'=>"Bad device template. Argument type is missing at index $idx, set to NONE if not required. process='$process->process'");
+                    }
+                    $argument->type = @constant($argument->type); // ProcessArg::
+
+                    $expected_type = isset($process_args[$idx]['type']) ? $process_args[$idx]['type'] : ProcessArg::NONE;
+                    if ($argument->type !== $expected_type) {
+                        $this->log->error("prepare_processes() Bad device template. Mismatch ProcessArg type at index $idx. Got '{$argument->type}' expected '$expected_type'. process='$process->process'");
+                        return array('success'=>false, 'message'=>"Bad device template. Mismatch ProcessArg type at index $idx. Got '{$argument->type}' expected '$expected_type'. process='$process->process'");
                     }
 
-                    if ($process_type != $process->arguments->type) {
-                        $this->log->error("prepare_processes() Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process->process'");
-                        return array('success'=>false, 'message'=>"Bad device template. Missmatch ProcessArg type. Got '$process->arguments->type' expected '$process_type'. process='$process->process'");
-                    }
-                    else if ($process->arguments->type === ProcessArg::INPUTID || $process->arguments->type === ProcessArg::FEEDID) {
-                        // Add prefix if applicable, not currently used
-                        $process->arguments->value = $prefix.$process->arguments->value;
-                    }
-                    
-                    $result = $this->convert_process($feeds, $inputs, $process, $process_list);
-
-                    if (isset($result['success'])) {
-                        $failed = true;
-                    }
-                    else {
-                        $processes_converted[] = $result;
+                    // Add prefix if applicable for INPUTID or FEEDID
+                    if ($argument->type === ProcessArg::INPUTID || $argument->type === ProcessArg::FEEDID) {
+                        $argument->value = $prefix . $argument->value;
                     }
                 }
+
+                $result = $this->convert_process($feeds, $inputs, $process, $process_list);
+
+                if (isset($result['success'])) {
+                    $failed = true;
+                }
                 else {
-                    $this->log->error("prepare_processes() Bad device template. Argument type is missing, set to NONE if not required. process='$process->process' type='".$process->arguments->type."'");
-                    return array('success'=>false, 'message'=>"Bad device template. Argument type is missing, set to NONE if not required. process='$process->process' type='".$process->arguments->type."'");
+                    $processes_converted[] = $result;
                 }
             }
             else {
