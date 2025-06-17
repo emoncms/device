@@ -20,6 +20,9 @@ var device_dialog =
         }
         
         this.drawConfig();
+
+        // hide generate template textarea on load
+        $('#generate-template-textarea').addClass('hidden');
     },
 
     'drawConfig':function() {
@@ -303,6 +306,7 @@ var device_dialog =
         $("#generate-template").on('click', function () {
             let device_template = device.generateTemplate(device_dialog.device.id);
             $('#generate-template-textarea').val(JSON.stringify(device_template, null, 2));
+            $('#generate-template-textarea').removeClass('hidden');
         });
     },
 
