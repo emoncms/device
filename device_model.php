@@ -616,7 +616,7 @@ class Device
     public function prepare_template($id) {
         // Device ID
         $id = intval($id);
-        
+
         // Fetch device info: userid, nodeid, name, description, type, devicekey
         $device = $this->get($id);
         
@@ -641,6 +641,35 @@ class Device
             return array('success'=>false, 'message'=>'Device template class is not defined');
         }
         return array('success'=>false, 'message'=>'Device type not specified');
+    }
+
+    public function prepare_custom_template($id, $template = false) {
+        // Device ID
+        $id = intval($id);
+
+        if ($template === false) {
+            return array('success'=>false, 'message'=>'No template provided');
+        }
+        
+        $template = json_decode($template);
+        if ($template === null) {
+            return array('success'=>false, 'message'=>'Invalid template JSON provided');
+        }
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return array('success'=>false, 'message'=>'JSON error: '.json_last_error_msg());
+        }
+
+        // Fetch device info: userid, nodeid, name, description, type, devicekey
+        $device = $this->get($id);
+        
+        // This is typically called here as get_module_class('device', 'template')
+        // returning the device_template.php class
+        // implementation supports greater modularity but is not in use?
+        $class = $this->get_module_class('device', self::TEMPLATE);
+        if ($class != null) {
+            return $class->prepare_template($device, $template);
+        }
+        return array('success'=>false, 'message'=>'Device template class is not defined');
     }
 
     /**

@@ -50,6 +50,12 @@ var device = {
         return result;
     },
 
+    'prepareCustomTemplate':function(id, template) {
+        var result = {};
+        $.ajax({ url: path+"device/template/prepare_custom.json?id="+id, type: 'POST', data: "template="+JSON.stringify(template), dataType: 'json', async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
     'generateTemplate':function(id) {
         var result = {};
         $.ajax({ url: path+"device/template/generate.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });

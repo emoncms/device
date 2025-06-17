@@ -74,13 +74,18 @@ class DeviceTemplate
         return $result[$type];
     }
 
-    public function prepare_template($device) {
+
+    public function prepare_template($device, $template = false) {
         $userid = intval($device['userid']);
         
-        // Returns full template object from data/...
-        $result = $this->get_template($device['type']);
-        if (!is_object($result)) {
-            return $result;
+        if ($template == false) {
+            // Returns full template object from data/...
+            $result = $this->get_template($device['type']);
+            if (!is_object($result)) {
+                return $result;
+            }
+        } else {
+            $result = $template;
         }
 
         // Option not currently in use, $prefix is typically empty ""

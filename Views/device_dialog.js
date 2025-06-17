@@ -22,7 +22,7 @@ var device_dialog =
         this.drawConfig();
 
         // hide generate template textarea on load
-        $('#generate-template-textarea').addClass('hidden');
+        $('#custom-template-textarea').addClass('hidden');
     },
 
     'drawConfig':function() {
@@ -298,6 +298,11 @@ var device_dialog =
             $('#device-config-modal').modal('hide');
             device_dialog.loadInit();
         });
+
+        $("#prepare-custom-template").off('click').on('click', function () {
+            $('#device-config-modal').modal('hide');
+            device_dialog.loadInitCustom();
+        });
         
         $("#device-config-devicekey-new").off('click').on('click', function () {
             $('#device-config-devicekey').val(device.generatekey());
@@ -305,8 +310,8 @@ var device_dialog =
 
         $("#generate-template").on('click', function () {
             let device_template = device.generateTemplate(device_dialog.device.id);
-            $('#generate-template-textarea').val(JSON.stringify(device_template, null, 2));
-            $('#generate-template-textarea').removeClass('hidden');
+            $('#custom-template-textarea').val(JSON.stringify(device_template, null, 2));
+            $('#custom-template-textarea').removeClass('hidden');
         });
     },
 
@@ -349,6 +354,42 @@ var device_dialog =
             $('#wrap').trigger("device-init");
         });
     },
+
+    'loadInitCustom': function() {
+        let custom_template = $('#custom-template-textarea').val();
+        if (custom_template == null || custom_template == "") {
+            alert("Please enter a custom template to initialize the device.");
+            return false;
+        }
+        try {
+            custom_template = JSON.parse(custom_template);
+        } catch (e) {
+            alert("Invalid JSON format in custom template:\n" + e.message);
+            return false;
+        }
+        var result = device.prepareCustomTemplate(device_dialog.device.id, custom_template);
+        if (typeof result.success !== 'undefined' && !result.success) {
+            alert('Unable to initialize device with custom template:\n' + result.message);
+            return false;
+        }
+        device_dialog.deviceTemplate = result;
+        device_dialog.drawInit(result);
+
+        // Initialize callbacks
+        $("#device-init-confirm").off('click').on('click', function() {
+            $('#device-init-modal').modal('hide');
+            
+            var template = device_dialog.parseTemplate();
+            var result = device.init(device_dialog.device.id, template);
+            if (typeof result.success !== 'undefined' && !result.success) {
+                alert('Unable to initialize device:\n'+result.message);
+                return false;
+            }
+            
+            $('#wrap').trigger("device-init");
+        });
+    },
+
 
     'drawInit': function (result) {
         $('#device-init-modal').modal('show');

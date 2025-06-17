@@ -2,8 +2,8 @@
     global $path;
 ?>
 
-<link href="<?php echo $path; ?>Modules/device/Views/device_dialog.css?v=3" rel="stylesheet">
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=3"></script>
+<link href="<?php echo $path; ?>Modules/device/Views/device_dialog.css?v=4" rel="stylesheet">
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=4"></script>
 
 <div id="device-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-config-modal-label" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
@@ -61,7 +61,9 @@
             <div class="generate-template-section">
                 <p><b><?php echo _('Generate template from existing inputs, input processing and feeds'); ?></b></p>
                 <button class="btn" id="generate-template">Generate template</button>
-                <textarea id="generate-template-textarea" class="input-large hidden" placeholder="<?php echo _('Generated template will be shown here'); ?>"></textarea>
+                <button class="btn btn-primary" id="prepare-custom-template"><?php echo _('Apply custom template'); ?></button>
+                
+                <textarea id="custom-template-textarea" class="input-large hidden" placeholder="<?php echo _('Generated template will be shown here'); ?>"></textarea>
             </div>
         </div>
     </div>
