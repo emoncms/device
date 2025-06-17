@@ -563,4 +563,156 @@ class DeviceTemplate
         }
         return null;
     }
+
+    // ------ Template Generation ------
+
+
+    /**
+     * Generates a template based on the device's inputs and processes.
+     *
+     * @param array $device Device information including userid and nodeid.
+     * @return array Template structure containing inputs and feeds.
+     */
+    public function generate_template($device) {
+        $userid = intval($device['userid']);
+        $nodeid = $device['nodeid'];
+
+        // Get all inputs associated with $nodeid
+        $inputs = $this->input->getlist($userid);
+        $inputs_by_id = $this->map_inputs_by_id($inputs, $nodeid);
+        $engines = array_flip(Engine::get_all());
+
+        $template_inputs = array();
+        $template_feeds = array();
+
+        foreach ($inputs as $input) {
+            if ($input['nodeid'] != $nodeid) continue;
+
+            $processes_for_template = array();
+            $decoded_processList = $this->process->decode_processlist($input['processList']);
+
+            foreach ($decoded_processList as $process) {
+                $process_info = $this->process->get_info($process['fn']);
+                if (!$process_info) continue;
+
+                list($arguments, $feeds) = $this->build_process_arguments($process, $process_info, $inputs_by_id, $engines);
+                $template_feeds = array_merge($template_feeds, $feeds);
+
+                $processes_for_template[] = array(
+                    "process" => $process_info['function'],
+                    "arguments" => $arguments,
+                );
+            }
+
+            $template_inputs[] = array(
+                "name" => $input['name'],
+                "description" => $input['description'],
+                "processList" => $processes_for_template
+            );
+        }
+
+        $template = array(
+            "name" => $nodeid."-template",
+            "category" => "Custom",
+            "group" => "Custom",
+            "description" => "",
+            "inputs" => $template_inputs,
+            "feeds" => array_values($this->unique_feeds($template_feeds)),
+        );
+
+        return $template;
+    }
+
+    /**
+     * Map inputs by their ID for quick lookup.
+     */
+    private function map_inputs_by_id($inputs, $nodeid) {
+        $inputs_by_id = array();
+        foreach ($inputs as $input) {
+            if ($input['nodeid'] == $nodeid) {
+                $inputs_by_id[$input['id']] = $input;
+            }
+        }
+        return $inputs_by_id;
+    }
+
+    /**
+     * Build process arguments and collect feeds for the template.
+     */
+    private function build_process_arguments($process, $process_info, $inputs_by_id, $engines) {
+        $arguments = array();
+        $feeds = array();
+
+        foreach ($process_info['args'] as $idx => $arg) {
+            switch ($arg['type']) {
+                case ProcessArg::NONE:
+                    $arguments[] = array("type" => "ProcessArg::NONE");
+                    break;
+
+                case ProcessArg::VALUE:
+                    $arguments[] = array(
+                        "type" => "ProcessArg::VALUE",
+                        "value" => $process['args'][$idx],
+                    );
+                    break;
+
+                case ProcessArg::FEEDID:
+                    $feedid = $process['args'][$idx];
+                    $feed = $this->feed->get($feedid);
+                    $arguments[] = array(
+                        "type" => "ProcessArg::FEEDID",
+                        "value" => $feed['name'],
+                    );
+                    $feeds[] = $this->build_template_feed($feed, $feedid, $engines);
+                    break;
+
+                case ProcessArg::INPUTID:
+                    $inputid = $process['args'][$idx];
+                    $input_data = isset($inputs_by_id[$inputid]) ? $inputs_by_id[$inputid] : false;
+                    if ($input_data) {
+                        $arguments[] = array(
+                            "type" => "ProcessArg::INPUTID",
+                            "value" => $input_data['name'],
+                        );
+                    }
+                    break;
+            }
+        }
+
+        // If only one argument is present convert it to a single value
+        if (count($arguments) == 1) {
+            $arguments = $arguments[0];
+        }
+
+        return array($arguments, $feeds);
+    }
+
+    /**
+     * Build a feed entry for the template.
+     */
+    private function build_template_feed($feed, $feedid, $engines) {
+        $template_feed = array(
+            "name" => $feed['name'],
+            "engine" => "Engine::".$engines[$feed['engine']]
+        );
+        $meta = $this->feed->get_meta($feedid);
+        if (isset($meta->interval)) {
+            $template_feed['interval'] = $meta->interval;
+        }
+        if (isset($feed['unit'])) {
+            $template_feed['unit'] = $feed['unit'];
+        }
+        return $template_feed;
+    }
+
+    /**
+     * Remove duplicate feeds by name.
+     */
+    private function unique_feeds($feeds) {
+        $unique = array();
+        foreach ($feeds as $feed) {
+            $unique[$feed['name']] = $feed;
+        }
+        return $unique;
+    }
 }

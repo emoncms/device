@@ -685,6 +685,23 @@ class Device
         return array('success'=>false, 'message'=>'Device type not specified');
     }
 
+    public function generate_template($id) {
+        // Device ID
+        $id = intval($id);
+        
+        // Fetch device info: userid, nodeid, name, description, type, devicekey
+        $device = $this->get($id);
+        
+        // Only available with device template for now?
+        $module = "device"; 
+
+        // This is typically called here as get_module_class('device', 'template')
+        // returning the device_template.php class
+        // implementation supports greater modularity but is not in use?
+        $class = $this->get_module_class($module, self::TEMPLATE);
+        return $class->generate_template($device);
+    }
+
     private function load_template_list() {
 
         $this->templates = array();
