@@ -364,7 +364,7 @@ class Device
             $stmt->bind_param("isssss",$userid,$nodeid,$name,$description,$type,$devicekey);
             $result = $stmt->execute();
             $stmt->close();
-            if (!$result) return array('success'=>false, 'message'=>_("Error creating device"));
+            if (!$result) return array('success'=>false, 'message'=>tr("Error creating device"));
             
             $deviceid = $this->mysqli->insert_id;
             

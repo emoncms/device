@@ -24,26 +24,26 @@
 </style>
 
 <div>
-    <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Devices Help'); ?></a></div>
-    <div id="device-header"><h2><?php echo _('Devices Location'); ?></h2></div>
+    <div id="api-help-header" style="float:right;"><a href="api"><?php echo tr('Devices Help'); ?></a></div>
+    <div id="device-header"><h2><?php echo tr('Devices Location'); ?></h2></div>
 
     <div id="table"></div>
 
     <div id="device-none" class="hide">
         <div class="alert alert-block">
-            <h4 class="alert-heading"><?php echo _('No devices'); ?></h4><br>
+            <h4 class="alert-heading"><?php echo tr('No devices'); ?></h4><br>
             <p>
-                <?php echo _('Devices are used to configure and prepare the communication with different physical devices. Devices are grouped by Location for easy tracking when deploying at scale.'); ?>
+                <?php echo tr('Devices are used to configure and prepare the communication with different physical devices. Devices are grouped by Location for easy tracking when deploying at scale.'); ?>
                 <br><br>
-                <?php echo _('A device configures and prepares inputs, feeds and other possible settings. e.g. representing different registers of defined metering units.'); ?>
+                <?php echo tr('A device configures and prepares inputs, feeds and other possible settings. e.g. representing different registers of defined metering units.'); ?>
                 <br>
-                <?php echo _('Follow the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Device API helper'); ?></a>
+                <?php echo tr('Follow the next link as a guide for generating your request: '); ?><a href="api"><?php echo tr('Device API helper'); ?></a>
             </p>
         </div>
     </div>
 
     <div id="toolbar_bottom"><hr>
-        <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
+        <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo tr('New device'); ?></button>
     </div>
     
     <div id="device-loader" class="ajax-loader"></div>
@@ -62,7 +62,7 @@
   table.groupfields = {
     'dummy-4':{'title':'', 'type':"blank"},
     'dummy-5':{'title':'', 'type':"blank"},
-    'time':{'title':'<?php echo _('Updated'); ?>', 'type':"group-updated"},
+    'time':{'title':'<?php echo tr('Updated'); ?>', 'type':"group-updated"},
     'dummy-7':{'title':'', 'type':"blank"},
     'dummy-8':{'title':'', 'type':"blank"}
   }
@@ -70,13 +70,13 @@
   table.deletedata = false;
   table.fields = {
     //'id':{'type':"fixed"},
-    'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
-    'name':{'title':'<?php echo _("Name"); ?>','type':"fixed"},
-    'description':{'title':'<?php echo _('Location'); ?>','type':"fixed"},
-    'typename':{'title':'<?php echo _("Type"); ?>','type':"fixed"},
-    'devicekey':{'title':'<?php echo _('Device access key'); ?>','type':"fixed"},
-    'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
-    // 'public':{'title':"<?php echo _('tbd'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
+    'nodeid':{'title':'<?php echo tr("Node"); ?>','type':"fixed"},
+    'name':{'title':'<?php echo tr("Name"); ?>','type':"fixed"},
+    'description':{'title':'<?php echo tr('Location'); ?>','type':"fixed"},
+    'typename':{'title':'<?php echo tr("Type"); ?>','type':"fixed"},
+    'devicekey':{'title':'<?php echo tr('Device access key'); ?>','type':"fixed"},
+    'time':{'title':'<?php echo tr("Updated"); ?>', 'type':"updated"},
+    // 'public':{'title':"<?php echo tr('tbd'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
     // Actions
     'delete-action':{'title':'', 'type':"delete"},
     'config-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'}
