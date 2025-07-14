@@ -1,7 +1,6 @@
 {
     "Device API": "API des appareils",
     "Apikey authentication": "Authentification par clé API",
-    "If you want to call any of the following actions when your not logged in you have this options to authenticate:": "Si vous souhaitez appeler l\\'une des actions suivantes sans être connecté, vous avez ces options d\\'authentification :",
     "Append on the URL of your request: &apikey=APIKEY": "Ajouter à l\\'URL de votre requête : &apikey=APIKEY",
     "Use POST parameter: \"apikey=APIKEY\"": "Utiliser le paramètre POST : \"apikey=APIKEY\"",
     "Add the HTTP header: \"Authorization: Bearer APIKEY\"": "Ajouter l\\'en-tête HTTP : \"Authorization: Bearer APIKEY\"",
@@ -9,15 +8,13 @@
     "Read & Write:": "Lecture & écriture :",
     "Devicekey authentication": "Authentification par clé de périphérique",
     "Using a device key will only allow sending data for the Node of that device, giving a greater level of security.": "Utiliser une clé de périphérique permet uniquement d\\'envoyer des données pour le nœud associé à ce périphérique, offrant ainsi un niveau de sécurité plus élevé.",
-    "The input module can use a devicekey instead of an apikey. If you want to authenticate as a device, you can:": "Le module d\\'entrée peut utiliser une clé de périphérique au lieu d\\'une clé API. Si vous souhaitez vous authentifier en tant que périphérique, vous pouvez :",
     "Append on the input URL of your request: &devicekey=DEVICEKEY": "Ajouter à l\\'URL d\\'entrée de votre requête : &devicekey=DEVICEKEY",
     "Use POST parameter while calling input: \"devicekey=DEVICEKEY\"": "Utiliser le paramètre POST lors de l\\'appel à l\\'entrée : \"devicekey=DEVICEKEY\"",
-    "Ensure that the sent input Node matches the Node that is configured for the device on the device menu": "S\\'assurer que le nœud d\\'entrée envoyé correspond au nœud configuré pour le périphérique dans le menu des périphériques",
     "Available HTML URLs": "URLs HTML disponibles",
     "The device list view": "Vue de la liste des périphériques",
     "This page": "Cette page",
     "Available JSON commands": "Commandes JSON disponibles",
-    "To use the json api the request url needs to include <b>.json</b>": "Pour utiliser l\\'API JSON, l\\'URL de la requête doit inclure <b>.json</b>",
+    "To use the json api the request url needs to include <b>.json<\/b>": "Pour utiliser l\\'API JSON, l\\'URL de la requête doit inclure <b>.json<\/b>",
     "Device actions": "Actions sur les périphériques",
     "List devices": "Lister les périphériques",
     "Get device details": "Obtenir les détails d\\'un périphérique",
@@ -38,7 +35,7 @@
     "Get template details": "Obtenir les détails du modèle",
     "Prepare device initialization": "Préparer l\\'initialisation du périphérique",
     "Devices templates documentation": "Documentation des modèles de périphériques",
-    "Template files are located at <b>'\\Modules\\device\\data\\*.json'</b>": "Les fichiers de modèle sont situés dans <b>'\\Modules\\device\\data\\*.json'</b>",
+    "Template files are located at <b>'\\Modules\\device\\data\\*.json'<\/b>": "Les fichiers de modèle sont situés dans <b>'\\Modules\\device\\data\\*.json'<\/b>",
     "Each file defines a device type and provides the default inputs and feeds configurations for that device.": "Chaque fichier définit un type de périphérique et fournit les entrées et flux par défaut pour ce périphérique.",
     "A device should only need to be initialized once on instalation. Initiating a device twice will duplicate its default inputs and feeds.": "Un périphérique ne doit être initialisé qu\\'une seule fois lors de l\\'installation. L\\'initialiser deux fois dupliquera ses entrées et flux par défaut.",
     "Configure Device": "Configurer le périphérique",
@@ -82,5 +79,8 @@
     "Type": "Type",
     "Device access key": "Clé d\\'authentification au périphérique",
     "tbd": "à définir",
-    "Error creating device": "Erreur lors de la création du périphérique"
+    "Error creating device": "Erreur lors de la création du périphérique",
+    "If you want to call any of the following actions when your not logged in you have this options to authenticate with the API key:": "If you want to call any of the following actions when your not logged in you have this options to authenticate with the API key:",
+    "The input module can use a devicekey instead of an apikey. If you want to authenticate as a device, just replace apikey=APIKEY with devicekey=DEVICEKEY:": "The input module can use a devicekey instead of an apikey. If you want to authenticate as a device, just replace apikey=APIKEY with devicekey=DEVICEKEY:",
+    "Ensure that the sent input Node matches the Node that is configured for the device on the device menu.": "Ensure that the sent input Node matches the Node that is configured for the device on the device menu."
 }
