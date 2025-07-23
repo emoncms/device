@@ -8,5 +8,6 @@ $schema['device'] = array(
     'description' => array('type' => 'text'),
     'type' => array('type' => 'varchar(32)'),
     'devicekey' => array('type' => 'varchar(64)'),
-    'time' => array('type' => 'int(10)')
+    'time' => array('type' => 'int(10)'),
+    'ip' => array('type' => 'text', 'Null'=>false, 'default'=>'')
 );

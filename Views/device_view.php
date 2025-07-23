@@ -14,13 +14,13 @@
   width: 88%;
 }
 #table td:nth-of-type(1) { width:5%;}
-#table th:nth-of-type(5), td:nth-of-type(5) { text-align: right; }
 #table th:nth-of-type(6), td:nth-of-type(6) { text-align: right; }
+#table th:nth-of-type(7), td:nth-of-type(7) { text-align: right; }
 #table th[fieldg="time"] { font-weight:normal; text-align: right; }
-#table td:nth-of-type(7) { width:14px; text-align: center; }
 #table td:nth-of-type(8) { width:14px; text-align: center; }
 #table td:nth-of-type(9) { width:14px; text-align: center; }
 #table td:nth-of-type(10) { width:14px; text-align: center; }
+#table td:nth-of-type(11) { width:14px; text-align: center; }
 </style>
 
 <div>
@@ -74,6 +74,7 @@
     'name':{'title':'<?php echo _("Name"); ?>','type':"fixed"},
     'description':{'title':'<?php echo _('Location'); ?>','type':"fixed"},
     'typename':{'title':'<?php echo _("Type"); ?>','type':"fixed"},
+    'ip':{'title':'<?php echo _('IP'); ?>','type':"fixed"},
     'devicekey':{'title':'<?php echo _('Device access key'); ?>','type':"fixed"},
     'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
     // 'public':{'title':"<?php echo _('tbd'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
