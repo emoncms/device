@@ -1,0 +1,27 @@
+{
+    "name": "DHW Diverter digital",
+    "category": "OpenEnergyMonitor",
+    "group": "emonHP Heat Pump Monitor",
+    "description": "emonHP DHW status sensor on GPIO input",
+    "inputs": [
+        {
+            "name": "pin15",
+            "description": "Diverter valve status",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_dhw" }
+                }
+            ]
+        }
+        
+    ],
+
+    "feeds": [
+        {
+            "name": "heatpump_dhw",
+            "engine": "Engine::PHPFINA",
+            "interval": "10"
+        }
+    ]
+}

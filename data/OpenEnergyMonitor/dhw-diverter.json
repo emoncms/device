@@ -1,0 +1,52 @@
+{
+    "name": "DHW Diverter analog",
+    "category": "OpenEnergyMonitor",
+    "group": "emonHP Heat Pump Monitor",
+    "description": "emonPi2 DHW status sensor on analog input",
+    "inputs": [
+        {
+            "name": "analog",
+            "description": "Diverter valve power",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "analog" }
+                },
+                {
+                    "process": "scale",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": "-1" }
+                },
+                {
+                    "process": "offset",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": "1000" }
+                },
+                {
+                    "process": "allowpositive",
+                    "arguments": { "type": "ProcessArg::NONE"}
+                },
+                {
+                    "process": "max_value_allowed",
+                    "arguments": { "type": "ProcessArg::VALUE", "value": "1" }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": { "type": "ProcessArg::FEEDID", "value": "heatpump_dhw" }
+                }
+            ]
+        }
+        
+    ],
+
+    "feeds": [
+        {
+            "name": "analog",
+            "engine": "Engine::PHPFINA",
+            "interval": "10"
+        },
+        {
+            "name": "heatpump_dhw",
+            "engine": "Engine::PHPFINA",
+            "interval": "10"
+        }
+    ]
+}

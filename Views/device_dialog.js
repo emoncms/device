@@ -20,6 +20,9 @@ var device_dialog =
         }
         
         this.drawConfig();
+
+        // hide generate template textarea on load
+        $('#custom-template-textarea').addClass('hidden');
     },
 
     'drawConfig':function() {
@@ -137,7 +140,7 @@ var device_dialog =
         $("#template-list").text('');
         
         var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device.<br>" +
-                "Initializing a device usualy should only be done once on installation. " +
+                "Initializing a device usually should only be done once on installation. " +
                 "If the configuration was already applied, only missing inputs and feeds will be created.";
         
         $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
@@ -295,9 +298,20 @@ var device_dialog =
             $('#device-config-modal').modal('hide');
             device_dialog.loadInit();
         });
+
+        $("#prepare-custom-template").off('click').on('click', function () {
+            $('#device-config-modal').modal('hide');
+            device_dialog.loadInitCustom();
+        });
         
         $("#device-config-devicekey-new").off('click').on('click', function () {
             $('#device-config-devicekey').val(device.generatekey());
+        });
+
+        $("#generate-template").on('click', function () {
+            let device_template = device.generateTemplate(device_dialog.device.id);
+            $('#custom-template-textarea').val(JSON.stringify(device_template, null, 2));
+            $('#custom-template-textarea').removeClass('hidden');
         });
     },
 
@@ -340,6 +354,42 @@ var device_dialog =
             $('#wrap').trigger("device-init");
         });
     },
+
+    'loadInitCustom': function() {
+        let custom_template = $('#custom-template-textarea').val();
+        if (custom_template == null || custom_template == "") {
+            alert("Please enter a custom template to initialize the device.");
+            return false;
+        }
+        try {
+            custom_template = JSON.parse(custom_template);
+        } catch (e) {
+            alert("Invalid JSON format in custom template:\n" + e.message);
+            return false;
+        }
+        var result = device.prepareCustomTemplate(device_dialog.device.id, custom_template);
+        if (typeof result.success !== 'undefined' && !result.success) {
+            alert('Unable to initialize device with custom template:\n' + result.message);
+            return false;
+        }
+        device_dialog.deviceTemplate = result;
+        device_dialog.drawInit(result);
+
+        // Initialize callbacks
+        $("#device-init-confirm").off('click').on('click', function() {
+            $('#device-init-modal').modal('hide');
+            
+            var template = device_dialog.parseTemplate();
+            var result = device.initCustom(device_dialog.device.id, template);
+            if (typeof result.success !== 'undefined' && !result.success) {
+                alert('Unable to initialize device:\n'+result.message);
+                return false;
+            }
+            
+            $('#wrap').trigger("device-init");
+        });
+    },
+
 
     'drawInit': function (result) {
         $('#device-init-modal').modal('show');
@@ -419,56 +469,68 @@ var device_dialog =
     },
 
     'drawInitProcessList': function (processList) {
+        console.log("drawInitProcessList", processList);
+
         if (!processList || processList.length < 1) return "";
 
         var out = "";
         for (var i = 0; i < processList.length; i++) {
             var process = processList[i];
-            if (process['arguments'] != undefined && process['arguments']['type'] != undefined) {
-                var title;
-                var label;
-                switch(process['arguments']['type']) {
-                case 0: // VALUE
-                    label = "important";
-                    title = "Value - ";
-                    break;
-                    
-                case 1: //INPUTID
-                    label = "warning";
-                    title = "Input - ";
-                    break;
-                    
-                case 2: //FEEDID
-                    label = "info";
-                    title = "Feed - ";
-                    break;
-                    
-                case 3: // NONE
-                    label = "important";
-                    title = "";
-                    break;
-                    
-                case 4: // TEXT
-                    label = "important";
-                    title = "Text - ";
-                    break;
-                    
-                case 5: // SCHEDULEID
-                    label = "warning";
-                    title = "Schedule - "
-                    break;
-                    
-                default:
-                    label = "important";
-                    title = "ERROR - ";
-                    break;
+            if (process['arguments'] !== undefined && Array.isArray(process['arguments']) && process['arguments'].length > 0) {
+                var title = process["name"];
+                var label = "important";
+                var argTitles = [];
+
+                for (var j = 0; j < process['arguments'].length; j++) {
+                    var arg = process['arguments'][j];
+                    var argLabel = "";
+                    var argTitle = "";
+
+                    switch(arg.type) {
+                        case 0: // VALUE
+                            argLabel = "important";
+                            argTitle = "Value";
+                            break;
+                        case 1: // INPUTID
+                            argLabel = "warning";
+                            argTitle = "Input";
+                            break;
+                        case 2: // FEEDID
+                            argLabel = "info";
+                            argTitle = "Feed";
+                            break;
+                        case 3: // NONE
+                            argLabel = "important";
+                            argTitle = "";
+                            break;
+                        case 4: // TEXT
+                            argLabel = "important";
+                            argTitle = "Text";
+                            break;
+                        case 5: // SCHEDULEID
+                            argLabel = "warning";
+                            argTitle = "Schedule";
+                            break;
+                        default:
+                            argLabel = "important";
+                            argTitle = "ERROR";
+                            break;
+                    }
+
+                    // Use the first argument's label for the badge
+                    if (j === 0) label = argLabel;
+
+                    if (typeof arg.value !== "undefined" && argTitle !== "") {
+                        argTitles.push(argTitle + ": " + arg.value);
+                    } else if (typeof arg.value !== "undefined") {
+                        argTitles.push(arg.value);
+                    }
                 }
-                title += process["name"];
-                
-                if (process['arguments']['value'] != undefined) {
-                    title += ": " + process['arguments']['value'];
+
+                if (argTitles.length > 0) {
+                    title += " (" + argTitles.join(", ") + ")";
                 }
-                
+
                 out += "<span class='label label-"+label+"' title='"+title+"' style='cursor:default'><small>"+process["short"]+"</small></span> ";
             }
         }

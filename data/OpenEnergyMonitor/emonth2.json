@@ -10,7 +10,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_temperature" }
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "temperature" }
                 }
             ]
         },
@@ -20,7 +20,7 @@
             "processList": [
                 {
                     "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "emonth_humidity" }
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "humidity" }
                 }
             ]
         }
@@ -28,13 +28,13 @@
 
     "feeds": [
         {
-            "name": "emonth_temperature",
+            "name": "temperature",
             "engine": "Engine::PHPFINA",
             "interval": "60",
             "unit": "°C"
         },
         {
-            "name": "emonth_humidity",
+            "name": "humidity",
             "engine": "Engine::PHPFINA",
             "interval": "60",
             "unit": "%"
