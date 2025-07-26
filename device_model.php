@@ -214,7 +214,7 @@ class Device
         }
         else {
             // Get from mysql db
-            $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`time` FROM device WHERE id = '$id'");
+            $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`time`, `ip` FROM device WHERE id = '$id'");
             $device = (array) $result->fetch_object();
         }
         return $device;
@@ -260,7 +260,7 @@ class Device
         $userid = intval($userid);
         
         $devices = array();
-        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`time` FROM device WHERE userid = '$userid' ORDER BY nodeid, name asc");
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`time`,`ip` FROM device WHERE userid = '$userid' ORDER BY nodeid, name asc");
         while ($device = (array) $result->fetch_object()) {
             $devices[] = $device;
         }
@@ -270,7 +270,7 @@ class Device
     private function load_list_to_redis($userid) {
         $userid = intval($userid);
         
-        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey` FROM device WHERE userid = '$userid'");
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`ip` FROM device WHERE userid = '$userid'");
         while ($row = $result->fetch_object()) {
             $this->redis->sAdd("user:device:$userid", $row->id);
             $this->redis->hMSet("device:".$row->id, array(
@@ -280,7 +280,8 @@ class Device
                 'name'=>$row->name,
                 'description'=>$row->description,
                 'type'=>$row->type,
-                'devicekey'=>$row->devicekey
+                'devicekey'=>$row->devicekey,
+                'ip'=>$row->ip
             ));
         }
     }
@@ -288,7 +289,7 @@ class Device
     private function load_device_to_redis($id) {
         $id = intval($id);
         
-        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey` FROM device WHERE id = '$id'");
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`ip` FROM device WHERE id = '$id'");
         $row = $result->fetch_object();
         if (!$row) {
             $this->log->warn("Device model: Requested device does not exist for id=$id");
@@ -301,7 +302,8 @@ class Device
             'name'=>$row->name,
             'description'=>$row->description,
             'type'=>$row->type,
-            'devicekey'=>$row->devicekey
+            'devicekey'=>$row->devicekey,
+            'ip'=>$row->ip
         ));
         return true;
     }
@@ -487,7 +489,9 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"name",$fields->name);
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"name",$fields->name);
+                }
             } else $success = false;
             $stmt->close();
         }
@@ -497,7 +501,9 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->description,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"description",$fields->description);
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"description",$fields->description);
+                }
             } else $success = false;
             $stmt->close();
         }
@@ -507,7 +513,9 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->nodeid,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"nodeid",$fields->nodeid);
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"nodeid",$fields->nodeid);
+                }
             } else $success = false;
             $stmt->close();
         }
@@ -517,7 +525,9 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET type = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->type,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"type",$fields->type);
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"type",$fields->type);
+                }
             } else $success = false;
             $stmt->close();
         }
@@ -534,6 +544,18 @@ class Device
             if ($stmt->execute()) {
                 if ($this->redis) {
                     $this->redis->hSet("device:".$id,"devicekey",$fields->devicekey);
+                }
+            } else $success = false;
+            $stmt->close();
+        }
+        
+        if (isset($fields->ip)) {
+            if (preg_replace('/[^a-zA-Z0-9\.\-:]/', '', $fields->ip)!=$fields->ip) return array('success'=>false, 'message'=>'invalid characters in device ip');
+            $stmt = $this->mysqli->prepare("UPDATE device SET ip = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->ip,$id);
+            if ($stmt->execute()) {
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"ip",$fields->ip);
                 }
             } else $success = false;
             $stmt->close();
