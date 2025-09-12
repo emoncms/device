@@ -76,7 +76,7 @@ function device_controller()
         else if ($route->action == "generatekey") {
             if ($session['userid']>0 && $session['write']) $result = $device->generate_devicekey();
         }
-        else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "init") {
+        else if ($route->action == "template" && $route->subaction != "prepare" && $route->subaction != "prepare_custom" && $route->subaction != "init" && $route->subaction != "init_custom" && $route->subaction != "generate") {
             if ($route->subaction == "listshort") {
                 if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_meta();
             }
@@ -103,7 +103,10 @@ function device_controller()
                             $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
                         }
                         if ($route->subaction == 'prepare') $result = $device->prepare_template($deviceid);
+                        else if ($route->subaction == 'prepare_custom') $result = $device->prepare_custom_template($deviceid, $_POST['template']);
                         else if ($route->subaction == 'init') $result = $device->init_template($deviceget, $_POST['template']);
+                        else if ($route->subaction == 'init_custom') $result = $device->init_custom_template($deviceget, $_POST['template']);
+                        else if ($route->subaction == 'generate') $result = $device->generate_template($deviceid);
                     }
                 }
             }

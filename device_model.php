@@ -214,7 +214,7 @@ class Device
         }
         else {
             // Get from mysql db
-            $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`time` FROM device WHERE id = '$id'");
+            $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`time`, `ip` FROM device WHERE id = '$id'");
             $device = (array) $result->fetch_object();
         }
         return $device;
@@ -260,7 +260,7 @@ class Device
         $userid = intval($userid);
         
         $devices = array();
-        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`time` FROM device WHERE userid = '$userid' ORDER BY nodeid, name asc");
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`time`,`ip` FROM device WHERE userid = '$userid' ORDER BY nodeid, name asc");
         while ($device = (array) $result->fetch_object()) {
             $devices[] = $device;
         }
@@ -270,7 +270,7 @@ class Device
     private function load_list_to_redis($userid) {
         $userid = intval($userid);
         
-        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey` FROM device WHERE userid = '$userid'");
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`ip` FROM device WHERE userid = '$userid'");
         while ($row = $result->fetch_object()) {
             $this->redis->sAdd("user:device:$userid", $row->id);
             $this->redis->hMSet("device:".$row->id, array(
@@ -280,7 +280,8 @@ class Device
                 'name'=>$row->name,
                 'description'=>$row->description,
                 'type'=>$row->type,
-                'devicekey'=>$row->devicekey
+                'devicekey'=>$row->devicekey,
+                'ip'=>$row->ip
             ));
         }
     }
@@ -288,7 +289,7 @@ class Device
     private function load_device_to_redis($id) {
         $id = intval($id);
         
-        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey` FROM device WHERE id = '$id'");
+        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey`,`ip` FROM device WHERE id = '$id'");
         $row = $result->fetch_object();
         if (!$row) {
             $this->log->warn("Device model: Requested device does not exist for id=$id");
@@ -301,7 +302,8 @@ class Device
             'name'=>$row->name,
             'description'=>$row->description,
             'type'=>$row->type,
-            'devicekey'=>$row->devicekey
+            'devicekey'=>$row->devicekey,
+            'ip'=>$row->ip
         ));
         return true;
     }
@@ -364,7 +366,7 @@ class Device
             $stmt->bind_param("isssss",$userid,$nodeid,$name,$description,$type,$devicekey);
             $result = $stmt->execute();
             $stmt->close();
-            if (!$result) return array('success'=>false, 'message'=>_("Error creating device"));
+            if (!$result) return array('success'=>false, 'message'=>tr("Error creating device"));
             
             $deviceid = $this->mysqli->insert_id;
             
@@ -487,7 +489,9 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"name",$fields->name);
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"name",$fields->name);
+                }
             } else $success = false;
             $stmt->close();
         }
@@ -497,7 +501,9 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->description,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"description",$fields->description);
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"description",$fields->description);
+                }
             } else $success = false;
             $stmt->close();
         }
@@ -507,7 +513,9 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET nodeid = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->nodeid,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"nodeid",$fields->nodeid);
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"nodeid",$fields->nodeid);
+                }
             } else $success = false;
             $stmt->close();
         }
@@ -517,7 +525,9 @@ class Device
             $stmt = $this->mysqli->prepare("UPDATE device SET type = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->type,$id);
             if ($stmt->execute()) {
-                $this->redis->hSet("device:".$id,"type",$fields->type);
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"type",$fields->type);
+                }
             } else $success = false;
             $stmt->close();
         }
@@ -534,6 +544,18 @@ class Device
             if ($stmt->execute()) {
                 if ($this->redis) {
                     $this->redis->hSet("device:".$id,"devicekey",$fields->devicekey);
+                }
+            } else $success = false;
+            $stmt->close();
+        }
+        
+        if (isset($fields->ip)) {
+            if (preg_replace('/[^a-zA-Z0-9\.\-:]/', '', $fields->ip)!=$fields->ip) return array('success'=>false, 'message'=>'invalid characters in device ip');
+            $stmt = $this->mysqli->prepare("UPDATE device SET ip = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->ip,$id);
+            if ($stmt->execute()) {
+                if ($this->redis) {
+                    $this->redis->hSet("device:".$id,"ip",$fields->ip);
                 }
             } else $success = false;
             $stmt->close();
@@ -614,15 +636,26 @@ class Device
     }
 
     public function prepare_template($id) {
+        // Device ID
         $id = intval($id);
-        
+
+        // Fetch device info: userid, nodeid, name, description, type, devicekey
         $device = $this->get($id);
+        
+        // If device type is present fetch the associated template
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+
+            // Returns template meta information
+            // e.g. module, name, category, group, description, control
             $result = $this->get_template_meta($device['type']);
             if (isset($result["success"]) && $result["success"] == false) {
                 return $result;
             }
             $module = $result['module'];
+
+            // This is typically called here as get_module_class('device', 'template')
+            // returning the device_template.php class
+            // implementation supports greater modularity but is not in use?
             $class = $this->get_module_class($module, self::TEMPLATE);
             if ($class != null) {
                 return $class->prepare_template($device);
@@ -632,9 +665,46 @@ class Device
         return array('success'=>false, 'message'=>'Device type not specified');
     }
 
+    public function prepare_custom_template($id, $template = false) {
+        // Device ID
+        $id = intval($id);
+
+        if ($template === false) {
+            return array('success'=>false, 'message'=>'No template provided');
+        }
+        
+        $template = json_decode($template);
+        if ($template === null) {
+            return array('success'=>false, 'message'=>'Invalid template JSON provided');
+        }
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return array('success'=>false, 'message'=>'JSON error: '.json_last_error_msg());
+        }
+
+        // Fetch device info: userid, nodeid, name, description, type, devicekey
+        $device = $this->get($id);
+        
+        // This is typically called here as get_module_class('device', 'template')
+        // returning the device_template.php class
+        // implementation supports greater modularity but is not in use?
+        $class = $this->get_module_class('device', self::TEMPLATE);
+        if ($class != null) {
+            return $class->prepare_template($device, $template);
+        }
+        return array('success'=>false, 'message'=>'Device template class is not defined');
+    }
+
+    /**
+     * Initialize a device with a template
+     * @param int $id Device ID
+     * @param string|false $template JSON encoded template with what actions to perform
+     * @return array Result of the initialization
+     */
     public function init($id, $template) {
+        // Device ID
         $id = intval($id);
         
+        // Fetch device info: userid, nodeid, name, description, type, devicekey
         $device = $this->get($id);
         $result = $this->init_template($device, $template);
         if (isset($result['success']) && $result['success'] == false) {
@@ -647,11 +717,16 @@ class Device
         if (isset($template) && $template!==false) $template = json_decode($template);
         
         if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+            // Returns template meta information
+            // e.g. module, name, category, group, description, control
             $result = $this->get_template_meta($device['type']);
             if (isset($result['success']) && $result['success'] == false) {
                 return $result;
             }
             $module = $result['module'];
+            // This is typically called here as get_module_class('device', 'template')
+            // returning the device_template.php class
+            // implementation supports greater modularity but is not in use?
             $class = $this->get_module_class($module, self::TEMPLATE);
             if ($class != null) {
                 return $class->init_template($device, $template);
@@ -659,6 +734,29 @@ class Device
             return array('success'=>false, 'message'=>'Device template class is not defined');
         }
         return array('success'=>false, 'message'=>'Device type not specified');
+    }
+
+    public function init_custom_template($device, $template) {
+        if (isset($template) && $template!==false) $template = json_decode($template);
+        $class = $this->get_module_class('device', self::TEMPLATE);
+        return $class->init_template($device, $template);
+    }
+
+    public function generate_template($id) {
+        // Device ID
+        $id = intval($id);
+        
+        // Fetch device info: userid, nodeid, name, description, type, devicekey
+        $device = $this->get($id);
+        
+        // Only available with device template for now?
+        $module = "device"; 
+
+        // This is typically called here as get_module_class('device', 'template')
+        // returning the device_template.php class
+        // implementation supports greater modularity but is not in use?
+        $class = $this->get_module_class($module, self::TEMPLATE);
+        return $class->generate_template($device);
     }
 
     private function load_template_list() {
