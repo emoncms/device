@@ -1,4 +1,7 @@
-<?php global $path, $session, $user; ?>
+<?php 
+defined('EMONCMS_EXEC') or die('Restricted access');
+global $path, $session, $user; 
+?>
 <style>
     a.anchor {
         display: block;
