@@ -3,8 +3,8 @@
     global $path;
 ?>
 
-<link href="<?php echo $path; ?>Modules/device/Views/device_dialog.css?v=4" rel="stylesheet">
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=4"></script>
+<link href="<?php echo $path; ?>Modules/device/Views/device_dialog.css?v=5" rel="stylesheet">
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=5"></script>
 
 <div id="device-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-config-modal-label" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">

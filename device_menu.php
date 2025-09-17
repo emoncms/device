@@ -1,4 +1,5 @@
 <?php
+/*
 global $session;
 if ($session["write"]) {
     $menu["setup"]["l2"]['device'] = array(
@@ -7,4 +8,6 @@ if ($session["write"]) {
         "order"=>6, 
         "icon"=>"device"
     );
-}
+
+}*/
+

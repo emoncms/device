@@ -411,66 +411,131 @@ class Device
         }
     }
     
-    // Clear devices with empty input processLists
-    public function clean($userid,$active=0,$dryrun=0) {
+    /**
+     * Clean inactive and unconfigured inputs from devices
+     * 
+     * This method determines which inputs can be safely removed by:
+     * 1. For devices with configured inputs: removes inputs that are unconfigured AND inactive
+     *    relative to the most recent configured input activity
+     * 2. For devices with NO configured inputs: removes inputs that are inactive relative to current time
+     * 3. Removes entire devices if all their inputs are removed
+     * 
+     * @param int $userid User ID
+     * @param int $inactive_timeout Timeout in seconds for considering inputs inactive (default 60)
+     * @param int $dryrun If 1, only simulate the cleanup without making changes
+     * @return string Result message indicating what was cleaned/would be cleaned
+     */
+    public function clean($userid, $inactive_timeout = 3600, $dryrun = 0) {
         $userid = (int) $userid;
-        $active = (int) $active;
+        $inactive_timeout = (int) $inactive_timeout;
+        $dryrun = (int) $dryrun;
         
         $now = time();
-        
         $deleted_inputs = 0;
-        $deleted_nodes = 0;
+        $deleted_devices = 0;
 
+        // Get all devices for the user
         $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey` FROM device WHERE userid = '$userid'");
-        while ($row = $result->fetch_object()) {
         
-            $id = $row->id;
+        while ($row = $result->fetch_object()) {
+            $device_id = $row->id;
             $nodeid = $row->nodeid;
             
-            // Fetch inputs associated with node
+            // Fetch all inputs for this device and load their times once
             $inputs = array();
+            $configured_inputs = array();
+            $unconfigured_inputs = array();
+            
             if ($result2 = $this->mysqli->query("SELECT * FROM input WHERE `userid` = '$userid' AND `nodeid` = '$nodeid'")) {
-                while ($row2 = $result2->fetch_object()) $inputs[] = $row2;
-            }
-            
-            // Check that all node inputs are empty
-            $inputs_empty = true;
-            foreach ($inputs as $i) {
-                $inputid = $i->id;
-                
-                if ($i->processList!=NULL && $i->processList!='') {
-                    $inputs_empty = false;
-                }
-
-                if ($active && $this->redis) {
-                   $input_time = $this->redis->hget("input:lastvalue:$inputid",'time');
-                   if (($now-$input_time)<$active) {
-                       $inputs_empty = false;
-                   }
-                }
-            }
-            
-            if ($inputs_empty) {
-                 // Delete node
-                 if (!$dryrun) $this->delete($id);
-                 
-                 // Delete inputs
-                 foreach ($inputs as $i) {
-                    $inputid = $i->id;
-                    if (!$dryrun) {
-                        $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
-                        if ($this->redis) {
-                            $this->redis->del("input:$inputid");
-                            $this->redis->srem("user:inputs:$userid",$inputid);
-                        }
+                while ($row2 = $result2->fetch_object()) {
+                    // Get input time once and store it with the input object
+                    $input_time = 0;
+                    if ($this->redis) {
+                        $input_time = $this->redis->hget("input:lastvalue:".$row2->id, 'time');
+                        if (!$input_time) $input_time = 0;
+                    } else {
+                        // Fallback to database time if no Redis
+                        $input_time = $row2->time ? $row2->time : 0;
                     }
-                    $deleted_inputs++;
+                    $row2->input_time = $input_time; // Store time with the input object
+                    
+                    $inputs[] = $row2;
+                    
+                    // Separate configured from unconfigured inputs
+                    if ($row2->processList != NULL && $row2->processList != '') {
+                        $configured_inputs[] = $row2;
+                    } else {
+                        $unconfigured_inputs[] = $row2;
+                    }
                 }
-                $deleted_nodes++;
+            }
+            
+            $inputs_to_delete = array();
+            
+            if (count($configured_inputs) > 0) {
+                // Strategy for devices WITH configured inputs:
+                // Find the most recent activity time among configured inputs
+                $most_recent_time = 0;
+                foreach ($configured_inputs as $input) {
+                    $most_recent_time = max($most_recent_time, $input->input_time);
+                }
+                
+                // Check unconfigured inputs against configured input activity
+                foreach ($unconfigured_inputs as $input) {
+                    // Mark for deletion if inactive relative to configured input activity
+                    if (($most_recent_time - $input->input_time) > $inactive_timeout) {
+                        $inputs_to_delete[] = $input;
+                    }
+                }
+            } else {
+                // Strategy for devices with NO configured inputs:
+                // Check all inputs against current time
+                foreach ($inputs as $input) {
+                    // Mark for deletion if inactive relative to current time
+                    if (($now - $input->input_time) > $inactive_timeout) {
+                        $inputs_to_delete[] = $input;
+                    }
+                }
+            }
+            
+            // Delete the identified inputs
+            foreach ($inputs_to_delete as $input) {
+                if (!$dryrun) {
+                    $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '".$input->id."'");
+                    if ($this->redis) {
+                        $this->redis->del("input:".$input->id);
+                        $this->redis->srem("user:inputs:$userid", $input->id);
+                    }
+                }
+                $deleted_inputs++;
+            }
+            
+            // If we deleted all inputs for this device, delete the device too
+            if (count($inputs_to_delete) === count($inputs) && count($inputs) > 0) {
+                if (!$dryrun) {
+                    $this->delete($device_id);
+                }
+                $deleted_devices++;
             }
         }
-        if ($dryrun) return "DRYRUN: $deleted_nodes nodes to delete ($deleted_inputs inputs)";
-        return "Deleted $deleted_nodes nodes ($deleted_inputs inputs)";
+        
+        // Return appropriate message
+        $input_text = ($deleted_inputs === 1) ? "input" : "inputs";
+        $device_text = ($deleted_devices === 1) ? "device" : "devices";
+        
+        if ($dryrun) {
+            if ($deleted_devices > 0) {
+                return "DRYRUN: $deleted_inputs inactive $input_text would be deleted and $deleted_devices $device_text";
+            } else {
+                return "DRYRUN: $deleted_inputs inactive $input_text would be deleted";
+            }
+        } else {
+            if ($deleted_devices > 0) {
+                return "Deleted $deleted_inputs inactive $input_text and $deleted_devices $device_text";
+            } else {
+                return "Deleted $deleted_inputs inactive $input_text";
+            }
+        }
     }
 
     public function set_fields($id, $fields) {
