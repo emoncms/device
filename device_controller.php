@@ -32,11 +32,17 @@ function device_controller()
         // 4. device makes follow up request for authentication
         //    - reply authentication details
         // ---------------------------------------------------------------
-        /*
         if ($route->action == "authcheck") { $route->action = "auth"; $route->subaction = "check"; } 
         if ($route->action == "authallow") { $route->action = "auth"; $route->subaction = "allow"; }         
 
         if ($route->action == "auth") {
+            if (!isset($settings["device"])) {
+                return array('content'=>array('success'=>false, 'message'=>'Auth functionality not enabled'));
+            }
+            if (!isset($settings["device"]["enable_auth_check"]) || !$settings["device"]["enable_auth_check"]) {
+                return array('content'=>array('success'=>false, 'message'=>'Auth functionality not enabled'));
+            }
+
             if ($route->subaction=="request") {
                 // 1. Register request for authentication details, or provide if allowed
                 $result = $device->request_auth($_SERVER['REMOTE_ADDR']);
@@ -62,7 +68,7 @@ function device_controller()
                 $result = $device->allow_auth_request(get("ip"));
             }
         }
-        */
+            
         if ($route->action == 'list') {
             if ($session['userid']>0 && $session['read']) $result = $device->get_list($session['userid']);
         }
