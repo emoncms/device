@@ -434,13 +434,24 @@ class Device
         $deleted_inputs = 0;
         $deleted_devices = 0;
 
-        // Get all devices for the user
-        $result = $this->mysqli->query("SELECT `id`,`userid`,`nodeid`,`name`,`description`,`type`,`devicekey` FROM device WHERE userid = '$userid'");
-        
+        $devices = array();
+
+        // Get all registered devices for the user
+        $result = $this->mysqli->query("SELECT `id`,`nodeid` FROM device WHERE userid = '$userid'");
         while ($row = $result->fetch_object()) {
-            $device_id = $row->id;
-            $nodeid = $row->nodeid;
-            
+            $devices[$row->nodeid] = $row->id;
+        }
+
+        // Get all unregistered devices for the user (input nodes)
+        $result = $this->mysqli->query("SELECT `nodeid` FROM input WHERE userid = '$userid'");
+        while ($row = $result->fetch_object()) {
+            if (!isset($devices[$row->nodeid])) {
+                $devices[$row->nodeid] = false;
+            }
+        }
+
+        foreach ($devices as $nodeid => $device_id) {
+
             // Fetch all inputs for this device and load their times once
             $inputs = array();
             $configured_inputs = array();
@@ -512,7 +523,7 @@ class Device
             
             // If we deleted all inputs for this device, delete the device too
             if (count($inputs_to_delete) === count($inputs) && count($inputs) > 0) {
-                if (!$dryrun) {
+                if (!$dryrun && $device_id) {
                     $this->delete($device_id);
                 }
                 $deleted_devices++;
