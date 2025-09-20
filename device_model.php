@@ -442,11 +442,24 @@ class Device
             $devices[$row->nodeid] = $row->id;
         }
 
+        require_once "Modules/process/process_model.php";
+        $process = new Process($this->mysqli,false,false,false);
+
         // Get all unregistered devices for the user (input nodes)
-        $result = $this->mysqli->query("SELECT `nodeid` FROM input WHERE userid = '$userid'");
+        $result = $this->mysqli->query("SELECT `id`,`nodeid`,`processList` FROM input WHERE userid = '$userid'");
+        $input_process_referenced_inputs = array();
         while ($row = $result->fetch_object()) {
             if (!isset($devices[$row->nodeid])) {
                 $devices[$row->nodeid] = false;
+            }
+
+            if ($row->processList != NULL && $row->processList != '') {
+                $entities = $process->get_referenced_entities($row->processList);
+                if (isset($entities['inputs']) && count($entities['inputs']) > 0) {
+                    foreach ($entities['inputs'] as $inputid) {
+                        $input_process_referenced_inputs[$inputid] = true;
+                    }
+                }
             }
         }
 
@@ -508,6 +521,11 @@ class Device
                     }
                 }
             }
+
+            // Filter out input_process_referenced_inputs
+            $inputs_to_delete = array_filter($inputs_to_delete, function($input) use ($input_process_referenced_inputs) {
+                return !isset($input_process_referenced_inputs[$input->id]);
+            });
             
             // Delete the identified inputs
             foreach ($inputs_to_delete as $input) {
