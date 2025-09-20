@@ -1,11 +1,16 @@
 <?php
+global $session, $settings;
 
-global $session;
 if ($session["write"]) {
-    $menu["setup"]["l2"]['device'] = array(
-        "name"=>tr("Devices"),
-        "href"=>"device/view", 
-        "order"=>6, 
-        "icon"=>"device"
-    );
+    if (isset($settings["device"]) && isset($settings["device"]["hide_menu"]) && $settings["device"]["hide_menu"]==true) {
+        // Device menu is hidden
+    } else {
+        // Visible as default
+        $menu["setup"]["l2"]['device'] = array(
+            "name"=>tr("Devices"),
+            "href"=>"device/view", 
+            "order"=>6, 
+            "icon"=>"device"
+        );
+    }
 }
