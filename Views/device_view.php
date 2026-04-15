@@ -10,14 +10,47 @@
 
 <style>
 
+/* ── Theme variables ─────────────────────────────────────── */
+#device-app {
+    --bg-card:              #282828;
+    --bg-card-header:       #222;
+    --bg-card-header-hover: #242424;
+    --bg-chip:              #2e2e2e;
+    --bg-badge:             #2a2a2a;
+
+    --border:             #333;
+    --border-card:        #333;
+    --border-strong:      #666;
+
+    --text-primary:       #ddd;
+    --text-body:          #ddd;
+    --text-secondary:     #ddd;
+    --text-muted:         #444;
+
+    --accent:             #44b3e2;
+    --accent-bg:          rgba(68,179,226,0.1);
+    --accent-bg-hover:    rgba(68,179,226,0.22);
+    --accent-row-hover:   rgba(68,179,226,0.05);
+    --accent-border:      rgba(68,179,226,0.3);
+}
+
 body {
     background-color: #1e1e1e;
-    
+}
+
+.content-container {
+    max-width: 1150px;
+}
+
+#footer {
+    margin: 0;
+    background-color: #181818;
+    color: #999;
 }
 
 #device-app {
-    color: #ccc;
-    font-size: 13px;
+    color: var(--text-body);
+    font-size: 14px;
 }
 
 /* ── Page header ─────────────────────────────────────────── */
@@ -27,18 +60,18 @@ body {
     align-items: center;
     padding: 0.6rem 0 0.75rem;
     margin-bottom: 1rem;
-    border-bottom: 1px solid #2e2e2e;
+    border-bottom: 1px solid var(--border);
 }
 #device-app .device-page-header h2 {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #ddd;
+    color: var(--text-primary);
     letter-spacing: 0.01em;
 }
 #device-app .device-page-header a {
     font-size: 12px;
-    color: #44b3e2;
+    color: var(--accent);
     text-decoration: none;
     opacity: 0.8;
     transition: opacity 0.2s;
@@ -47,24 +80,24 @@ body {
 
 /* ── Empty state ──────────────────────────────────────────── */
 #device-app .device-empty {
-    background-color: #252525;
-    border: 1px solid #2e2e2e;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
     border-radius: 0.5rem;
     padding: 1.5rem 1.75rem;
-    color: #888;
+    color: var(--text-secondary);
     line-height: 1.6;
 }
 #device-app .device-empty h4 {
     margin: 0 0 0.6rem 0;
     font-size: 1rem;
-    color: #bbb;
+    color: var(--text-primary);
 }
-#device-app .device-empty a { color: #44b3e2; }
+#device-app .device-empty a { color: var(--accent); }
 
 /* ── Location cards ───────────────────────────────────────── */
 #device-app .location-card {
-    background-color: #252525;
-    border: 1px solid #2e2e2e;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
     border-radius: 0.5rem;
     margin-bottom: 0.75rem;
     overflow: hidden;
@@ -76,13 +109,13 @@ body {
     align-items: center;
     gap: 0.6rem;
     padding: 0.6rem 1rem;
-    background-color: #1e1e1e;
-    border-bottom: 1px solid #2e2e2e;
+    background-color: var(--bg-card-header);
+    border-bottom: 1px solid var(--border);
     cursor: pointer;
     user-select: none;
 }
 #device-app .location-card-header:hover {
-    background-color: #242424;
+    background-color: var(--bg-card-header-hover);
 }
 /* Blue left accent */
 #device-app .location-card-header::before {
@@ -91,86 +124,86 @@ body {
     width: 3px;
     height: 1.1em;
     border-radius: 2px;
-    background-color: #44b3e2;
+    background-color: var(--accent);
     flex-shrink: 0;
 }
 #device-app .location-card-header .location-name {
     font-weight: 600;
     font-size: 13px;
-    color: #ddd;
+    color: var(--text-primary);
     flex: 1;
     letter-spacing: 0.02em;
 }
 #device-app .location-card-header .location-badge {
     font-size: 11px;
-    color: #555;
-    background-color: #2a2a2a;
-    border: 1px solid #333;
+    color: var(--text-secondary);
+    background-color: var(--bg-badge);
+    border: 1px solid var(--border-strong);
     border-radius: 0.75rem;
     padding: 1px 8px;
 }
 #device-app .location-card-header .location-updated {
     font-size: 11px;
-    color: #555;
+    color: var(--text-secondary);
     white-space: nowrap;
-}
-#device-app .location-card-header .location-updated span {
-    /* colour injected inline by formatUpdated */
 }
 #device-app .location-card-header .collapse-icon {
     font-size: 11px;
-    color: #444;
+    color: var(--text-secondary);
     transition: color 0.2s;
     flex-shrink: 0;
 }
-#device-app .location-card-header:hover .collapse-icon { color: #44b3e2; }
+#device-app .location-card-header:hover .collapse-icon { color: var(--accent); }
 
 /* Inner table */
 #device-app .location-card table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 #device-app .location-card table th {
     padding: 5px 12px;
     font-size: 11px;
     font-weight: normal;
-    color: #555;
+    color: var(--text-secondary);
+    text-align: left;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    border-bottom: 1px solid #2a2a2a;
-    background-color: #202020;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--bg-card-header);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #device-app .location-card table td {
     padding: 9px 12px;
-    color: #bbb;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-body);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     vertical-align: middle;
 }
 #device-app .location-card table tr:last-child td {
     border-bottom: none;
 }
 #device-app .location-card table tbody tr:hover td {
-    background-color: rgba(68,179,226,0.05);
+    background-color: var(--accent-row-hover);
 }
 
 /* Node ID — secondary */
 #device-app .location-card table td.col-node {
-    color: #555;
-    width: 60px;
+    color: var(--text-secondary);
 }
 /* Name — primary */
 #device-app .location-card table td.col-name {
-    color: #ddd;
+    color: var(--text-primary);
     font-weight: 500;
 }
 /* Type chip */
 #device-app .location-card table td.col-type span {
     display: inline-block;
     font-size: 11px;
-    color: #888;
-    background-color: #2a2a2a;
-    border: 1px solid #333;
+    color: var(--text-secondary);
+    background-color: var(--bg-chip);
+    border: 1px solid var(--border-strong);
     border-radius: 0.75rem;
     padding: 1px 8px;
 }
@@ -178,24 +211,26 @@ body {
 #device-app .location-card table td.col-ip {
     font-family: monospace;
     font-size: 12px;
-    color: #777;
+    color: var(--text-secondary);
 }
 /* Device key — truncated monospace */
 #device-app .location-card table td.col-key {
     font-family: monospace;
     font-size: 11px;
-    color: #555;
+    color: var(--text-secondary);
     max-width: 160px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 /* Updated time */
+#device-app .location-card table th.col-updated,
 #device-app .location-card table td.col-updated {
     text-align: right;
     white-space: nowrap;
 }
 /* Action col */
+#device-app .location-card table th.col-action,
 #device-app .location-card table td.col-action {
     width: 24px;
     text-align: center;
@@ -207,10 +242,10 @@ body {
     transition: color 0.15s;
 }
 #device-app .location-card table tbody tr:hover .device-action {
-    color: #555;
+    color: var(--text-secondary);
 }
 #device-app .device-action:hover {
-    color: #44b3e2 !important;
+    color: var(--accent) !important;
 }
 
 /* ── Toolbar ──────────────────────────────────────────────── */
@@ -224,9 +259,9 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.35em;
-    background-color: rgba(68,179,226,0.1);
-    color: #44b3e2;
-    border: 1px solid rgba(68,179,226,0.3);
+    background-color: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
     border-radius: 0.375rem;
     padding: 0.3rem 0.85rem;
     font-size: 13px;
@@ -236,7 +271,7 @@ body {
 }
 #device-app .device-btn:hover,
 #device-app .device-btn:focus {
-    background-color: rgba(68,179,226,0.22);
+    background-color: var(--accent-bg-hover);
     color: #fff;
     outline: none;
 }
@@ -245,7 +280,7 @@ body {
 #device-app .device-loader {
     text-align: center;
     padding: 1.5rem 0;
-    color: #444;
+    color: var(--text-muted);
     font-size: 12px;
     letter-spacing: 0.05em;
 }
@@ -281,6 +316,16 @@ body {
 
         <!-- Device table -->
         <table v-show="!collapsed[groupName]">
+            <colgroup>
+                <col style="width:8%">
+                <col style="width:20%">
+                <col style="width:16%">
+                <col style="width:12%">
+                <col style="width:22%">
+                <col style="width:12%">
+                <col style="width:32px">
+                <col style="width:32px">
+            </colgroup>
             <thead>
                 <tr>
                     <th><?php echo tr('Node'); ?></th>
@@ -288,9 +333,9 @@ body {
                     <th><?php echo tr('Type'); ?></th>
                     <th><?php echo tr('IP'); ?></th>
                     <th><?php echo tr('Device key'); ?></th>
-                    <th style="text-align:right"><?php echo tr('Updated'); ?></th>
-                    <th></th>
-                    <th></th>
+                    <th class="col-updated"><?php echo tr('Updated'); ?></th>
+                    <th class="col-action"></th>
+                    <th class="col-action"></th>
                 </tr>
             </thead>
             <tbody>
@@ -302,10 +347,10 @@ body {
                     <td class="col-key" :title="d.devicekey">{{ d.devicekey }}</td>
                     <td class="col-updated" v-html="formatUpdated(d.time)"></td>
                     <td class="col-action">
-                        <a class="device-action" @click="deleteDevice(d)"><i class="icon-trash"></i></a>
+                        <a class="device-action" @click="deleteDevice(d)"><i class="icon-trash icon-white"></i></a>
                     </td>
                     <td class="col-action">
-                        <i v-if="!d['#NO_CONFIG#']" class="icon-wrench device-action" @click="configDevice(d)"></i>
+                        <i v-if="!d['#NO_CONFIG#']" class="icon-white icon-wrench device-action" @click="configDevice(d)"></i>
                     </td>
                 </tr>
             </tbody>
@@ -316,7 +361,7 @@ body {
     <div class="device-loader" v-show="loading">Loading…</div>
 
     <div class="device-toolbar">
-        <button class="device-btn" @click="newDevice"><i class="icon-plus-sign"></i> <?php echo tr('New device'); ?></button>
+        <button class="device-btn" @click="newDevice"><i class="icon-white icon-plus-sign"></i> <?php echo tr('New device'); ?></button>
     </div>
 
 </div>
