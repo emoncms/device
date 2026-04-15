@@ -7,293 +7,16 @@
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $version; ?>"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Theme/css/emoncms-app.css">
 
-<style>
+<div id="device-app" class="emon-app">
 
-/* ── Theme variables ─────────────────────────────────────── */
-#device-app {
-    --bg-card:              #282828;
-    --bg-card-header:       #222;
-    --bg-card-header-hover: #242424;
-    --bg-chip:              #2e2e2e;
-    --bg-badge:             #2a2a2a;
-
-    --border:             #333;
-    --border-card:        #333;
-    --border-strong:      #666;
-
-    --text-primary:       #ddd;
-    --text-body:          #ddd;
-    --text-secondary:     #ddd;
-    --text-muted:         #444;
-
-    --accent:             #44b3e2;
-    --accent-bg:          rgba(68,179,226,0.1);
-    --accent-bg-hover:    rgba(68,179,226,0.22);
-    --accent-row-hover:   rgba(68,179,226,0.05);
-    --accent-border:      rgba(68,179,226,0.3);
-}
-
-body {
-    background-color: #1e1e1e;
-}
-
-.content-container {
-    max-width: 1150px;
-}
-
-#footer {
-    margin: 0;
-    background-color: #181818;
-    color: #999;
-}
-
-#device-app {
-    color: var(--text-body);
-    font-size: 14px;
-}
-
-/* ── Page header ─────────────────────────────────────────── */
-#device-app .device-page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem 0 0.75rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-}
-#device-app .device-page-header h2 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    letter-spacing: 0.01em;
-}
-#device-app .device-page-header a {
-    font-size: 12px;
-    color: var(--accent);
-    text-decoration: none;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-}
-#device-app .device-page-header a:hover { opacity: 1; text-decoration: none; }
-
-/* ── Empty state ──────────────────────────────────────────── */
-#device-app .device-empty {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 0.5rem;
-    padding: 1.5rem 1.75rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-#device-app .device-empty h4 {
-    margin: 0 0 0.6rem 0;
-    font-size: 1rem;
-    color: var(--text-primary);
-}
-#device-app .device-empty a { color: var(--accent); }
-
-/* ── Location cards ───────────────────────────────────────── */
-#device-app .location-card {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 0.5rem;
-    margin-bottom: 0.75rem;
-    overflow: hidden;
-}
-
-/* Card header */
-#device-app .location-card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.6rem 1rem;
-    background-color: var(--bg-card-header);
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    user-select: none;
-}
-#device-app .location-card-header:hover {
-    background-color: var(--bg-card-header-hover);
-}
-/* Blue left accent */
-#device-app .location-card-header::before {
-    content: '';
-    display: block;
-    width: 3px;
-    height: 1.1em;
-    border-radius: 2px;
-    background-color: var(--accent);
-    flex-shrink: 0;
-}
-#device-app .location-card-header .location-name {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--text-primary);
-    flex: 1;
-    letter-spacing: 0.02em;
-}
-#device-app .location-card-header .location-badge {
-    font-size: 11px;
-    color: var(--text-secondary);
-    background-color: var(--bg-badge);
-    border: 1px solid var(--border-strong);
-    border-radius: 0.75rem;
-    padding: 1px 8px;
-}
-#device-app .location-card-header .location-updated {
-    font-size: 11px;
-    color: var(--text-secondary);
-    white-space: nowrap;
-}
-#device-app .location-card-header .collapse-icon {
-    font-size: 11px;
-    color: var(--text-secondary);
-    transition: color 0.2s;
-    flex-shrink: 0;
-}
-#device-app .location-card-header:hover .collapse-icon { color: var(--accent); }
-
-/* Inner table */
-#device-app .location-card table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-#device-app .location-card table th {
-    padding: 5px 12px;
-    font-size: 11px;
-    font-weight: normal;
-    color: var(--text-secondary);
-    text-align: left;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    border-bottom: 1px solid var(--border);
-    background-color: var(--bg-card-header);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-#device-app .location-card table td {
-    padding: 9px 12px;
-    color: var(--text-body);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    vertical-align: middle;
-}
-#device-app .location-card table tr:last-child td {
-    border-bottom: none;
-}
-#device-app .location-card table tbody tr:hover td {
-    background-color: var(--accent-row-hover);
-}
-
-/* Node ID — secondary */
-#device-app .location-card table td.col-node {
-    color: var(--text-secondary);
-}
-/* Name — primary */
-#device-app .location-card table td.col-name {
-    color: var(--text-primary);
-    font-weight: 500;
-}
-/* Type chip */
-#device-app .location-card table td.col-type span {
-    display: inline-block;
-    font-size: 11px;
-    color: var(--text-secondary);
-    background-color: var(--bg-chip);
-    border: 1px solid var(--border-strong);
-    border-radius: 0.75rem;
-    padding: 1px 8px;
-}
-/* IP */
-#device-app .location-card table td.col-ip {
-    font-family: monospace;
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-/* Device key — truncated monospace */
-#device-app .location-card table td.col-key {
-    font-family: monospace;
-    font-size: 11px;
-    color: var(--text-secondary);
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-/* Updated time */
-#device-app .location-card table th.col-updated,
-#device-app .location-card table td.col-updated {
-    text-align: right;
-    white-space: nowrap;
-}
-/* Action col */
-#device-app .location-card table th.col-action,
-#device-app .location-card table td.col-action {
-    width: 24px;
-    text-align: center;
-    padding: 9px 6px;
-}
-#device-app .device-action {
-    cursor: pointer;
-    color: transparent;
-    transition: color 0.15s;
-}
-#device-app .location-card table tbody tr:hover .device-action {
-    color: var(--text-secondary);
-}
-#device-app .device-action:hover {
-    color: var(--accent) !important;
-}
-
-/* ── Toolbar ──────────────────────────────────────────────── */
-#device-app .device-toolbar {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 0 0.25rem;
-    gap: 0.5rem;
-}
-#device-app .device-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35em;
-    background-color: var(--accent-bg);
-    color: var(--accent);
-    border: 1px solid var(--accent-border);
-    border-radius: 0.375rem;
-    padding: 0.3rem 0.85rem;
-    font-size: 13px;
-    font-family: inherit;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-}
-#device-app .device-btn:hover,
-#device-app .device-btn:focus {
-    background-color: var(--accent-bg-hover);
-    color: #fff;
-    outline: none;
-}
-
-/* ── Loader ───────────────────────────────────────────────── */
-#device-app .device-loader {
-    text-align: center;
-    padding: 1.5rem 0;
-    color: var(--text-muted);
-    font-size: 12px;
-    letter-spacing: 0.05em;
-}
-</style>
-
-<div id="device-app">
-
-    <div v-show="deviceList.length" class="device-page-header">
+    <div v-show="deviceList.length" class="page-header">
         <h2><?php echo tr('Devices'); ?></h2>
         <a href="api"><?php echo tr('API Help'); ?></a>
     </div>
 
-    <div v-if="!deviceList.length && !loading" class="device-empty">
+    <div v-if="!deviceList.length && !loading" class="empty-state">
         <h4><?php echo tr('No devices'); ?></h4>
         <p>
             <?php echo tr('Devices are used to configure and prepare the communication with different physical devices. Devices are grouped by Location for easy tracking when deploying at scale.'); ?>
@@ -304,13 +27,13 @@ body {
         </p>
     </div>
 
-    <div v-for="(group, groupName) in groupedDevices" :key="groupName" class="location-card">
+    <div v-for="(group, groupName) in groupedDevices" :key="groupName" class="group-card">
 
         <!-- Card header -->
-        <div class="location-card-header" @click="toggleGroup(groupName)">
-            <span class="location-name">{{ groupName || '<?php echo tr('Ungrouped'); ?>' }}</span>
-            <span class="location-badge">{{ group.length }}</span>
-            <span class="location-updated" v-html="formatUpdated(groupMaxTime(group))"></span>
+        <div class="group-card-header" @click="toggleGroup(groupName)">
+            <span class="group-name">{{ groupName || '<?php echo tr('Ungrouped'); ?>' }}</span>
+            <span class="group-badge">{{ group.length }}</span>
+            <span class="group-updated" v-html="formatUpdated(groupMaxTime(group))"></span>
             <i class="collapse-icon" :class="collapsed[groupName] ? 'icon-chevron-right' : 'icon-chevron-down'"></i>
         </div>
 
@@ -340,17 +63,17 @@ body {
             </thead>
             <tbody>
                 <tr v-for="d in group" :key="d.id">
-                    <td class="col-node">{{ d.nodeid }}</td>
-                    <td class="col-name">{{ d.name }}</td>
-                    <td class="col-type"><span v-if="d.typename">{{ d.typename }}</span></td>
-                    <td class="col-ip">{{ d.ip }}</td>
-                    <td class="col-key" :title="d.devicekey">{{ d.devicekey }}</td>
+                    <td class="col-secondary">{{ d.nodeid }}</td>
+                    <td class="col-primary">{{ d.name }}</td>
+                    <td class="col-chip"><span v-if="d.typename">{{ d.typename }}</span></td>
+                    <td class="col-mono">{{ d.ip }}</td>
+                    <td class="col-mono-truncate" :title="d.devicekey">{{ d.devicekey }}</td>
                     <td class="col-updated" v-html="formatUpdated(d.time)"></td>
                     <td class="col-action">
-                        <a class="device-action" @click="deleteDevice(d)"><i class="icon-trash icon-white"></i></a>
+                        <a class="row-action" @click="deleteDevice(d)"><i class="icon-trash icon-white"></i></a>
                     </td>
                     <td class="col-action">
-                        <i v-if="!d['#NO_CONFIG#']" class="icon-white icon-wrench device-action" @click="configDevice(d)"></i>
+                        <i v-if="!d['#NO_CONFIG#']" class="icon-white icon-wrench row-action" @click="configDevice(d)"></i>
                     </td>
                 </tr>
             </tbody>
@@ -358,10 +81,10 @@ body {
 
     </div>
 
-    <div class="device-loader" v-show="loading">Loading…</div>
+    <div class="app-loader" v-show="loading">Loading…</div>
 
-    <div class="device-toolbar">
-        <button class="device-btn" @click="newDevice"><i class="icon-white icon-plus-sign"></i> <?php echo tr('New device'); ?></button>
+    <div class="app-toolbar">
+        <button class="app-btn" @click="newDevice"><i class="icon-white icon-plus-sign"></i> <?php echo tr('New device'); ?></button>
     </div>
 
 </div>
