@@ -9,21 +9,257 @@
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <style>
-#device-app input[type="text"] { width: 88%; }
-#device-app td:nth-of-type(1) { width: 5%; }
-#device-app th:nth-of-type(6), #device-app td:nth-of-type(6) { text-align: right; }
-#device-app th:nth-of-type(7), #device-app td:nth-of-type(7) { text-align: right; }
-#device-app .group-updated { font-weight: normal; text-align: right; }
-#device-app td.action-col { width: 14px; text-align: center; }
-#device-app .device-action { cursor: pointer; }
+
+body {
+    background-color: #1e1e1e;
+    
+}
+
+#device-app {
+    color: #ccc;
+    font-size: 13px;
+}
+
+/* ── Page header ─────────────────────────────────────────── */
+#device-app .device-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0 0.75rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #2e2e2e;
+}
+#device-app .device-page-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ddd;
+    letter-spacing: 0.01em;
+}
+#device-app .device-page-header a {
+    font-size: 12px;
+    color: #44b3e2;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+#device-app .device-page-header a:hover { opacity: 1; text-decoration: none; }
+
+/* ── Empty state ──────────────────────────────────────────── */
+#device-app .device-empty {
+    background-color: #252525;
+    border: 1px solid #2e2e2e;
+    border-radius: 0.5rem;
+    padding: 1.5rem 1.75rem;
+    color: #888;
+    line-height: 1.6;
+}
+#device-app .device-empty h4 {
+    margin: 0 0 0.6rem 0;
+    font-size: 1rem;
+    color: #bbb;
+}
+#device-app .device-empty a { color: #44b3e2; }
+
+/* ── Location cards ───────────────────────────────────────── */
+#device-app .location-card {
+    background-color: #252525;
+    border: 1px solid #2e2e2e;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+}
+
+/* Card header */
+#device-app .location-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    background-color: #1e1e1e;
+    border-bottom: 1px solid #2e2e2e;
+    cursor: pointer;
+    user-select: none;
+}
+#device-app .location-card-header:hover {
+    background-color: #242424;
+}
+/* Blue left accent */
+#device-app .location-card-header::before {
+    content: '';
+    display: block;
+    width: 3px;
+    height: 1.1em;
+    border-radius: 2px;
+    background-color: #44b3e2;
+    flex-shrink: 0;
+}
+#device-app .location-card-header .location-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: #ddd;
+    flex: 1;
+    letter-spacing: 0.02em;
+}
+#device-app .location-card-header .location-badge {
+    font-size: 11px;
+    color: #555;
+    background-color: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 0.75rem;
+    padding: 1px 8px;
+}
+#device-app .location-card-header .location-updated {
+    font-size: 11px;
+    color: #555;
+    white-space: nowrap;
+}
+#device-app .location-card-header .location-updated span {
+    /* colour injected inline by formatUpdated */
+}
+#device-app .location-card-header .collapse-icon {
+    font-size: 11px;
+    color: #444;
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+#device-app .location-card-header:hover .collapse-icon { color: #44b3e2; }
+
+/* Inner table */
+#device-app .location-card table {
+    width: 100%;
+    border-collapse: collapse;
+}
+#device-app .location-card table th {
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: normal;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #2a2a2a;
+    background-color: #202020;
+    white-space: nowrap;
+}
+#device-app .location-card table td {
+    padding: 9px 12px;
+    color: #bbb;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+}
+#device-app .location-card table tr:last-child td {
+    border-bottom: none;
+}
+#device-app .location-card table tbody tr:hover td {
+    background-color: rgba(68,179,226,0.05);
+}
+
+/* Node ID — secondary */
+#device-app .location-card table td.col-node {
+    color: #555;
+    width: 60px;
+}
+/* Name — primary */
+#device-app .location-card table td.col-name {
+    color: #ddd;
+    font-weight: 500;
+}
+/* Type chip */
+#device-app .location-card table td.col-type span {
+    display: inline-block;
+    font-size: 11px;
+    color: #888;
+    background-color: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 0.75rem;
+    padding: 1px 8px;
+}
+/* IP */
+#device-app .location-card table td.col-ip {
+    font-family: monospace;
+    font-size: 12px;
+    color: #777;
+}
+/* Device key — truncated monospace */
+#device-app .location-card table td.col-key {
+    font-family: monospace;
+    font-size: 11px;
+    color: #555;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Updated time */
+#device-app .location-card table td.col-updated {
+    text-align: right;
+    white-space: nowrap;
+}
+/* Action col */
+#device-app .location-card table td.col-action {
+    width: 24px;
+    text-align: center;
+    padding: 9px 6px;
+}
+#device-app .device-action {
+    cursor: pointer;
+    color: transparent;
+    transition: color 0.15s;
+}
+#device-app .location-card table tbody tr:hover .device-action {
+    color: #555;
+}
+#device-app .device-action:hover {
+    color: #44b3e2 !important;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────── */
+#device-app .device-toolbar {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0 0.25rem;
+    gap: 0.5rem;
+}
+#device-app .device-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    background-color: rgba(68,179,226,0.1);
+    color: #44b3e2;
+    border: 1px solid rgba(68,179,226,0.3);
+    border-radius: 0.375rem;
+    padding: 0.3rem 0.85rem;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+#device-app .device-btn:hover,
+#device-app .device-btn:focus {
+    background-color: rgba(68,179,226,0.22);
+    color: #fff;
+    outline: none;
+}
+
+/* ── Loader ───────────────────────────────────────────────── */
+#device-app .device-loader {
+    text-align: center;
+    padding: 1.5rem 0;
+    color: #444;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+}
 </style>
 
 <div id="device-app">
-    <div v-show="deviceList.length" style="float:right;"><a href="api"><?php echo tr('Devices Help'); ?></a></div>
-    <div v-show="deviceList.length"><h2><?php echo tr('Devices Location'); ?></h2></div>
 
-    <div v-if="!deviceList.length && !loading" class="alert alert-block">
-        <h4 class="alert-heading"><?php echo tr('No devices'); ?></h4><br>
+    <div v-show="deviceList.length" class="device-page-header">
+        <h2><?php echo tr('Devices'); ?></h2>
+        <a href="api"><?php echo tr('API Help'); ?></a>
+    </div>
+
+    <div v-if="!deviceList.length && !loading" class="device-empty">
+        <h4><?php echo tr('No devices'); ?></h4>
         <p>
             <?php echo tr('Devices are used to configure and prepare the communication with different physical devices. Devices are grouped by Location for easy tracking when deploying at scale.'); ?>
             <br><br>
@@ -33,62 +269,56 @@
         </p>
     </div>
 
-    <table v-if="deviceList.length" class="table table-hover">
-        <template v-for="(group, groupName) in groupedDevices">
-            <!-- Group header row -->
-            <tbody :key="'hdr-' + groupName">
+    <div v-for="(group, groupName) in groupedDevices" :key="groupName" class="location-card">
+
+        <!-- Card header -->
+        <div class="location-card-header" @click="toggleGroup(groupName)">
+            <span class="location-name">{{ groupName || '<?php echo tr('Ungrouped'); ?>' }}</span>
+            <span class="location-badge">{{ group.length }}</span>
+            <span class="location-updated" v-html="formatUpdated(groupMaxTime(group))"></span>
+            <i class="collapse-icon" :class="collapsed[groupName] ? 'icon-chevron-right' : 'icon-chevron-down'"></i>
+        </div>
+
+        <!-- Device table -->
+        <table v-show="!collapsed[groupName]">
+            <thead>
                 <tr>
-                    <th colspan="3">
-                        <i class="device-action"
-                           :class="collapsed[groupName] ? 'icon-plus-sign' : 'icon-minus-sign'"
-                           @click="toggleGroup(groupName)"></i>
-                        <a class="device-action" @click="toggleGroup(groupName)">{{ groupName }}</a>
-                    </th>
-                    <th></th>
-                    <th></th>
-                    <th class="group-updated" v-html="formatUpdated(groupMaxTime(group))"></th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                <!-- Column headers -->
-                <tr v-show="!collapsed[groupName]">
                     <th><?php echo tr('Node'); ?></th>
                     <th><?php echo tr('Name'); ?></th>
-                    <th><?php echo tr('Location'); ?></th>
                     <th><?php echo tr('Type'); ?></th>
                     <th><?php echo tr('IP'); ?></th>
-                    <th><?php echo tr('Device access key'); ?></th>
-                    <th><?php echo tr('Updated'); ?></th>
+                    <th><?php echo tr('Device key'); ?></th>
+                    <th style="text-align:right"><?php echo tr('Updated'); ?></th>
                     <th></th>
                     <th></th>
                 </tr>
-            </tbody>
-            <!-- Data rows -->
-            <tbody :key="'rows-' + groupName" v-show="!collapsed[groupName]">
+            </thead>
+            <tbody>
                 <tr v-for="d in group" :key="d.id">
-                    <td>{{ d.nodeid }}</td>
-                    <td>{{ d.name }}</td>
-                    <td>{{ d.description }}</td>
-                    <td>{{ d.typename }}</td>
-                    <td>{{ d.ip }}</td>
-                    <td>{{ d.devicekey }}</td>
-                    <td v-html="formatUpdated(d.time)"></td>
-                    <td class="action-col">
+                    <td class="col-node">{{ d.nodeid }}</td>
+                    <td class="col-name">{{ d.name }}</td>
+                    <td class="col-type"><span v-if="d.typename">{{ d.typename }}</span></td>
+                    <td class="col-ip">{{ d.ip }}</td>
+                    <td class="col-key" :title="d.devicekey">{{ d.devicekey }}</td>
+                    <td class="col-updated" v-html="formatUpdated(d.time)"></td>
+                    <td class="col-action">
                         <a class="device-action" @click="deleteDevice(d)"><i class="icon-trash"></i></a>
                     </td>
-                    <td class="action-col">
+                    <td class="col-action">
                         <i v-if="!d['#NO_CONFIG#']" class="icon-wrench device-action" @click="configDevice(d)"></i>
                     </td>
                 </tr>
             </tbody>
-        </template>
-    </table>
+        </table>
 
-    <div class="ajax-loader" v-show="loading"></div>
-
-    <div id="toolbar_bottom"><hr>
-        <button class="btn btn-small" @click="newDevice">&nbsp;<i class="icon-plus-sign"></i>&nbsp;<?php echo tr('New device'); ?></button>
     </div>
+
+    <div class="device-loader" v-show="loading">Loading…</div>
+
+    <div class="device-toolbar">
+        <button class="device-btn" @click="newDevice"><i class="icon-plus-sign"></i> <?php echo tr('New device'); ?></button>
+    </div>
+
 </div>
 
 <?php require "Modules/device/Views/device_dialog.php"; ?>
