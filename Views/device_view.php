@@ -1,12 +1,9 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $settings, $session;
-    
-    $version = 3;
+    global $path, $settings, $session;    
+    load_js("Modules/device/Views/device.js");
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $version; ?>"></script>
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <div id="device-app">
 
@@ -97,14 +94,15 @@
   // The global update() below refreshes the Vue app anyway.
   var table = { remove: function() {}, timeServerLocalOffset: 0 };
 
-  var deviceApp = new Vue({
-    el: '#device-app',
-    data: {
-      deviceList: [],
-      collapsed: {},
-      loading: false,
-      timeServerLocalOffset: 0,
-      updater: null
+  var deviceApp = Vue.createApp({
+    data: function() {
+      return {
+        deviceList: [],
+        collapsed: {},
+        loading: false,
+        timeServerLocalOffset: 0,
+        updater: null
+      };
     },
     computed: {
       groupedDevices: function() {
@@ -147,7 +145,7 @@
         if (interval > 0) this.updater = setInterval(this.update.bind(this), interval);
       },
       toggleGroup: function(groupName) {
-        Vue.set(this.collapsed, groupName, !this.collapsed[groupName]);
+        this.collapsed[groupName] = !this.collapsed[groupName];
       },
       groupMaxTime: function(rows) {
         var max = 0;
@@ -199,8 +197,12 @@
     mounted: function() {
       this.update();
       this.startUpdater(10000);
+    },
+    beforeUnmount: function() {
+      clearInterval(this.updater);
+      this.updater = null;
     }
-  });
+  }).mount('#device-app');
 
   // Global update() so device_dialog.js can call it after delete/save
   function update() { deviceApp.update(); }
