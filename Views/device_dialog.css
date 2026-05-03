@@ -170,7 +170,7 @@
 .table-inputs td:nth-of-type(6) { text-align: left; }
 
 
-#device-config-modal.modal {
+#device-config-modal.ec-modal {
     margin: 0;
     border-radius: 0;
     border: none;
@@ -181,7 +181,7 @@
 #device-config-body {
     padding: 0
 }
-#device-config-modal.modal .accordion-toggle {
+#device-config-modal.ec-modal .accordion-toggle {
     white-space: nowrap;
     overflow: hidden;
 }
@@ -210,19 +210,19 @@
     font-size: 12px !important;
     font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
 }
-#device-config-modal.modal .modal-content {
+#device-config-modal.ec-modal .modal-content {
     margin-top: 0
 }
-#device-config-modal.modal .modal-sidebar {
+#device-config-modal.ec-modal .modal-sidebar {
     margin: 0
 }
 
 /* add horizontal padding to devices larger than iphone5 (320px)*/
 @media (min-width: 340px) {
-    #device-config-modal.modal {
+    #device-config-modal.ec-modal {
         margin: 0 auto
     }
-    #device-config-modal.modal .modal-sidebar {
+    #device-config-modal.ec-modal .modal-sidebar {
         margin: 0 -1rem
     }
     #device-content {
@@ -241,14 +241,14 @@
     #device-content {
         left: 270px;
     }
-    #device-config-modal.modal {
+    #device-config-modal.ec-modal {
         margin: 0;
         border-radius: 6px;
         border: 1px solid rgba(0,0,0,0.3);
         width: 94%;
         left: 3%;
     }
-    #device-config-modal.modal .modal-sidebar {
+    #device-config-modal.ec-modal .modal-sidebar {
         margin: 0 -1rem
     }
 

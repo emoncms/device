@@ -1,14 +1,14 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path;
+
+    load_css("Modules/device/Views/device_dialog.css");
+    load_js("Modules/device/Views/device_dialog.js");
 ?>
 
-<link href="<?php echo $path; ?>Modules/device/Views/device_dialog.css?v=5" rel="stylesheet">
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=5"></script>
-
-<div id="device-config-modal" class="modal hide keyboard modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-config-modal-label" aria-hidden="true" data-backdrop="static">
+<dialog id="device-config-modal" class="ec-modal modal-adjust" aria-labelledby="device-config-modal-label" data-backdrop="static" style="--modal-width: 94vw;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="modal-close-btn" data-modal-close aria-label="Close">&times;</button>
         <h3 id="device-config-modal-label"><?php echo tr('Configure Device'); ?></h3>
     </div>
     <div id="device-config-body" class="modal-body">
@@ -69,17 +69,17 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn hidden-xs" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
-        <button class="btn visible-xs pull-left"  title="<?php echo tr('Cancel'); ?>" style="margin-left:0;font-weight:bold" data-dismiss="modal" aria-hidden="true" type="button">×</button>
+        <button class="btn hidden-xs" data-modal-close><?php echo tr('Cancel'); ?></button>
+        <button class="btn visible-xs pull-left"  title="<?php echo tr('Cancel'); ?>" style="margin-left:0;font-weight:bold" data-modal-close type="button">&times;</button>
         <button id="device-delete" class="btn btn-danger" style="cursor:pointer"><i class="icon-trash icon-white hidden-xs"></i> <?php echo tr('Delete'); ?></button>
         <button id="device-init" class="btn btn-primary"><i class="icon-refresh icon-white hidden-xs"></i> <?php echo tr('Initialize'); ?></button>
         <button id="device-save" class="btn btn-primary"><?php echo tr('Save'); ?></button>
     </div>
-</div>
+</dialog>
 
-<div id="device-init-modal" class="modal hide modal-adjust" tabindex="-1" role="dialog" aria-labelledby="device-init-modal-label" aria-hidden="true" data-backdrop="static">
+<dialog id="device-init-modal" class="ec-modal modal-adjust" aria-labelledby="device-init-modal-label" data-backdrop="static" style="--modal-width: 94vw;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="modal-close-btn" data-modal-close aria-label="Close">&times;</button>
         <h3 id="device-init-modal-label"><?php echo tr('Initialize device'); ?></h3>
     </div>
     <div id="device-init-body" class="modal-body">
@@ -119,14 +119,14 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button id="device-init-cancel" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
+        <button id="device-init-cancel" class="btn" data-modal-close><?php echo tr('Cancel'); ?></button>
         <button id="device-init-confirm" class="btn btn-primary"><?php echo tr('Initialize'); ?></button>
     </div>
-</div>
+</dialog>
 
-<div id="device-delete-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="device-delete-modal-label" aria-hidden="true" data-backdrop="static">
+<dialog id="device-delete-modal" class="ec-modal" aria-labelledby="device-delete-modal-label" data-backdrop="static" style="--modal-width: 620px;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="modal-close-btn" data-modal-close aria-label="Close">&times;</button>
         <h3 id="device-delete-modal-label"><?php echo tr('Delete device'); ?></h3>
     </div>
     <div class="modal-body">
@@ -140,10 +140,10 @@
         </p>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
+        <button class="btn" data-modal-close><?php echo tr('Cancel'); ?></button>
         <button id="device-delete-confirm" class="btn btn-primary"><?php echo tr('Delete permanently'); ?></button>
     </div>
-</div>
+</dialog>
 
 <script>
     $(window).resize(function() {

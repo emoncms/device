@@ -7,9 +7,8 @@
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $version; ?>"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Theme/css/emoncms-app.css">
 
-<div id="device-app" class="emon-app">
+<div id="device-app">
 
     <div v-show="deviceList.length" class="page-header">
         <h2><?php echo tr('Devices'); ?></h2>
