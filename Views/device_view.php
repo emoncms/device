@@ -1,166 +1,216 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $settings, $session;
-    
-    $version = 3;
+    global $path, $settings, $session;    
+    load_js("Modules/device/Views/device.js");
 ?>
 
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $version; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js?v=<?php echo $version; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js?v=<?php echo $version; ?>"></script>
+<div id="device-app">
 
-<style>
-#table input[type="text"] {
-  width: 88%;
-}
-#table td:nth-of-type(1) { width:5%;}
-#table th:nth-of-type(6), td:nth-of-type(6) { text-align: right; }
-#table th:nth-of-type(7), td:nth-of-type(7) { text-align: right; }
-#table th[fieldg="time"] { font-weight:normal; text-align: right; }
-#table td:nth-of-type(8) { width:14px; text-align: center; }
-#table td:nth-of-type(9) { width:14px; text-align: center; }
-#table td:nth-of-type(10) { width:14px; text-align: center; }
-#table td:nth-of-type(11) { width:14px; text-align: center; }
-</style>
+    <div v-show="deviceList.length" class="page-header">
+        <h2><?php echo tr('Devices'); ?></h2>
+        <a href="api"><?php echo tr('API Help'); ?></a>
+    </div>
 
-<div>
-    <div id="api-help-header" style="float:right;"><a href="api"><?php echo tr('Devices Help'); ?></a></div>
-    <div id="device-header"><h2><?php echo tr('Devices Location'); ?></h2></div>
+    <div v-if="!deviceList.length && !loading" class="empty-state">
+        <h4><?php echo tr('No devices'); ?></h4>
+        <p>
+            <?php echo tr('Devices are used to configure and prepare the communication with different physical devices. Devices are grouped by Location for easy tracking when deploying at scale.'); ?>
+            <br><br>
+            <?php echo tr('A device configures and prepares inputs, feeds and other possible settings. e.g. representing different registers of defined metering units.'); ?>
+            <br>
+            <?php echo tr('Follow the next link as a guide for generating your request: '); ?><a href="api"><?php echo tr('Device API helper'); ?></a>
+        </p>
+    </div>
 
-    <div id="table"></div>
+    <div v-for="(group, groupName) in groupedDevices" :key="groupName" class="card">
 
-    <div id="device-none" class="hide">
-        <div class="alert alert-block">
-            <h4 class="alert-heading"><?php echo tr('No devices'); ?></h4><br>
-            <p>
-                <?php echo tr('Devices are used to configure and prepare the communication with different physical devices. Devices are grouped by Location for easy tracking when deploying at scale.'); ?>
-                <br><br>
-                <?php echo tr('A device configures and prepares inputs, feeds and other possible settings. e.g. representing different registers of defined metering units.'); ?>
-                <br>
-                <?php echo tr('Follow the next link as a guide for generating your request: '); ?><a href="api"><?php echo tr('Device API helper'); ?></a>
-            </p>
+        <!-- Card header -->
+        <div class="card-header card-header--lg" @click="toggleGroup(groupName)">
+            <span class="card-accent"></span>
+            <span class="card-name">{{ groupName || '<?php echo tr('Ungrouped'); ?>' }}</span>
+            <span class="card-badge">{{ group.length }}</span>
+            <span class="card-updated" v-html="formatUpdated(groupMaxTime(group))"></span>
+            <i class="collapse-icon" :class="collapsed[groupName] ? 'icon-chevron-right' : 'icon-chevron-down'"></i>
         </div>
+
+        <!-- Device table -->
+        <table v-show="!collapsed[groupName]">
+            <colgroup>
+                <col style="width:8%">
+                <col style="width:20%">
+                <col style="width:16%">
+                <col style="width:12%">
+                <col style="width:22%">
+                <col style="width:12%">
+                <col style="width:32px">
+                <col style="width:32px">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th><?php echo tr('Node'); ?></th>
+                    <th><?php echo tr('Name'); ?></th>
+                    <th><?php echo tr('Type'); ?></th>
+                    <th><?php echo tr('IP'); ?></th>
+                    <th><?php echo tr('Device key'); ?></th>
+                    <th class="col-updated"><?php echo tr('Updated'); ?></th>
+                    <th class="col-action"></th>
+                    <th class="col-action"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="d in group" :key="d.id">
+                    <td class="col-secondary">{{ d.nodeid }}</td>
+                    <td class="col-primary">{{ d.name }}</td>
+                    <td class="col-chip"><span v-if="d.typename">{{ d.typename }}</span></td>
+                    <td class="col-mono">{{ d.ip }}</td>
+                    <td class="col-mono-truncate" :title="d.devicekey">{{ d.devicekey }}</td>
+                    <td class="col-updated" v-html="formatUpdated(d.time)"></td>
+                    <td class="col-action">
+                        <a class="row-action" @click="deleteDevice(d)"><i class="icon-trash icon-white"></i></a>
+                    </td>
+                    <td class="col-action">
+                        <i v-if="!d['#NO_CONFIG#']" class="icon-white icon-wrench row-action" @click="configDevice(d)"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
     </div>
 
-    <div id="toolbar_bottom"><hr>
-        <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo tr('New device'); ?></button>
+    <div class="app-loader" v-show="loading">Loading…</div>
+
+    <div class="app-toolbar">
+        <button class="app-btn" @click="newDevice"><i class="icon-white icon-plus-sign"></i> <?php echo tr('New device'); ?></button>
     </div>
-    
-    <div id="device-loader" class="ajax-loader"></div>
+
 </div>
 
 <?php require "Modules/device/Views/device_dialog.php"; ?>
 
 <script>
   var devices = <?php echo json_encode($templates); ?>;
-  
-  // Extend table library field types
-  for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
-  table.element = "#table";
-  table.groupprefix = "";
-  table.groupby = 'description';
-  table.groupfields = {
-    'dummy-4':{'title':'', 'type':"blank"},
-    'dummy-5':{'title':'', 'type':"blank"},
-    'time':{'title':'<?php echo tr('Updated'); ?>', 'type':"group-updated"},
-    'dummy-7':{'title':'', 'type':"blank"},
-    'dummy-8':{'title':'', 'type':"blank"}
-  }
-  
-  table.deletedata = false;
-  table.fields = {
-    //'id':{'type':"fixed"},
-    'nodeid':{'title':'<?php echo tr("Node"); ?>','type':"fixed"},
-    'name':{'title':'<?php echo tr("Name"); ?>','type':"fixed"},
-    'description':{'title':'<?php echo tr('Location'); ?>','type':"fixed"},
-    'typename':{'title':'<?php echo tr("Type"); ?>','type':"fixed"},
-    'ip':{'title':'<?php echo tr('IP'); ?>','type':"fixed"},
-    'devicekey':{'title':'<?php echo tr('Device access key'); ?>','type':"fixed"},
-    'time':{'title':'<?php echo tr("Updated"); ?>', 'type':"updated"},
-    // 'public':{'title':"<?php echo tr('tbd'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
-    // Actions
-    'delete-action':{'title':'', 'type':"delete"},
-    'config-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'}
-  }
 
-  update();
+  // Shim so device_dialog.js can call table.remove() without error after delete.
+  // The global update() below refreshes the Vue app anyway.
+  var table = { remove: function() {}, timeServerLocalOffset: 0 };
 
-  function update(){
-    var requestTime = (new Date()).getTime();
-    $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-      table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-      table.data = data;
-
-      for (d in data) {
-        if (data[d]['type'] !== null && data[d]['type'] != '' && devices[data[d]['type']]!=undefined) {
-          data[d]['typename'] = devices[data[d]['type']].name;
+  var deviceApp = Vue.createApp({
+    data: function() {
+      return {
+        deviceList: [],
+        collapsed: {},
+        loading: false,
+        timeServerLocalOffset: 0,
+        updater: null
+      };
+    },
+    computed: {
+      groupedDevices: function() {
+        var groups = {};
+        for (var i = 0; i < this.deviceList.length; i++) {
+          var d = this.deviceList[i];
+          var key = d.description || '';
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(d);
         }
-        else data[d]['typename'] = '';
-        /*
-        if (data[d]['own'] != true){ 
-          data[d]['#READ_ONLY#'] = true;  // if the data field #READ_ONLY# is true, the fields type: edit, delete will be ommited from the table row and icon type will not update when clicked.
+        return groups;
+      }
+    },
+    methods: {
+      update: function() {
+        var self = this;
+        var requestTime = (new Date()).getTime();
+        self.loading = true;
+        $.ajax({ url: path + "device/list.json", dataType: 'json', async: true,
+          success: function(data, textStatus, xhr) {
+            self.timeServerLocalOffset = requestTime - (new Date(xhr.getResponseHeader('Date'))).getTime();
+            // keep shim in sync for device_dialog.js
+            table.timeServerLocalOffset = self.timeServerLocalOffset;
+            for (var i = 0; i < data.length; i++) {
+              var d = data[i];
+              if (d.type !== null && d.type !== '' && devices[d.type] !== undefined) {
+                d.typename = devices[d.type].name;
+              } else {
+                d.typename = '';
+              }
+            }
+            self.deviceList = data || [];
+            self.loading = false;
+          }
+        });
+      },
+      startUpdater: function(interval) {
+        clearInterval(this.updater);
+        this.updater = null;
+        if (interval > 0) this.updater = setInterval(this.update.bind(this), interval);
+      },
+      toggleGroup: function(groupName) {
+        this.collapsed[groupName] = !this.collapsed[groupName];
+      },
+      groupMaxTime: function(rows) {
+        var max = 0;
+        for (var i = 0; i < rows.length; i++) {
+          var t = parseFloat(rows[i].time);
+          if (!isNaN(t) && t > max) max = t;
         }
-        */
+        return max;
+      },
+      formatUpdated: function(time) {
+        var servertime = (new Date()).getTime() - this.timeServerLocalOffset;
+        var update = new Date(time * 1000).getTime();
+        var delta = servertime - update;
+        var secs = Math.abs(delta) / 1000;
+        var mins = secs / 60;
+        var hour = secs / 3600;
+        var day = hour / 24;
+        var d = new Date(time * 1000);
+
+        var updated = secs.toFixed(0) + "s";
+        if (update === 0 || !isFinite(secs)) updated = "n/a";
+        else if (secs.toFixed(0) == 0) updated = "now";
+        else if (day > 365 && delta > 0) updated = d.toLocaleDateString("en-GB", {year:"numeric", month:"short"});
+        else if (day > 31 && delta > 0) updated = d.toLocaleDateString("en-GB", {month:"short", day:"numeric"});
+        else if (day > 2) updated = day.toFixed(1) + " days";
+        else if (hour > 2) updated = hour.toFixed(0) + " hrs";
+        else if (secs > 180) updated = mins.toFixed(0) + " mins";
+
+        secs = Math.abs(secs);
+        var color = "rgb(150,150,150)";
+        if (delta < 0) color = "rgb(60,135,170)";
+        else if (secs < 25) color = "rgb(50,200,50)";
+        else if (secs < 60) color = "rgb(240,180,20)";
+        else if (secs < 7200) color = "rgb(255,125,20)";
+        else if (secs < 2678400) color = "rgb(255,0,0)";
+
+        return "<span style='color:" + color + ";'>" + updated + "</span>";
+      },
+      deleteDevice: function(d) {
+        device_dialog.loadDelete(d, null);
+      },
+      configDevice: function(d) {
+        device_dialog.loadConfig(devices, d);
+      },
+      newDevice: function() {
+        device_dialog.loadConfig(devices, null);
       }
+    },
+    mounted: function() {
+      this.update();
+      this.startUpdater(10000);
+    },
+    beforeUnmount: function() {
+      clearInterval(this.updater);
+      this.updater = null;
+    }
+  }).mount('#device-app');
 
-      table.draw();
-      if (table.data.length != 0) {
-        $("#device-none").hide();
-        $("#device-header").show();
-        $("#api-help-header").show();
-      } else {
-        $("#device-none").show();
-        $("#device-header").hide();
-        $("#api-help-header").hide();
-      }
-      $("#device-loader").hide();
-    }});
-  }
-
-  var updater;
-  function updaterStart(func, interval)
-  {
-    clearInterval(updater);
-    updater = null;
-    if (interval > 0) updater = setInterval(func, interval);
-  }
-  updaterStart(update, 10000);
-
-  $("#table").bind("onEdit", function(e){
-    updaterStart(update, 0);
-  });
-
-  $("#table").bind("onSave", function(e,id,fields_to_update){
-    device.set(id,fields_to_update);
-  });
-
-  $("#table").bind("onResume", function(e){
-    updaterStart(update, 10000);
-  });
-
-  $("#table").bind("onDelete", function(e,id,row) {
-    // Get device of clicked row
-    var localDevice = device.get(id);
-    device_dialog.loadDelete(localDevice, row);
-  });
-
-  $("#table").on('click', '.icon-wrench', function() {
-    // Get device of clicked row
-    var localDevice = table.data[$(this).attr('row')];
-    device_dialog.loadConfig(devices, localDevice);
-  });
-
-  $("#device-new").on('click', function () {
-    device_dialog.loadConfig(devices, null);
-  });
+  // Global update() so device_dialog.js can call it after delete/save
+  function update() { deviceApp.update(); }
 
   $("#device-reload").click(function() {
-    $.ajax({ url: path+"device/template/reload.json", async: true, dataType: "json", success: function(result)
-      {
-        alert(result.message);
-      }
-    });
+    $.ajax({ url: path + "device/template/reload.json", async: true, dataType: "json", success: function(result) {
+      alert(result.message);
+    }});
   });
-
 </script>
