@@ -23,13 +23,14 @@
         </p>
     </div>
 
-    <div v-for="(group, groupName) in groupedDevices" :key="groupName" class="group-card">
+    <div v-for="(group, groupName) in groupedDevices" :key="groupName" class="card">
 
         <!-- Card header -->
-        <div class="group-card-header" @click="toggleGroup(groupName)">
-            <span class="group-name">{{ groupName || '<?php echo tr('Ungrouped'); ?>' }}</span>
-            <span class="group-badge">{{ group.length }}</span>
-            <span class="group-updated" v-html="formatUpdated(groupMaxTime(group))"></span>
+        <div class="card-header card-header--lg" @click="toggleGroup(groupName)">
+            <span class="card-accent"></span>
+            <span class="card-name">{{ groupName || '<?php echo tr('Ungrouped'); ?>' }}</span>
+            <span class="card-badge">{{ group.length }}</span>
+            <span class="card-updated" v-html="formatUpdated(groupMaxTime(group))"></span>
             <i class="collapse-icon" :class="collapsed[groupName] ? 'icon-chevron-right' : 'icon-chevron-down'"></i>
         </div>
 
