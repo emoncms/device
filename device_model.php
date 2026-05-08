@@ -470,7 +470,12 @@ class Device
             $configured_inputs = array();
             $unconfigured_inputs = array();
             
-            if ($result2 = $this->mysqli->query("SELECT * FROM input WHERE `userid` = '$userid' AND `nodeid` = '$nodeid'")) {
+            $stmt2 = $this->mysqli->prepare("SELECT * FROM input WHERE `userid` = ? AND `nodeid` = ?");
+            $stmt2->bind_param("is", $userid, $nodeid);
+            $stmt2->execute();
+            $result2 = $stmt2->get_result();
+            $stmt2->close();
+            if ($result2) {
                 while ($row2 = $result2->fetch_object()) {
                     // Get input time once and store it with the input object
                     $input_time = 0;
@@ -530,7 +535,11 @@ class Device
             // Delete the identified inputs
             foreach ($inputs_to_delete as $input) {
                 if (!$dryrun) {
-                    $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '".$input->id."'");
+                    $input_id = intval($input->id);
+                    $stmt_del = $this->mysqli->prepare("DELETE FROM input WHERE userid = ? AND id = ?");
+                    $stmt_del->bind_param("ii", $userid, $input_id);
+                    $stmt_del->execute();
+                    $stmt_del->close();
                     if ($this->redis) {
                         $this->redis->del("input:".$input->id);
                         $this->redis->srem("user:inputs:$userid", $input->id);
