@@ -29,8 +29,8 @@ class Device
     }
 
     public function devicekey_session($devicekey) {
-        // 1. Only allow alphanumeric characters
-        // if (!ctype_alnum($devicekey)) return array();
+        // 1. Only allow hexadecimal characters (keys are produced by bin2hex)
+        if (!ctype_xdigit($devicekey)) return array();
         
         // 2. Only allow 32 character length
         if (strlen($devicekey)!=32) return array();
@@ -636,8 +636,8 @@ class Device
         }
         
         if (isset($fields->devicekey)) {
-            // 1. Only allow alphanumeric characters
-            if (!ctype_alnum($fields->devicekey)) return array('success'=>false, 'message'=>'invalid characters in device key');
+            // 1. Only allow hexadecimal characters (keys are produced by bin2hex)
+            if (!ctype_xdigit($fields->devicekey)) return array('success'=>false, 'message'=>'invalid characters in device key');
             
             // 2. Only allow 32 character length
             if (strlen($fields->devicekey)!=32) return array('success'=>false, 'message'=>'device key must be 32 characters long');
