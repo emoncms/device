@@ -26,7 +26,7 @@ var device_dialog =
     },
 
     'drawConfig':function() {
-        $("#device-config-modal").modal('show');
+        emoncmsModal.open('device-config-modal');
         this.adjustConfigModal();
         this.clearConfigModal();
 
@@ -280,7 +280,7 @@ var device_dialog =
                     }
                 }
                 update();
-                $('#device-config-modal').modal('hide');
+                emoncmsModal.close('device-config-modal');
                 if (init) device_dialog.loadInit();
             }
             else {
@@ -290,17 +290,17 @@ var device_dialog =
         });
         
         $("#device-delete").off('click').on('click', function () {
-            $('#device-config-modal').modal('hide');
+            emoncmsModal.close('device-config-modal');
             device_dialog.loadDelete(device_dialog.device, null);
         });
         
         $("#device-init").off('click').on('click', function () {
-            $('#device-config-modal').modal('hide');
+            emoncmsModal.close('device-config-modal');
             device_dialog.loadInit();
         });
 
         $("#prepare-custom-template").off('click').on('click', function () {
-            $('#device-config-modal').modal('hide');
+            emoncmsModal.close('device-config-modal');
             device_dialog.loadInitCustom();
         });
         
@@ -392,7 +392,7 @@ var device_dialog =
 
 
     'drawInit': function (result) {
-        $('#device-init-modal').modal('show');
+        emoncmsModal.open('device-init-modal');
         device_dialog.adjustInitModal();
         
         $('#device-init-modal-label').html('Initialize Device: <b>'+device_dialog.device.name+'</b>');  
@@ -577,7 +577,7 @@ var device_dialog =
     'loadDelete': function(device, tablerow) {
         this.device = device;
         
-        $('#device-delete-modal').modal('show');
+        emoncmsModal.open('device-delete-modal');
         $('#device-delete-modal-label').html('Delete Device: <b>'+device.name+'</b>');
         
         // Initialize callbacks
@@ -605,7 +605,7 @@ var device_dialog =
                     update();
                 });
             }
-            $('#device-delete-modal').modal('hide');
+            emoncmsModal.close('device-delete-modal');
             $('#wrap').trigger("device-delete");
         });
     }
