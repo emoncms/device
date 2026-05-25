@@ -29,8 +29,8 @@ class Device
     }
 
     public function devicekey_session($devicekey) {
-        // 1. Only allow alphanumeric characters
-        // if (!ctype_alnum($devicekey)) return array();
+        // 1. Only allow hexadecimal characters (keys are produced by bin2hex)
+        if (!ctype_xdigit($devicekey)) return array();
         
         // 2. Only allow 32 character length
         if (strlen($devicekey)!=32) return array();
@@ -144,53 +144,6 @@ class Device
         if ($_nodeid!=$nodeid) return false;
         
         if ($result && $id > 0) return $id; else return false;
-    }
-
-    public function request_auth($ip) {
-        if (!$this->redis) {
-            return array("success"=>false, "message"=>"Unable to handle authentication requests without redis");
-        }
-        $ip_parts = explode(".", $ip);
-        for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
-        $ip = implode(".", $ip_parts);
-        
-        $allow_ip = $this->redis->get("device:auth:allow");
-        // Only show authentication details to allowed ip address
-        if ($allow_ip == $ip) {
-            $this->redis->del("device:auth:allow");
-            global $settings;
-            return $settings['mqtt']['user'].":".$settings['mqtt']['password'].":".$settings['mqtt']['basetopic'];
-        } else {
-            $this->redis->set("device:auth:request", json_encode(array("ip"=>$ip)));
-            return array("success"=>true, "message"=>"Authentication request registered for IP $ip");
-        }
-    }
-
-    public function get_auth_request() {
-        if (!$this->redis) {
-            return array("success"=>false, "message"=>"Unable to handle authentication requests without redis");
-        }
-        if ($device_auth = $this->redis->get("device:auth:request")) {
-            $device_auth = json_decode($device_auth);
-            return array_merge(array("success"=>true, "ip"=>$device_auth->ip));
-        } else {
-            return array("success"=>true, "message"=>"No authentication request registered");
-        }
-    }
-
-    public function allow_auth_request($ip) {
-        if (!$this->redis) {
-            return array("success"=>false, "message"=>"Unable to handle authentication requests without redis");
-        }
-        $ip_parts = explode(".", $ip);
-        for ($i=0; $i<count($ip_parts); $i++) $ip_parts[$i] = (int) $ip_parts[$i];
-        $ip = implode(".", $ip_parts);
-        
-        $this->redis->set("device:auth:allow", $ip);    // Temporary availability of auth for device ip address
-        $this->redis->expire("device:auth:allow", 60);  // Expire after 60 seconds
-        $this->redis->del("device:auth:request");
-        
-        return array("success"=>true, "message"=>"Authentication request allowed for IP $ip");
     }
 
     public function get($id) {
@@ -470,7 +423,12 @@ class Device
             $configured_inputs = array();
             $unconfigured_inputs = array();
             
-            if ($result2 = $this->mysqli->query("SELECT * FROM input WHERE `userid` = '$userid' AND `nodeid` = '$nodeid'")) {
+            $stmt2 = $this->mysqli->prepare("SELECT * FROM input WHERE `userid` = ? AND `nodeid` = ?");
+            $stmt2->bind_param("is", $userid, $nodeid);
+            $stmt2->execute();
+            $result2 = $stmt2->get_result();
+            $stmt2->close();
+            if ($result2) {
                 while ($row2 = $result2->fetch_object()) {
                     // Get input time once and store it with the input object
                     $input_time = 0;
@@ -530,7 +488,11 @@ class Device
             // Delete the identified inputs
             foreach ($inputs_to_delete as $input) {
                 if (!$dryrun) {
-                    $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '".$input->id."'");
+                    $input_id = intval($input->id);
+                    $stmt_del = $this->mysqli->prepare("DELETE FROM input WHERE userid = ? AND id = ?");
+                    $stmt_del->bind_param("ii", $userid, $input_id);
+                    $stmt_del->execute();
+                    $stmt_del->close();
                     if ($this->redis) {
                         $this->redis->del("input:".$input->id);
                         $this->redis->srem("user:inputs:$userid", $input->id);
@@ -627,8 +589,8 @@ class Device
         }
         
         if (isset($fields->devicekey)) {
-            // 1. Only allow alphanumeric characters
-            if (!ctype_alnum($fields->devicekey)) return array('success'=>false, 'message'=>'invalid characters in device key');
+            // 1. Only allow hexadecimal characters (keys are produced by bin2hex)
+            if (!ctype_xdigit($fields->devicekey)) return array('success'=>false, 'message'=>'invalid characters in device key');
             
             // 2. Only allow 32 character length
             if (strlen($fields->devicekey)!=32) return array('success'=>false, 'message'=>'device key must be 32 characters long');

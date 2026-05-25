@@ -23,52 +23,6 @@ function device_controller()
 
     if ($route->format == 'json')
     {
-        // ---------------------------------------------------------------
-        // Method for sharing authentication details with a node
-        // that does not require copying and pasting passwords and apikeys
-        // 1. device requests authentication - reply "request registered"
-        // 2. notification asks user whether to allow or deny device
-        // 3. user clicks on allow
-        // 4. device makes follow up request for authentication
-        //    - reply authentication details
-        // ---------------------------------------------------------------
-        if ($route->action == "authcheck") { $route->action = "auth"; $route->subaction = "check"; } 
-        if ($route->action == "authallow") { $route->action = "auth"; $route->subaction = "allow"; }         
-
-        if ($route->action == "auth") {
-            if (!isset($settings["device"])) {
-                return array('content'=>array('success'=>false, 'message'=>'Auth functionality not enabled'));
-            }
-            if (!isset($settings["device"]["enable_auth_check"]) || !$settings["device"]["enable_auth_check"]) {
-                return array('content'=>array('success'=>false, 'message'=>'Auth functionality not enabled'));
-            }
-
-            if ($route->subaction=="request") {
-                // 1. Register request for authentication details, or provide if allowed
-                $result = $device->request_auth($_SERVER['REMOTE_ADDR']);
-                if (isset($result['success'])) {
-                    $result = $result['message'];
-                }
-                $route->format = "text";
-            }
-            else if ($route->subaction=="check" && $session['read']) {
-                // 2. User checks for device waiting for authentication
-                $result = $device->get_auth_request();
-
-                if (isset($settings["device"]["enable_UDP_broadcast"]) && $settings["device"]["enable_UDP_broadcast"]) {
-                    $port = 5005;
-                    $broadcast_string = "emonpi.local";
-                    $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-                    socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
-                    socket_sendto($sock, $broadcast_string, strlen($broadcast_string), 0, '255.255.255.255', $port);
-                }
-            }
-            else if ($route->subaction=="allow" && $session['write']) {
-                // 3. User allows device to receive authentication details
-                $result = $device->allow_auth_request(get("ip"));
-            }
-        }
-            
         if ($route->action == 'list') {
             if ($session['userid']>0 && $session['read']) $result = $device->get_list($session['userid']);
         }
