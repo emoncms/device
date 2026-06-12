@@ -12,5 +12,13 @@ if ($session["write"]) {
             "order"=>6, 
             "icon"=>"device"
         );
+
+
+        $menu["setup"]["l2"]['divider'] = array(
+            "divider"=>"15px",
+            "href"=>'',
+            "order"=>6
+        );
+
     }
 }
