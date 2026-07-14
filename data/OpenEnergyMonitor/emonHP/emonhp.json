@@ -1,5 +1,5 @@
 {
-    "name": "emonHP L3 1x electric",
+    "name": "1x electric, 1x heat",
     "category": "OpenEnergyMonitor",
     "group": "emonHP",
     "description": "emonHP Heat Pump Monitor with 1x Electricity and 1x Heat Meter",
