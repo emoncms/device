@@ -1,7 +1,7 @@
 {
     "name": "EmonTH HeatPump",
     "category": "OpenEnergyMonitor",
-    "group": "Temperature & Humidity",
+    "group": "emonHP",
     "description": "emonTH as an emonHP heat pump monitor indoor room temperature sensor",
     "inputs": [
         {

@@ -1,7 +1,7 @@
 {
     "name": "DHW Diverter digital",
     "category": "OpenEnergyMonitor",
-    "group": "emonHP Heat Pump Monitor",
+    "group": "emonHP",
     "description": "emonHP DHW status sensor on GPIO input",
     "inputs": [
         {

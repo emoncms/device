@@ -1,0 +1,244 @@
+{
+    "name": "Hybrid MBUS",
+    "category": "OpenEnergyMonitor",
+    "group": "emonHP",
+    "description": "emonHP hybrid MBUS: 2x heat, 1x water",
+    "inputs": [
+    {
+      "name": "watermeter_Volume",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed_join",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "DHW watermeter_Volume"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter_Energy",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed_join",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "heatpump_heat_kwh"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter_Power",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "heatpump_heat"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter_FlowRate",
+      "description": "",
+      "processList": [
+        {
+          "process": "scale",
+          "arguments": {
+            "type": "ProcessArg::VALUE",
+            "value": "16.67"
+          }
+        },
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "heatpump_flowrate"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter_FlowT",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "heatpump_flowT"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter_ReturnT",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "heatpump_returnT"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter2-Boiler_Energy",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed_join",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "boiler_energy"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter2-Boiler_Power",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "boiler_heat"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter2-Boiler_FlowRate",
+      "description": "",
+      "processList": [
+        {
+          "process": "scale",
+          "arguments": {
+            "type": "ProcessArg::VALUE",
+            "value": "16.67"
+          }
+        },
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "boiler_flowrate"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter2-Boiler_FlowT",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "boiler_flowT"
+          }
+        }
+      ]
+    },
+    {
+      "name": "heatmeter2-Boiler_ReturnT",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "boiler_returnT"
+          }
+        }
+      ]
+    }
+  ],
+  "feeds": [
+    {
+      "name": "DHW watermeter_Volume",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "DHW watermeter",
+      "unit": "m3"
+    },
+    {
+      "name": "heatpump_heat_kwh",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "heatpump",
+      "unit": "kWh"
+    },
+    {
+      "name": "heatpump_heat",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "heatpump",
+      "unit": "W"
+    },
+    {
+      "name": "heatpump_flowrate",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "heatpump",
+      "unit": "L/min"
+    },
+    {
+      "name": "heatpump_flowT",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "heatpump",
+      "unit": "°C"
+    },
+    {
+      "name": "heatpump_returnT",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "heatpump",
+      "unit": "°C"
+    },
+    {
+      "name": "boiler_energy",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "boiler",
+      "unit": "kWh"
+    },
+    {
+      "name": "boiler_heat",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "boiler",
+      "unit": "W"
+    },
+    {
+      "name": "boiler_flowrate",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "boiler",
+      "unit": "L/min"
+    },
+    {
+      "name": "boiler_flowT",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "boiler",
+      "unit": "°C"
+    },
+    {
+      "name": "boiler_returnT",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "boiler",
+      "unit": "°C"
+    }
+  ]
+}
