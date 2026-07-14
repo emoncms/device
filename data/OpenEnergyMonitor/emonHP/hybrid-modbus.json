@@ -1,0 +1,90 @@
+{
+    "name": "Hybrid Modbus",
+    "category": "OpenEnergyMonitor",
+    "group": "emonHP",
+    "description": "emonHP hybrid Modbus: 2x electric meters",
+    "inputs": [
+    {
+      "name": "ashp_Power",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "heatpump_elec"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ashp_Energy",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed_join",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "heatpump_elec_kwh"
+          }
+        }
+      ]
+    },
+    {
+      "name": "grid_Power",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "grid_Power"
+          }
+        }
+      ]
+    },
+    {
+      "name": "grid_Energy",
+      "description": "",
+      "processList": [
+        {
+          "process": "log_to_feed_join",
+          "arguments": {
+            "type": "ProcessArg::FEEDID",
+            "value": "grid_Energy"
+          }
+        }
+      ]
+    }
+  ],
+  "feeds": [
+    {
+      "name": "heatpump_elec",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "heatpump",
+      "unit": "W"
+    },
+    {
+      "name": "heatpump_elec_kwh",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "heatpump",
+      "unit": "kWh"
+    },
+    {
+      "name": "grid_Power",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "grid",
+      "unit": "W"
+    },
+    {
+      "name": "grid_Energy",
+      "engine": "Engine::PHPFINA",
+      "interval": 10,
+      "tag": "grid",
+      "unit": "kWh"
+    }
+  ]
+}

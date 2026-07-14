@@ -38,7 +38,7 @@
           "process": "log_to_feed",
           "arguments": {
             "type": "ProcessArg::FEEDID",
-            "value": "heatpump_elec"
+            "value": "heatpump_heat"
           }
         }
       ]
@@ -178,7 +178,7 @@
       "unit": "kWh"
     },
     {
-      "name": "heatpump_elec",
+      "name": "heatpump_heat",
       "engine": "Engine::PHPFINA",
       "interval": 10,
       "tag": "heatpump",
