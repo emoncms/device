@@ -18,7 +18,18 @@ function device_controller()
             $templates = $device->get_template_list_meta($session['userid']);
             $result = view("Modules/device/Views/device_view.php", array('templates'=>$templates));
         }
-        else if ($route->action == 'api') $result = view("Modules/device/Views/device_api.php", array());
+        else if ($route->action == 'api') {
+            require_once "Modules/device/device_api_obj.php";
+            $api = array();
+            foreach (device_api_obj() as $endpoint) { $endpoint['module'] = "device"; $api[] = $endpoint; }
+            $result = view("Lib/api_explorer_view.php", array(
+                "title"=>tr("Device API"),
+                "sub"=>tr("Use the device API to register devices and set up their inputs and feeds from a template"),
+                "api"=>$api, "show_docs_link"=>true, "standalone"=>true,
+                "extra"=>"Modules/device/Views/device_api_extra.php",
+                "apikeys"=>session_apikeys()
+            ));
+        }
     }
 
     if ($route->format == 'json')
