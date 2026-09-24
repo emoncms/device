@@ -12,7 +12,7 @@
             <div class="modal-header">
                 <h3 id="device-config-modal-label" class="modal-title"><?php echo tr('Configure Device'); ?></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+            </div>
             <div id="device-config-body" class="modal-body">
                 <div id="device-sidebar" class="modal-sidebar">
                     <h3 style="padding-left:10px;">
@@ -87,7 +87,7 @@
             <div class="modal-header">
                 <h3 id="device-init-modal-label" class="modal-title"><?php echo tr('Initialize device'); ?></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+            </div>
             <div id="device-init-body" class="modal-body">
                 <div class="content">
                     <p style="margin-top: 10px;"><?php echo tr('Initializing a device will automaticaly configure inputs and associated feeds as described.'); ?><br>
@@ -138,7 +138,7 @@
             <div class="modal-header">
                 <h3 id="device-delete-modal-label" class="modal-title"><?php echo tr('Delete device'); ?></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+            </div>
             <div class="modal-body">
                 <p><?php echo tr('Deleting a device is permanent.'); ?>
                    <br><br>
