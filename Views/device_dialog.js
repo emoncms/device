@@ -478,7 +478,7 @@ var device_dialog =
             var process = processList[i];
             if (process['arguments'] !== undefined && Array.isArray(process['arguments']) && process['arguments'].length > 0) {
                 var title = process["name"];
-                var label = "important";
+                var label = "danger";
                 var argTitles = [];
 
                 for (var j = 0; j < process['arguments'].length; j++) {
@@ -488,7 +488,7 @@ var device_dialog =
 
                     switch(arg.type) {
                         case 0: // VALUE
-                            argLabel = "important";
+                            argLabel = "danger";
                             argTitle = "Value";
                             break;
                         case 1: // INPUTID
@@ -500,11 +500,11 @@ var device_dialog =
                             argTitle = "Feed";
                             break;
                         case 3: // NONE
-                            argLabel = "important";
+                            argLabel = "danger";
                             argTitle = "";
                             break;
                         case 4: // TEXT
-                            argLabel = "important";
+                            argLabel = "danger";
                             argTitle = "Text";
                             break;
                         case 5: // SCHEDULEID
@@ -512,7 +512,7 @@ var device_dialog =
                             argTitle = "Schedule";
                             break;
                         default:
-                            argLabel = "important";
+                            argLabel = "danger";
                             argTitle = "ERROR";
                             break;
                     }
@@ -531,7 +531,7 @@ var device_dialog =
                     title += " (" + argTitles.join(", ") + ")";
                 }
 
-                out += "<span class='label label-"+label+"' title='"+title+"' style='cursor:default'><small>"+process["short"]+"</small></span> ";
+                out += "<span class='badge bg-"+label+"' title='"+title+"' style='cursor:default'><small>"+process["short"]+"</small></span> ";
             }
         }
         return out;

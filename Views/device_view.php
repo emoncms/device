@@ -100,17 +100,17 @@
         </template>
         <template v-else>
             <div class="controls device-controls">
-                <button v-if="groups.length > 0" @click="toggleAll" class="btn" :title="allCollapsed ? '<?php echo tr('Expand all'); ?>' : '<?php echo tr('Collapse all'); ?>'">
+                <button v-if="groups.length > 0" @click="toggleAll" class="btn btn-default" :title="allCollapsed ? '<?php echo tr('Expand all'); ?>' : '<?php echo tr('Collapse all'); ?>'">
                     <i :class="allCollapsed ? 'icon-resize-full' : 'icon-resize-small'"></i>
                 </button>
-                <button v-if="groups.length > 0" @click="toggleSelectAll" class="btn" :title="selected.length > 0 ? '<?php echo tr('Unselect all'); ?>' : '<?php echo tr('Select all'); ?>'">
+                <button v-if="groups.length > 0" @click="toggleSelectAll" class="btn btn-default" :title="selected.length > 0 ? '<?php echo tr('Unselect all'); ?>' : '<?php echo tr('Select all'); ?>'">
                     <i :class="selected.length > 0 ? 'icon-ban-circle' : 'icon-check'"></i>
                     <span v-if="selected.length > 0">{{ selected.length }}</span>
                 </button>
-                <button @click="deleteSelected" v-if="selected.length > 0" class="btn" title="<?php echo tr('Delete'); ?>">
+                <button @click="deleteSelected" v-if="selected.length > 0" class="btn btn-default" title="<?php echo tr('Delete'); ?>">
                     <i class="icon-trash"></i>
                 </button>
-                <button @click="configureSelected" v-if="selected.length === 1" class="btn" title="<?php echo tr('Configure'); ?>">
+                <button @click="configureSelected" v-if="selected.length === 1" class="btn btn-default" title="<?php echo tr('Configure'); ?>">
                     <i class="icon-wrench"></i>
                 </button>
                 <button @click="newDevice" class="btn btn-warning" style="float:right;" title="<?php echo tr('New device'); ?>">
@@ -187,7 +187,7 @@
                 </div>
             </template>
 
-            <div v-else class="alert alert-block">
+            <div v-else class="alert alert-warning">
                 <h4 class="alert-heading"><?php echo tr('No devices'); ?></h4><br>
                 <p>
                     <?php echo tr('Devices are used to configure and prepare the communication with different physical devices. Devices are grouped by Location for easy tracking when deploying at scale.'); ?>
