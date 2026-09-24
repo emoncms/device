@@ -1,10 +1,9 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path;
-?>
 
-<link href="<?php echo $path; ?>Modules/device/Views/device_dialog.css?v=5" rel="stylesheet">
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js?v=5"></script>
+    load_css("Modules/device/Views/device_dialog.css");
+    load_js("Modules/device/Views/device_dialog.js");
+?>
 
 <div id="device-config-modal" class="modal keyboard modal-adjust" tabindex="-1" aria-labelledby="device-config-modal-label" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog">
