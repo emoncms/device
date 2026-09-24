@@ -68,12 +68,12 @@ var device_dialog =
             $('#template-list').append(
                 "<div class='accordion-group'>" +
                     "<div class='accordion-heading category-heading'>" +
-                        "<span class='accordion-toggle' data-toggle='collapse' " +
-                            "data-parent='#template-list' data-target='#template-"+categoryid+"-collapse'>" +
+                        "<span class='accordion-toggle' data-bs-toggle='collapse' " +
+                            "data-bs-target='#template-"+categoryid+"-collapse'>" +
                             category +
                         "</span>" +
                     "</div>" +
-                    "<div id='template-"+categoryid+"-collapse' class='accordion-body collapse'>" +
+                    "<div id='template-"+categoryid+"-collapse' class='collapse' data-bs-parent='#template-list'>" +
                         "<div class='accordion-inner'>" +
                             "<div id='template-"+categoryid+"' class='accordion'></div>" +
                         "</div>" +
@@ -87,12 +87,12 @@ var device_dialog =
                 $('#template-'+categoryid).append(
                     "<div class='accordion-group'>" +
                         "<div class='accordion-heading group-heading'>" +
-                            "<span class='accordion-toggle' data-toggle='collapse' " +
-                                "data-parent='#template-"+categoryid+"' data-target='#template-"+categoryid+"-"+groupid+"-collapse'>" +
+                            "<span class='accordion-toggle' data-bs-toggle='collapse' " +
+                                "data-bs-target='#template-"+categoryid+"-"+groupid+"-collapse'>" +
                                 group +
                             "</span>" +
                         "</div>" +
-                        "<div id='template-"+categoryid+"-"+groupid+"-collapse' class='accordion-body collapse'>" +
+                        "<div id='template-"+categoryid+"-"+groupid+"-collapse' class='collapse' data-bs-parent='#template-"+categoryid+"'>" +
                             "<div id='template-"+categoryid+"-"+groupid+"' class='accordion-inner'></div>" +
                         "</div>" +
                     "</div>"
@@ -179,7 +179,7 @@ var device_dialog =
         var height = $(window).height();
         
         if ($("#device-config-modal").length) {
-            var h = height - $("#device-config-modal").position().top - 180;
+            var h = height - $("#device-config-modal .modal-content").offset().top - 180;
             $("#device-config-body").height(h);
         }
         
@@ -543,7 +543,7 @@ var device_dialog =
         var height = $(window).height();
         
         if ($("#device-init-modal").length) {
-            var h = height - $("#device-init-modal").position().top - 180;
+            var h = height - $("#device-init-modal .modal-content").offset().top - 180;
             $("#device-init-body").height(h);
         }
     },
