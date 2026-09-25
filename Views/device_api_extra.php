@@ -15,7 +15,7 @@
   device key authentication and how device templates work.
 
   Rendered by Lib/api_explorer_view.php via its $extra parameter and styled
-  with the shared .api-auth-card classes from Lib/api_auth_view.php.
+  with the shared .api-auth-card classes in Lib/api_explorer.css.
 
   */
 
