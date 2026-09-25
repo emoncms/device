@@ -18,13 +18,13 @@
                         <span><?php echo tr('Devices'); ?></span>            
                         <span id="device-sidebar-close"><i class="icon-remove"></i></span>
                     </h3>
-                    <div id="select-device-alert" class="hidden">
+                    <div id="select-device-alert" class="hide">
                         <div class="alert alert-warning" style="border: 0; line-height: 1.1; margin-bottom: 0; padding-left: .8em; border-radius: 0;">
                         <?php echo tr('Please select the correct device template to setup your device:'); ?>
                         </div>
                     </div>
                     <div style="overflow-x: hidden; width:100%">
-                        <div id="template-list" class="accordion"></div>
+                        <div id="template-list" class="tpl-list"></div>
                     </div>
                 </div>
                 
@@ -43,18 +43,18 @@
                     
                     <div class="divider"></div>
                     
-                    <label><b><?php echo tr('Node'); ?></b></label>
-                    <input id="device-config-node" class="input-medium" type="text" required>
+                    <label class="form-label"><b><?php echo tr('Node'); ?></b></label>
+                    <input id="device-config-node" class="form-control input-165 mb-2" type="text" required>
                     
-                    <label><b><?php echo tr('Name'); ?></b></label>
-                    <input id="device-config-name" class="input-large" type="text" required>
+                    <label class="form-label"><b><?php echo tr('Name'); ?></b></label>
+                    <input id="device-config-name" class="form-control input-220 mb-2" type="text" required>
                     
-                    <label><b><?php echo tr('Location'); ?></b></label>
-                    <input id="device-config-description" class="input-large" type="text">
+                    <label class="form-label"><b><?php echo tr('Location'); ?></b></label>
+                    <input id="device-config-description" class="form-control input-220 mb-2" type="text">
                     
-                    <label><b><?php echo tr('Device Key'); ?></b></label>
+                    <label class="form-label"><b><?php echo tr('Device Key'); ?></b></label>
                     <div class="input-group">
-                        <input id="device-config-devicekey" class="input-large key" type="text" style="width:245px;">
+                        <input id="device-config-devicekey" class="form-control key" type="text" style="width:259px;">
                         <button id="device-config-devicekey-new" class="btn btn-default"><?php echo tr('New'); ?></button>
                     </div>
         
@@ -65,7 +65,7 @@
                         <button class="btn btn-default" id="generate-template">Generate template</button>
                         <button class="btn btn-primary" id="prepare-custom-template"><?php echo tr('Apply custom template'); ?></button>
                         
-                        <textarea id="custom-template-textarea" class="input-large hidden" placeholder="<?php echo tr('Generated template will be shown here'); ?>"></textarea>
+                        <textarea id="custom-template-textarea" class="form-control hide" placeholder="<?php echo tr('Generated template will be shown here'); ?>"></textarea>
                     </div>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                     </p>
                 
                     <div id="device-init-feeds" style="display:none; margin-top:10px;">
-                        <label><b><?php echo tr('Feeds'); ?></b></label>
+                        <label class="form-label"><b><?php echo tr('Feeds'); ?></b></label>
                         <table class="table table-hover table-feeds">
                             <tr>
                                 <th></th>
@@ -108,7 +108,7 @@
                     </div>
                     
                     <div id="device-init-inputs" style="display:none">
-                        <label><b><?php echo tr('Inputs'); ?></b></label>
+                        <label class="form-label"><b><?php echo tr('Inputs'); ?></b></label>
                         <table class="table table-hover table-inputs">
                             <tr>
                                 <th></th>

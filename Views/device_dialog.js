@@ -22,7 +22,7 @@ var device_dialog =
         this.drawConfig();
 
         // hide generate template textarea on load
-        $('#custom-template-textarea').addClass('hidden');
+        $('#custom-template-textarea').addClass('hide');
     },
 
     'drawConfig':function() {
@@ -66,16 +66,16 @@ var device_dialog =
             groups.sort();
             
             $('#template-list').append(
-                "<div class='accordion-group'>" +
-                    "<div class='accordion-heading category-heading'>" +
-                        "<span class='accordion-toggle' data-bs-toggle='collapse' " +
+                "<div class='tpl-group'>" +
+                    "<div class='tpl-heading category-heading'>" +
+                        "<span class='tpl-toggle' data-bs-toggle='collapse' " +
                             "data-bs-target='#template-"+categoryid+"-collapse'>" +
                             category +
                         "</span>" +
                     "</div>" +
                     "<div id='template-"+categoryid+"-collapse' class='collapse' data-bs-parent='#template-list'>" +
-                        "<div class='accordion-inner'>" +
-                            "<div id='template-"+categoryid+"' class='accordion'></div>" +
+                        "<div class='tpl-inner'>" +
+                            "<div id='template-"+categoryid+"' class='tpl-list'></div>" +
                         "</div>" +
                     "</div>" +
                 "</div>"
@@ -85,15 +85,15 @@ var device_dialog =
                 var group = groups[i];
                 var groupid = group.replace(/\W/g, '').toLowerCase();
                 $('#template-'+categoryid).append(
-                    "<div class='accordion-group'>" +
-                        "<div class='accordion-heading group-heading'>" +
-                            "<span class='accordion-toggle' data-bs-toggle='collapse' " +
+                    "<div class='tpl-group'>" +
+                        "<div class='tpl-heading group-heading'>" +
+                            "<span class='tpl-toggle' data-bs-toggle='collapse' " +
                                 "data-bs-target='#template-"+categoryid+"-"+groupid+"-collapse'>" +
                                 group +
                             "</span>" +
                         "</div>" +
                         "<div id='template-"+categoryid+"-"+groupid+"-collapse' class='collapse' data-bs-parent='#template-"+categoryid+"'>" +
-                            "<div id='template-"+categoryid+"-"+groupid+"' class='accordion-inner'></div>" +
+                            "<div id='template-"+categoryid+"-"+groupid+"' class='tpl-inner'></div>" +
                         "</div>" +
                     "</div>"
                 );
@@ -154,11 +154,11 @@ var device_dialog =
             $("#device-save").html("Save");
             if (this.device.type != null && this.device.type != '') {
                 $("#device-init").show();
-                $('#select-device-alert').addClass('hidden')
+                $('#select-device-alert').addClass('hide')
             } else {
                 $("#device-init").hide();
                 $('#device-sidebar').addClass('show')
-                $('#select-device-alert').removeClass('hidden')
+                $('#select-device-alert').removeClass('hide')
             }
         }
         else {
@@ -311,7 +311,7 @@ var device_dialog =
         $("#generate-template").on('click', function () {
             let device_template = device.generateTemplate(device_dialog.device.id);
             $('#custom-template-textarea').val(JSON.stringify(device_template, null, 2));
-            $('#custom-template-textarea').removeClass('hidden');
+            $('#custom-template-textarea').removeClass('hide');
         });
     },
 
