@@ -6,89 +6,10 @@
 
     load_js("Lib/js/vue.global.prod-3.5.22.min.js");
     load_js("Modules/device/Views/device.js");
+    load_css("Modules/device/Views/device_view.css");
 ?>
 
-<style>
-/* ── Sticky controls toolbar ─────────────────────────────────────── */
-.device-controls-sentinel { height: 0; visibility: hidden; }
-.device-controls {
-    position: sticky;
-    top: var(--feed-top, 46px);
-    z-index: 100;
-    background: #fff;
-    padding: 6px 0;
-    margin-bottom: 10px;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, top 0.3s ease-out;
-}
-.device-controls.is-sticky { background: transparent; box-shadow: none; }
-.device-controls.is-sticky::before {
-    content: '';
-    position: fixed;
-    top: var(--feed-top, 46px);
-    left: 0;
-    width: 100vw;
-    height: 44px;
-    background: #209ed3;
-    z-index: -1;
-    transition: top 0.3s ease-out;
-}
-.device-controls .btn { margin-right: 4px; }
-
-/* ── Device List Grid: 9-column subgrid layout ───────────────────────
- * Col 1 : 40px        — select / chevron
- * Col 2 : max-content — nodeid
- * Col 3 : max-content — name
- * Col 4 : max-content — type
- * Col 5 : max-content — ip
- * Col 6 : max-content — devicekey (truncated)
- * Col 7 : 1fr         — spacer
- * Col 8 : max-content — updated
- * Col 9 : 40px        — configure
- * ────────────────────────────────────────────────────────────────── */
-.device-list-grid {
-    grid-template-columns: 40px max-content max-content max-content max-content max-content 1fr max-content 40px;
-}
-
-.device-list-grid[data-hide-typename]  [data-col="typename"]  { display: none; }
-.device-list-grid[data-hide-ip]        [data-col="ip"]        { display: none; }
-.device-list-grid[data-hide-devicekey] [data-col="devicekey"] { display: none; }
-.device-list-grid[data-hide-updated]   [data-col="updated"]   { display: none; }
-
-.device-list-grid [data-col="select"]    { grid-column: 1; }
-.device-list-grid [data-col="nodeid"]    { grid-column: 2; }
-.device-list-grid [data-col="name"]      { grid-column: 3; }
-.device-list-grid [data-col="typename"]  { grid-column: 4; }
-.device-list-grid [data-col="ip"]        { grid-column: 5; }
-.device-list-grid [data-col="devicekey"] { grid-column: 6; }
-.device-list-grid [data-col="spacer"]    { grid-column: 7; }
-.device-list-grid [data-col="updated"]   { grid-column: 8; }
-.device-list-grid [data-col="configure"] { grid-column: 9; text-align: center; }
-
-.device-list-cols {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    padding: 4px;
-    margin-bottom: 10px;
-    font-size: 11px;
-    color: #888;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background-color: #f0f0f0;
-}
-.device-list-cols > div { padding: 0 10px; }
-
-.device-devicekey {
-    font-family: monospace;
-    font-size: 11px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-</style>
-
-<div style="display:flex; align-items:center; justify-content:space-between;">
+<div class="page-header">
     <h3><?php echo tr('Devices'); ?></h3>
     <a href="api"><?php echo tr('Devices Help'); ?></a>
 </div>
