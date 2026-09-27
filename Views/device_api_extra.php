@@ -35,15 +35,15 @@
     <p><?php echo tr('The input API accepts a device key in place of an apikey, in the URL or the POST body:'); ?></p>
     <div style="display:flex; flex-direction:column; gap:10px">
       <div class="api-auth-row">
-        <span class="api-auth-tag recommended"><?php echo tr('RECOMMENDED'); ?></span>
-        <span class="api-auth-mono"><?php echo tr('POST body:'); ?> <span class="hl">devicekey=DEVICEKEY</span></span>
+        <span class="badge px-2 api-auth-tag bg-primary-subtle text-primary-emphasis"><?php echo tr('RECOMMENDED'); ?></span>
+        <span class="api-auth-mono font-monospace"><?php echo tr('POST body:'); ?> <span class="hl">devicekey=DEVICEKEY</span></span>
       </div>
       <div class="api-auth-row">
-        <span class="api-auth-tag"><?php echo tr('URL'); ?></span>
-        <span class="api-auth-mono">&amp;devicekey=DEVICEKEY</span>
+        <span class="badge px-2 api-auth-tag bg-secondary-subtle text-secondary-emphasis"><?php echo tr('URL'); ?></span>
+        <span class="api-auth-mono font-monospace">&amp;devicekey=DEVICEKEY</span>
       </div>
     </div>
-    <p class="api-auth-muted"><?php echo tr('The node the data is posted to must match the nodeid configured for that device, otherwise the post is rejected. Generate a key with device/generatekey.json below.'); ?></p>
+    <p class="text-body-secondary"><?php echo tr('The node the data is posted to must match the nodeid configured for that device, otherwise the post is rejected. Generate a key with device/generatekey.json below.'); ?></p>
   </div>
 
   <div class="api-auth-card">
@@ -53,9 +53,9 @@
       </span>
       <h3><?php echo tr('Device templates'); ?></h3>
     </div>
-    <p><?php echo tr('A template defines a device type and the default inputs, feeds and process lists for it. Template files live in <span class="api-auth-mono">Modules/device/data/*.json</span>.'); ?></p>
+    <p><?php echo tr('A template defines a device type and the default inputs, feeds and process lists for it. Template files live in <span class="api-auth-mono font-monospace">Modules/device/data/*.json</span>.'); ?></p>
     <p><?php echo tr('Setting up a device is two steps: <strong>create</strong> it with a nodeid and a type, then <strong>initialize</strong> it to build the inputs and feeds that type expects.'); ?></p>
-    <p class="api-auth-muted"><?php echo tr('Initialize a device once, on installation. Initializing the same device twice duplicates its inputs and feeds. Use device/template/prepare.json first to see exactly what will be created.'); ?></p>
+    <p class="text-body-secondary"><?php echo tr('Initialize a device once, on installation. Initializing the same device twice duplicates its inputs and feeds. Use device/template/prepare.json first to see exactly what will be created.'); ?></p>
     <p><a href="<?php echo $path; ?>device/view"><?php echo tr('Go to the Devices page'); ?></a></p>
   </div>
 </div>
