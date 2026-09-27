@@ -1,28 +1,3 @@
-/* ── Sticky controls toolbar ─────────────────────────────────────── */
-.device-controls-sentinel { height: 0; visibility: hidden; }
-.device-controls {
-    position: sticky;
-    top: var(--feed-top, 46px);
-    z-index: 100;
-    background: var(--bs-body-bg);
-    padding: 6px 0;
-    margin-bottom: 10px;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, top 0.3s ease-out;
-}
-.device-controls.is-sticky { background: transparent; box-shadow: none; }
-.device-controls.is-sticky::before {
-    content: '';
-    position: fixed;
-    top: var(--feed-top, 46px);
-    left: 0;
-    width: 100vw;
-    height: 44px;
-    background: var(--bg-menu-top-active);
-    z-index: -1;
-    transition: top 0.3s ease-out;
-}
-.device-controls .btn { margin-right: 4px; }
-
 /* ── Device List Grid: 9-column subgrid layout ───────────────────────
  * Col 1 : 40px        — select / chevron
  * Col 2 : max-content — nodeid

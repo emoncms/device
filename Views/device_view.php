@@ -13,14 +13,14 @@
     <h3><?php echo tr('Devices'); ?></h3>
     <a href="api"><?php echo tr('Devices Help'); ?></a>
 </div>
-<div class="device-controls-sentinel"></div>
+<div class="list-toolbar-sentinel"></div>
 <div id="device-app">
     <div v-cloak>
         <template v-if="!loaded">
             <div class="ajax-loader"></div>
         </template>
         <template v-else>
-            <div class="controls device-controls">
+            <div class="list-toolbar">
                 <button v-if="groups.length > 0" @click="toggleAll" class="btn btn-default" :title="allCollapsed ? '<?php echo tr('Expand all'); ?>' : '<?php echo tr('Collapse all'); ?>'">
                     <i :class="allCollapsed ? 'icon-resize-full' : 'icon-resize-small'"></i>
                 </button>
@@ -34,7 +34,7 @@
                 <button @click="configureSelected" v-if="selected.length === 1" class="btn btn-default" title="<?php echo tr('Configure'); ?>">
                     <i class="icon-wrench"></i>
                 </button>
-                <button @click="newDevice" class="btn btn-warning" style="float:right;" title="<?php echo tr('New device'); ?>">
+                <button @click="newDevice" class="btn btn-warning ms-auto" title="<?php echo tr('New device'); ?>">
                     <i class="icon-plus-sign icon-white"></i>&nbsp;<?php echo tr('New device'); ?>
                 </button>
             </div>
@@ -342,21 +342,7 @@ var update;
                 // After delete with row=null, device_dialog fires device-delete on #wrap
                 $('#wrap').on('device-delete', fetchDevices);
 
-                // Sticky controls: sync --feed-top then toggle is-sticky via IntersectionObserver
-                var sentinel = document.querySelector('.device-controls-sentinel');
-                if (sentinel && 'IntersectionObserver' in window) {
-                    var nav = document.querySelector('.menu-top');
-                    function updateTop() {
-                        var h = (nav && !nav.classList.contains('menu-top-hide')) ? nav.offsetHeight : 0;
-                        document.documentElement.style.setProperty('--feed-top', h + 'px');
-                    }
-                    if (nav) new MutationObserver(updateTop).observe(nav, { attributes: true, attributeFilter: ['class'] });
-                    updateTop();
-                    new IntersectionObserver(function (entries) {
-                        var ctrl = document.querySelector('.device-controls');
-                        if (ctrl) ctrl.classList.toggle('is-sticky', !entries[0].isIntersecting);
-                    }, { rootMargin: '-46px 0px 0px 0px', threshold: 0 }).observe(sentinel);
-                }
+                list_toolbar(document.querySelector('.list-toolbar-sentinel'), '.list-toolbar');
 
                 // Responsive column hiding — watch for container to appear (inside v-if)
                 var hideCols = ['devicekey', 'ip', 'typename', 'updated'];
