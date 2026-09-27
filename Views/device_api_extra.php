@@ -15,22 +15,22 @@
   device key authentication and how device templates work.
 
   Rendered by Lib/api_explorer_view.php via its $extra parameter and styled
-  with the shared .api-auth-card classes in Lib/api_explorer.css.
+  with the reference page components in the theme and Lib/api_explorer.css.
 
   */
 
   defined('EMONCMS_EXEC') or die('Restricted access');
   global $path;
 ?>
-<div class="api-auth-grid">
+<div class="row row-cols-1 row-cols-lg-2 g-3">
 
-  <div class="api-auth-card">
-    <div class="api-auth-title">
-      <span class="api-auth-icon">
+  <div class="col"><div class="card card-body gap-3 h-100 api-auth-card">
+    <h3 class="ref-card-title">
+      <span class="ref-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M10 18h4"></path></svg>
       </span>
-      <h3><?php echo tr('Device key authentication'); ?></h3>
-    </div>
+      <?php echo tr('Device key authentication'); ?>
+    </h3>
     <p><?php echo tr('A device key posts data for <strong>one node only</strong>, so a device that is out in the field never carries your account write key.'); ?></p>
     <p><?php echo tr('The input API accepts a device key in place of an apikey, in the URL or the POST body:'); ?></p>
     <div style="display:flex; flex-direction:column; gap:10px">
@@ -44,18 +44,18 @@
       </div>
     </div>
     <p class="text-body-secondary"><?php echo tr('The node the data is posted to must match the nodeid configured for that device, otherwise the post is rejected. Generate a key with device/generatekey.json below.'); ?></p>
-  </div>
+  </div></div>
 
-  <div class="api-auth-card">
-    <div class="api-auth-title">
-      <span class="api-auth-icon">
+  <div class="col"><div class="card card-body gap-3 h-100 api-auth-card">
+    <h3 class="ref-card-title">
+      <span class="ref-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"></path></svg>
       </span>
-      <h3><?php echo tr('Device templates'); ?></h3>
-    </div>
+      <?php echo tr('Device templates'); ?>
+    </h3>
     <p><?php echo tr('A template defines a device type and the default inputs, feeds and process lists for it. Template files live in <span class="api-auth-mono font-monospace">Modules/device/data/*.json</span>.'); ?></p>
     <p><?php echo tr('Setting up a device is two steps: <strong>create</strong> it with a nodeid and a type, then <strong>initialize</strong> it to build the inputs and feeds that type expects.'); ?></p>
     <p class="text-body-secondary"><?php echo tr('Initialize a device once, on installation. Initializing the same device twice duplicates its inputs and feeds. Use device/template/prepare.json first to see exactly what will be created.'); ?></p>
     <p><a href="<?php echo $path; ?>device/view"><?php echo tr('Go to the Devices page'); ?></a></p>
-  </div>
+  </div></div>
 </div>
