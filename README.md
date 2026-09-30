@@ -37,7 +37,7 @@ With the EmonPi and CT sensors connected up the emoncms inputs list running on t
 
 ![1.png](files/1.png)
 
-These are unconfigured at this point and no data is being recorded. The manual setup for a Type 1 Solar PV setup is documented here [OpenEnergyMonitor Guide: SolarPV](https://guide.openenergymonitor.org/applications/solar-pv), but we are going to use the device module here to automatically setup the inputs and feeds.
+These are unconfigured at this point and no data is being recorded. The manual setup for a Type 1 Solar PV setup is documented here [OpenEnergyMonitor Guide: SolarPV](https://docs.openenergymonitor.org/applications/solar-pv.html), but we are going to use the device module here to automatically setup the inputs and feeds.
 
 Navigate to the device module, click on Setup > Device Setup, which should bring up the following page:
 
