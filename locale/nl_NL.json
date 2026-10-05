@@ -29,7 +29,7 @@
     "Initialize": "Initialize",
     "Save": "Save",
     "Initialize device": "Initialize device",
-    "Initializing a device will automaticaly configure inputs and associated feeds as described.": "Initializing a device will automaticaly configure inputs and associated feeds as described.",
+    "Initializing a device will automatically configure inputs and associated feeds as described.": "Initializing a device will automatically configure inputs and associated feeds as described.",
     "Warning: ": "Warning: ",
     "Process lists with dependencies to deselected feeds or inputs will be skipped as a whole": "Process lists with dependencies to deselected feeds or inputs will be skipped as a whole",
     "Feeds": "Feeds",

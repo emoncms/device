@@ -54,7 +54,7 @@
     "Delete": "Supprimer",
     "Initialize": "Initialiser",
     "Save": "Enregistrer",
-    "Initializing a device will automaticaly configure inputs and associated feeds as described.": "Initialiser un périphérique configurera automatiquement les entrées et flux associés comme décrit.",
+    "Initializing a device will automatically configure inputs and associated feeds as described.": "Initialiser un périphérique configurera automatiquement les entrées et flux associés comme décrit.",
     "Warning: ": "Attention : ",
     "Process lists with dependencies to deselected feeds or inputs will be skipped as a whole": "Les listes de traitement dépendant de flux ou d\\'entrées désélectionnés seront entièrement ignorées",
     "Feeds": "Flux",

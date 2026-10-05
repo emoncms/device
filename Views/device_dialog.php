@@ -89,7 +89,7 @@
             </div>
             <div id="device-init-body" class="modal-body">
                 <div class="content">
-                    <p style="margin-top: 10px;"><?php echo tr('Initializing a device will automaticaly configure inputs and associated feeds as described.'); ?><br>
+                    <p style="margin-top: 10px;"><?php echo tr('Initializing a device will automatically configure inputs and associated feeds as described.'); ?><br>
                         <b><?php echo tr('Warning: '); ?></b><?php echo tr('Process lists with dependencies to deselected feeds or inputs will be skipped as a whole'); ?>
                     </p>
                 

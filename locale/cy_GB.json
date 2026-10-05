@@ -29,7 +29,7 @@
     "Initialize": "Cychwyn",
     "Save": "Cadw",
     "Initialize device": "Cychwyn dyfais",
-    "Initializing a device will automaticaly configure inputs and associated feeds as described.": "Bydd cychwyn dyfais yn ffurfweddu mewnbynnau a ffrwdiau cysylltiedig fel y'u disgrifir yn awtomatig.",
+    "Initializing a device will automatically configure inputs and associated feeds as described.": "Bydd cychwyn dyfais yn ffurfweddu mewnbynnau a ffrwdiau cysylltiedig fel y'u disgrifir yn awtomatig.",
     "Warning: ": "Rhybudd: ",
     "Process lists with dependencies to deselected feeds or inputs will be skipped as a whole": "Bydd rhestrau proses â dibyniaethau i ffrwdiau neu fewnbynnau a ddad-ddewiswyd yn cael eu sgipio yn gyfan gwbl",
     "Feeds": "Ffrwdiau",

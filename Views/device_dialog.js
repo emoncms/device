@@ -139,11 +139,11 @@ var device_dialog =
     'clearConfigModal':function() {
         $("#template-list").text('');
         
-        var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device.<br>" +
+        var tooltip = "Defaults, like inputs and associated feeds will be automatically configured together with the device.<br>" +
                 "Initializing a device usually should only be done once on installation. " +
                 "If the configuration was already applied, only missing inputs and feeds will be created.";
         
-        $('#template-tooltip').attr("title", tooltip).tooltip({html: true});
+        bootstrap.Tooltip.getOrCreateInstance(document.getElementById('template-tooltip'), {title: tooltip, html: true});
         
         if (this.device != null) {
             $('#device-config-node').val(this.device.nodeid);
