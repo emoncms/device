@@ -179,7 +179,7 @@ var device_dialog =
         var height = $(window).height();
         
         if ($("#device-config-modal").length) {
-            var h = height - $("#device-config-modal .modal-content").offset().top - 180;
+            var h = height - $("#device-config-modal .modal-content")[0].getBoundingClientRect().top - 180;
             $("#device-config-body").height(h);
         }
         
@@ -543,7 +543,7 @@ var device_dialog =
         var height = $(window).height();
         
         if ($("#device-init-modal").length) {
-            var h = height - $("#device-init-modal .modal-content").offset().top - 180;
+            var h = height - $("#device-init-modal .modal-content")[0].getBoundingClientRect().top - 180;
             $("#device-init-body").height(h);
         }
     },
